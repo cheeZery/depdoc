@@ -1,0 +1,24 @@
+{
+    "name": "cheezery/depdoc",
+    "description": "Helps you document dependencies of your project",
+    "type": "project",
+    "homepage": "https://github.com/cheeZery/depdoc",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carsten Dietzel",
+            "email": "carsten.dietzel@googlemail.com"
+        }
+    ],
+    "bin": [
+        "bin/depdoc"
+    ],
+    "autoload": {
+        "psr-4": {
+            "DepDoc\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.1.0"
+    }
+}

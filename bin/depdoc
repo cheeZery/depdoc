@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+$composerAutoload = getcwd() . '/vendor/autoload.php';
+
+if (!file_exists($composerAutoload)) {
+    echo 'Couldn\'t find composer, make sure to run script in project root!' . PHP_EOL;
+    exit(1);
+}
+
+require $composerAutoload;
+
+array_shift($argv);
+
+DepDoc\Runner::run($argv);
