@@ -69,7 +69,7 @@ class Markdown extends Parser
                 $priorLineWasEmpty = false;
 
                 foreach ($dependency['additionalContent'] as $index => $contentLine) {
-                    if ($contentLine[0] === '>' && !$descriptionFound) {
+                    if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
                         $descriptionFound = true;
                         unset($dependency['additionalContent'][$index]);
                         continue;

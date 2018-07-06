@@ -6,7 +6,9 @@ abstract class PackageManager
 {
     public function getName()
     {
-        return end(explode('\\', get_called_class()));
+        $fullyQualifiedClassNameParts = explode('\\', get_called_class());
+
+        return end($fullyQualifiedClassNameParts);
     }
 
     abstract public function getInstalledPackages();
