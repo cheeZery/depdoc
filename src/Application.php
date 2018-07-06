@@ -10,7 +10,7 @@ class Application
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $node = new PackageManager\Node();
         $installedPackages[$node->getName()] = [];
-        #$installedPackages[$node->getName()] = $node->getInstalledPackages();
+        $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $markdownParser = new Parser\Markdown();
         $documentedDependencies = $markdownParser->getDocumentedDependencies();
