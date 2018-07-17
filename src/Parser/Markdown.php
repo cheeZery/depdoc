@@ -50,7 +50,7 @@ class Markdown extends Parser
                 $dependencies[$currentPackageManagerName][$currentPackage] = [
                     'name' => $currentPackage,
                     'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
-                    'usedLockSymbol' => $matches[3],
+                    'usedLockSymbol' => $matches[3] ?? null,
                     'additionalContent' => []
                 ];
                 continue;
