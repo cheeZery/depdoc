@@ -42,13 +42,15 @@ class Markdown extends Parser
                 $dependencies[$currentPackageManagerName] = [];
             }
 
-            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒)?/', $line, $matches)) {
+            // TODO: After config file was added, add option to define used lock symbol
+            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
                 $currentPackage = $matches[1];
 
                 // TODO: Create model for documented dependency
                 $dependencies[$currentPackageManagerName][$currentPackage] = [
                     'name' => $currentPackage,
                     'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
+                    'usedLockSymbol' => $matches[3],
                     'additionalContent' => []
                 ];
                 continue;

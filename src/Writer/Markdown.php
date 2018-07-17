@@ -34,7 +34,8 @@ class Markdown extends Writer
                 $additionalContent = $documentedDependency['additionalContent'] ?? [];
 
                 if ($lockedVersion) {
-                    $documentation[] = "##### $name `$lockedVersion` 🔒";
+                    $usedLockSymbol = $documentedDependency['usedLockSymbol'] ?? '🔒';
+                    $documentation[] = "##### $name `$lockedVersion` $usedLockSymbol";
                 } else {
                     $documentation[] = "##### $name `$version`";
                 }
