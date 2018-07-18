@@ -8,7 +8,7 @@ class Runner
     private const ACTIONS = ['validate', 'update'];
 
     /** @var Application|null */
-    private $application;
+    protected $application;
 
     public function run(array $arguments = []): int
     {
