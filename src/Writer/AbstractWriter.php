@@ -2,7 +2,7 @@
 
 namespace DepDoc\Writer;
 
-abstract class Writer
+abstract class AbstractWriter
 {
     abstract public function createDocumentation(array $installedPackages, array $documentedDependencies);
 }

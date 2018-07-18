@@ -2,7 +2,7 @@
 
 namespace DepDoc\Parser;
 
-class Markdown extends Parser
+class MarkdownParser extends AbstractParser
 {
     private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 

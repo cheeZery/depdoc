@@ -2,13 +2,14 @@
 
 namespace DepDoc\Validator;
 
-class Validator
+class PackageValidator
 {
     /**
      * @param array $installedPackages
      * @param array $documentedDependencies
+     * @return string[]
      */
-    public function compare(array $installedPackages, array $documentedDependencies)
+    public function compare(array $installedPackages, array $documentedDependencies): array
     {
         $errors = [];
 
@@ -49,14 +50,6 @@ class Validator
             }
         }
 
-        if (count($errors) === 0) {
-            return;
-        }
-
-        foreach ($errors as $error) {
-            echo $error . PHP_EOL;
-        }
-
-        exit(1);
+        return $errors;
     }
 }

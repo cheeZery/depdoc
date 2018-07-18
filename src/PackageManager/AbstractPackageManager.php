@@ -2,7 +2,7 @@
 
 namespace DepDoc\PackageManager;
 
-abstract class PackageManager
+abstract class AbstractPackageManager
 {
     public function getName()
     {
