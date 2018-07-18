@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc;
 
 class Application
 {
-    public function updateAction()
+    public function updateAction(): bool
     {
         $composer = new PackageManager\Composer();
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
@@ -17,9 +18,11 @@ class Application
 
         $writer = new Writer\Markdown();
         $writer->createDocumentation($installedPackages, $documentedDependencies);
+
+        return true;
     }
 
-    public function validateAction()
+    public function validateAction(): bool
     {
         $composer = new PackageManager\Composer();
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
@@ -31,5 +34,7 @@ class Application
 
         $validator = new Validator\Validator();
         $validator->compare($installedPackages, $documentedDependencies);
+
+        return true;
     }
 }

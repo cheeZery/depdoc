@@ -7,7 +7,7 @@ class Runner
 {
     private const ACTIONS = ['validate', 'update'];
 
-    /** @var Application */
+    /** @var Application|null */
     private $application;
 
     public function run(array $arguments = []): int
@@ -27,11 +27,11 @@ class Runner
             return 1;
         }
 
-        $this->application = new Application();
-
         $actionName = "{$action}Action";
 
-        $this->application->$actionName();
+        if (!$this->getApplication()->$actionName()) {
+            return 1;
+        }
 
         return 0;
     }
@@ -54,10 +54,14 @@ HELP;
     }
 
     /**
-     * @return Application
+     * @return Application|null
      */
-    public function getApplication(): Application
+    public function getApplication(): ?Application
     {
+        if (!$this->application) {
+            $this->application = new Application();
+        }
+
         return $this->application;
     }
 
@@ -65,7 +69,7 @@ HELP;
      * @param Application $application
      * @return $this
      */
-    public function setApplication(Application $application): Runner
+    public function setApplication(?Application $application): Runner
     {
         $this->application = $application;
 
