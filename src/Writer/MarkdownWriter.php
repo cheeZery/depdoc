@@ -2,7 +2,7 @@
 
 namespace DepDoc\Writer;
 
-class Markdown extends Writer
+class MarkdownWriter extends AbstractWriter
 {
     private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 

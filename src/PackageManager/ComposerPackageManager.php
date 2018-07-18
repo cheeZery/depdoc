@@ -2,7 +2,7 @@
 
 namespace DepDoc\PackageManager;
 
-class Composer extends PackageManager
+class ComposerPackageManager extends AbstractPackageManager
 {
     public function getInstalledPackages()
     {
