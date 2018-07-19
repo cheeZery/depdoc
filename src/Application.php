@@ -43,6 +43,9 @@ class Application
 
         $documentedDependencies = $this->getParser()
             ->getDocumentedDependencies();
+        if ($documentedDependencies === null) {
+            return false;
+        }
 
         $this->getWriter()
             ->createDocumentation($installedPackages, $documentedDependencies);
@@ -60,6 +63,9 @@ class Application
 
         $documentedDependencies = $this->getParser()
             ->getDocumentedDependencies();
+        if ($documentedDependencies === null) {
+            return false;
+        }
 
         $validationResult = $this->getValidator()
             ->compare($installedPackages, $documentedDependencies);
