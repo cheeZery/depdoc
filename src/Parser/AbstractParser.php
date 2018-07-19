@@ -4,5 +4,5 @@ namespace DepDoc\Parser;
 
 abstract class AbstractParser
 {
-    abstract public function getDocumentedDependencies(?string $packageManagerName = null): ?array;
+    abstract public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array;
 }
