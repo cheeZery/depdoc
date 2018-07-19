@@ -27,6 +27,7 @@ class RunnerTest extends TestCase
         $application = $this->prophesize(Application::class);
         $application
             ->validateAction()
+            ->shouldBeCalled()
             ->willReturn(true);
 
         $runner = new Runner();
@@ -41,9 +42,11 @@ class RunnerTest extends TestCase
         $application = $this->prophesize(Application::class);
         $application
             ->validateAction()
+            ->shouldBeCalled()
             ->willReturn(true);
         $application
             ->updateAction()
+            ->shouldBeCalled()
             ->willReturn(true);
 
         $runner = new Runner();
@@ -71,9 +74,11 @@ class RunnerTest extends TestCase
         $application = $this->prophesize(Application::class);
         $application
             ->validateAction()
+            ->shouldBeCalled()
             ->willReturn(false);
         $application
             ->updateAction()
+            ->shouldBeCalled()
             ->willReturn(false);
 
         $runner = new Runner();
