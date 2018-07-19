@@ -4,9 +4,9 @@ namespace DepDoc\Parser;
 
 class MarkdownParser extends AbstractParser
 {
-    private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
+    public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function getDocumentedDependencies(?string $packageManagerName = null): ?array
+    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
     {
         if (!file_exists(self::DEPENDENCIES_FILE)) {
             echo self::DEPENDENCIES_FILE . ' is missing!';

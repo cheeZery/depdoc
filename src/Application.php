@@ -32,8 +32,13 @@ class Application
         $this->writer = new MarkdownWriter();
     }
 
-    public function updateAction(): bool
+    public function updateAction(array $options): bool
     {
+        $filepath = $this->getAbsoluteFilepath($options['targetDirectory']);
+        if (!file_exists($filepath)) {
+            touch($filepath);
+        }
+
         $composer = $this->getManagerComposer();
         $node = $this->getManagerNode();
 
@@ -42,7 +47,7 @@ class Application
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $documentedDependencies = $this->getParser()
-            ->getDocumentedDependencies();
+            ->getDocumentedDependencies($filepath);
         if ($documentedDependencies === null) {
             return false;
         }
@@ -53,8 +58,15 @@ class Application
         return true;
     }
 
-    public function validateAction(): bool
+    public function validateAction(array $options): bool
     {
+        $filepath = $this->getAbsoluteFilepath($options['targetDirectory']);
+        if (!file_exists($filepath)) {
+            echo sprintf('Error: Missing %s file in: %s', MarkdownParser::DEPENDENCIES_FILE, $filepath);
+
+            return false;
+        }
+
         $composer = $this->getManagerComposer();
         $node = $this->getManagerNode();
 
@@ -62,7 +74,7 @@ class Application
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $documentedDependencies = $this->getParser()
-            ->getDocumentedDependencies();
+            ->getDocumentedDependencies($filepath);
         if ($documentedDependencies === null) {
             return false;
         }
@@ -75,10 +87,15 @@ class Application
         }
 
         foreach ($validationResult as $line) {
-            echo $line  . PHP_EOL;
+            echo $line . PHP_EOL;
         }
 
         return false;
+    }
+
+    protected function getAbsoluteFilepath(string $directory): string
+    {
+        return $directory . DIRECTORY_SEPARATOR . MarkdownParser::DEPENDENCIES_FILE;
     }
 
     /**
