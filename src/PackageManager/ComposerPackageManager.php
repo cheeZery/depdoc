@@ -6,7 +6,8 @@ class ComposerPackageManager extends AbstractPackageManager
 {
     public function getInstalledPackages()
     {
-        // TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
+        // @TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
+        // @TODO: Support composer binary detection
         exec("composer show --direct --format json", $output);
 
         if ($output[0] !== '{') {
@@ -36,7 +37,7 @@ class ComposerPackageManager extends AbstractPackageManager
         $output = [];
 
         foreach ($installedPackages as $installedPackage) {
-            // TODO: Create model for installed package
+            // @TODO: Create model for installed package
             $output[$installedPackage['name']] = $installedPackage;
         }
 

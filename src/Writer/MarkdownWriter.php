@@ -47,14 +47,14 @@ class MarkdownWriter extends AbstractWriter
                 }
             }
 
-            // TODO: Maybe add documentation for packages who were documented but not installed (anymore)
+            // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
 
             $documentation[] = "";
 
             $handle = @fopen(self::DEPENDENCIES_FILE, "w");
 
             foreach ($documentation as $line) {
-                // TODO: which line break?!
+                // @TODO: which line break?!
                 fwrite($handle, "$line\r\n");
             }
 

@@ -8,13 +8,14 @@ class MarkdownParser extends AbstractParser
 
     public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
     {
-        if (!file_exists(self::DEPENDENCIES_FILE)) {
-            echo self::DEPENDENCIES_FILE . ' is missing!';
+        if (!file_exists($filepath)) {
+            echo $filepath . ' is missing!';
 
             return null;
         }
 
-        $handle = @fopen(self::DEPENDENCIES_FILE, "r");
+        // @TODO: Use file() here
+        $handle = @fopen($filepath, "r");
 
         $currentPackageManagerName = null;
         $currentPackage = null;
@@ -43,11 +44,11 @@ class MarkdownParser extends AbstractParser
                 $dependencies[$currentPackageManagerName] = [];
             }
 
-            // TODO: After config file was added, add option to define used lock symbol
+            // @TODO: After config file was added, add option to define used lock symbol
             if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
                 $currentPackage = $matches[1];
 
-                // TODO: Create model for documented dependency
+                // @TODO: Create model for documented dependency
                 $dependencies[$currentPackageManagerName][$currentPackage] = [
                     'name' => $currentPackage,
                     'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
