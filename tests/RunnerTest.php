@@ -5,6 +5,7 @@ namespace DepDocTest;
 use DepDoc\Application;
 use DepDoc\Runner;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 
 class RunnerTest extends TestCase
 {
@@ -22,30 +23,44 @@ class RunnerTest extends TestCase
         $this->assertEquals(0, $exitCode);
     }
 
-    public function testRunDefaultsToValidate()
+    public function testRunDefaultsToHelp()
     {
         $application = $this->prophesize(Application::class);
+        /** @noinspection PhpParamsInspection Argument::any() won't fit into <array> .. */
         $application
-            ->validateAction()
-            ->shouldBeCalled()
-            ->willReturn(true);
+            ->validateAction(Argument::any())
+            ->shouldNotBeCalled();
+        /** @noinspection PhpParamsInspection Argument::any() won't fit into <array> .. */
+        $application
+            ->updateAction(Argument::any())
+            ->shouldNotBeCalled();
 
         $runner = new Runner();
         $runner->setApplication($application->reveal());
 
+        ob_start();
         $exitCode = $runner->run();
+
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertContains('depdoc [command] [options]', $output);
         $this->assertEquals(0, $exitCode);
     }
 
     public function testRunUseProvidesArgument()
     {
+        $options = [
+            'targetDirectory' => getcwd(),
+        ];
+
         $application = $this->prophesize(Application::class);
         $application
-            ->validateAction()
+            ->validateAction($options)
             ->shouldBeCalled()
             ->willReturn(true);
         $application
-            ->updateAction()
+            ->updateAction($options)
             ->shouldBeCalled()
             ->willReturn(true);
 
@@ -71,13 +86,17 @@ class RunnerTest extends TestCase
 
     public function testRunFailsIfCommandFails()
     {
+        $options = [
+            'targetDirectory' => getcwd(),
+        ];
+
         $application = $this->prophesize(Application::class);
         $application
-            ->validateAction()
+            ->validateAction($options)
             ->shouldBeCalled()
             ->willReturn(false);
         $application
-            ->updateAction()
+            ->updateAction($options)
             ->shouldBeCalled()
             ->willReturn(false);
 

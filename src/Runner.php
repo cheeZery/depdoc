@@ -58,12 +58,16 @@ class Runner
         ];
 
         while (count($arguments)) {
-            $argument = array_shift($arguments);
+            $argument = trim(array_shift($arguments));
+            if (strlen($argument) === 0) {
+                continue;
+            }
+
             if ($argument === '-d' && count($arguments)) {
                 $parsedOptions['targetDirectory'] = array_shift($arguments);
                 continue;
             }
-            if (in_array($argument, static::ACTIONS)) {
+            if ($argument[0] !== '-') {
                 $parsedAction = $argument;
                 continue;
             }
