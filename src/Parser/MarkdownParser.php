@@ -10,7 +10,8 @@ class MarkdownParser extends AbstractParser
     {
         if (!file_exists(self::DEPENDENCIES_FILE)) {
             echo self::DEPENDENCIES_FILE . ' is missing!';
-            exit(1);
+
+            return null;
         }
 
         $handle = @fopen(self::DEPENDENCIES_FILE, "r");
@@ -51,7 +52,7 @@ class MarkdownParser extends AbstractParser
                     'name' => $currentPackage,
                     'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
                     'usedLockSymbol' => $matches[3] ?? null,
-                    'additionalContent' => []
+                    'additionalContent' => [],
                 ];
                 continue;
             }
