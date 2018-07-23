@@ -14,15 +14,13 @@ class MarkdownParser extends AbstractParser
             return null;
         }
 
-        // @TODO: Use file() here
-        $handle = @fopen($filepath, "r");
-
+        $lines = file($filepath);
         $currentPackageManagerName = null;
         $currentPackage = null;
 
         $dependencies = [];
 
-        while (($line = fgets($handle)) !== false) {
+        foreach ($lines as $line) {
 
             $line = rtrim($line);
 
@@ -64,8 +62,6 @@ class MarkdownParser extends AbstractParser
 
             $dependencies[$currentPackageManagerName][$currentPackage]['additionalContent'][] = $line;
         }
-
-        fclose($handle);
 
         foreach ($dependencies as &$packageManagerDependencies) {
             foreach ($packageManagerDependencies as &$dependency) {
