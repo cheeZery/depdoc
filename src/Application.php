@@ -43,7 +43,6 @@ class Application
         $node = $this->getManagerNode();
 
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
-        $installedPackages[$node->getName()] = [];
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $documentedDependencies = $this->getParser()

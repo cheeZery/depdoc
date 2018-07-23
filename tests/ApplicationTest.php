@@ -5,6 +5,7 @@ namespace DepDocTest;
 
 use DepDoc\Application;
 use DepDoc\PackageManager\ComposerPackageManager;
+use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\Parser\MarkdownParser;
 use DepDoc\Validator\PackageValidator;
 use DepDoc\Writer\MarkdownWriter;
@@ -39,6 +40,7 @@ class ApplicationTest extends TestCase
 
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
+        $nodeManager = $this->prophesize(NodePackageManager::class);
         $parser = $this->prophesize(MarkdownParser::class);
         $writer = $this->prophesize(MarkdownWriter::class);
 
@@ -56,6 +58,15 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn($composerPackages);
 
+        $nodeManager
+            ->getName()
+            ->shouldBeCalledTimes(1)
+            ->willReturn('node');
+        $nodeManager
+            ->getInstalledPackages()
+            ->shouldBeCalledTimes(1)
+            ->willReturn([]);
+
         /** @noinspection PhpStrictTypeCheckingInspection */
         $parser
             ->getDocumentedDependencies(Argument::any())
@@ -65,7 +76,7 @@ class ApplicationTest extends TestCase
         $writer
             ->createDocumentation([
                 'composer' => $composerPackages,
-                'NodePackageManager' => [],
+                'node' => [],
             ], [])
             ->shouldBeCalledTimes(1);
 
@@ -74,6 +85,7 @@ class ApplicationTest extends TestCase
         $application = new Application();
         $application
             ->setManagerComposer($composerManager->reveal())
+            ->setManagerNode($nodeManager->reveal())
             ->setWriter($writer->reveal())
             ->setParser($parser->reveal());
         $result = $application->updateAction([
@@ -97,6 +109,7 @@ class ApplicationTest extends TestCase
 
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
+        $nodeManager = $this->prophesize(NodePackageManager::class);
         $parser = $this->prophesize(MarkdownParser::class);
         $validator = $this->prophesize(PackageValidator::class);
 
@@ -114,6 +127,15 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn($composerPackages);
 
+        $nodeManager
+            ->getName()
+            ->shouldBeCalledTimes(1)
+            ->willReturn('node');
+        $nodeManager
+            ->getInstalledPackages()
+            ->shouldBeCalledTimes(1)
+            ->willReturn([]);
+
         /** @noinspection PhpStrictTypeCheckingInspection */
         $parser
             ->getDocumentedDependencies(Argument::any())
@@ -123,7 +145,7 @@ class ApplicationTest extends TestCase
         $validator
             ->compare([
                 'composer' => $composerPackages,
-                'NodePackageManager' => [],
+                'node' => [],
             ], [])
             ->willReturn([]);
 
@@ -132,6 +154,7 @@ class ApplicationTest extends TestCase
         $application = new Application();
         $application
             ->setManagerComposer($composerManager->reveal())
+            ->setManagerNode($nodeManager->reveal())
             ->setValidator($validator->reveal())
             ->setParser($parser->reveal());
         $result = $application->validateAction([
