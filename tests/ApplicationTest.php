@@ -11,7 +11,6 @@ use DepDoc\Validator\PackageValidator;
 use DepDoc\Writer\MarkdownWriter;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 class ApplicationTest extends TestCase
 {
@@ -37,6 +36,11 @@ class ApplicationTest extends TestCase
                 'description' => 'Test dep 2',
             ],
         ];
+        $targetDependenciesDirectory = '/test';
+        $targetDependenciesFilepath = $targetDependenciesDirectory . DIRECTORY_SEPARATOR . 'DEPENDENCIES.md';
+        $targetActionOptions = [
+            'targetDirectory' => $targetDependenciesDirectory,
+        ];
 
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
@@ -45,7 +49,7 @@ class ApplicationTest extends TestCase
         $writer = $this->prophesize(MarkdownWriter::class);
 
         $prophecyDepDoc
-            ->file_exists(Argument::containingString('tests/DEPENDENCIES.md'))
+            ->file_exists($targetDependenciesFilepath)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
@@ -54,7 +58,7 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn('composer');
         $composerManager
-            ->getInstalledPackages()
+            ->getInstalledPackages($targetDependenciesDirectory)
             ->shouldBeCalledTimes(1)
             ->willReturn($composerPackages);
 
@@ -63,13 +67,12 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn('node');
         $nodeManager
-            ->getInstalledPackages()
+            ->getInstalledPackages($targetDependenciesDirectory)
             ->shouldBeCalledTimes(1)
             ->willReturn([]);
 
-        /** @noinspection PhpStrictTypeCheckingInspection */
         $parser
-            ->getDocumentedDependencies(Argument::any())
+            ->getDocumentedDependencies($targetDependenciesFilepath)
             ->shouldBeCalledTimes(1)
             ->willReturn([]);
 
@@ -88,9 +91,7 @@ class ApplicationTest extends TestCase
             ->setManagerNode($nodeManager->reveal())
             ->setWriter($writer->reveal())
             ->setParser($parser->reveal());
-        $result = $application->updateAction([
-            'targetDirectory' => realpath(__DIR__ . DIRECTORY_SEPARATOR),
-        ]);
+        $result = $application->updateAction($targetActionOptions);
 
         $this->assertTrue($result);
 
@@ -106,6 +107,11 @@ class ApplicationTest extends TestCase
                 'description' => 'Test dep 1',
             ],
         ];
+        $targetDependenciesDirectory = '/test';
+        $targetDependenciesFilepath = $targetDependenciesDirectory . DIRECTORY_SEPARATOR . 'DEPENDENCIES.md';
+        $targetActionOptions = [
+            'targetDirectory' => $targetDependenciesDirectory,
+        ];
 
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
@@ -114,7 +120,7 @@ class ApplicationTest extends TestCase
         $validator = $this->prophesize(PackageValidator::class);
 
         $prophecyDepDoc
-            ->file_exists(Argument::containingString('tests/DEPENDENCIES.md'))
+            ->file_exists($targetDependenciesFilepath)
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
@@ -123,7 +129,7 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn('composer');
         $composerManager
-            ->getInstalledPackages()
+            ->getInstalledPackages($targetDependenciesDirectory)
             ->shouldBeCalledTimes(1)
             ->willReturn($composerPackages);
 
@@ -132,13 +138,12 @@ class ApplicationTest extends TestCase
             ->shouldBeCalledTimes(1)
             ->willReturn('node');
         $nodeManager
-            ->getInstalledPackages()
+            ->getInstalledPackages($targetDependenciesDirectory)
             ->shouldBeCalledTimes(1)
             ->willReturn([]);
 
-        /** @noinspection PhpStrictTypeCheckingInspection */
         $parser
-            ->getDocumentedDependencies(Argument::any())
+            ->getDocumentedDependencies($targetDependenciesFilepath)
             ->shouldBeCalledTimes(1)
             ->willReturn([]);
 
@@ -157,9 +162,7 @@ class ApplicationTest extends TestCase
             ->setManagerNode($nodeManager->reveal())
             ->setValidator($validator->reveal())
             ->setParser($parser->reveal());
-        $result = $application->validateAction([
-            'targetDirectory' => realpath(__DIR__ . DIRECTORY_SEPARATOR),
-        ]);
+        $result = $application->validateAction($targetActionOptions);
 
         $this->assertTrue($result);
 

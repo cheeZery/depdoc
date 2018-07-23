@@ -35,6 +35,8 @@ class Application
     public function updateAction(array $options): bool
     {
         $filepath = $this->getAbsoluteFilepath($options['targetDirectory']);
+        $directory = dirname($filepath);
+
         if (!file_exists($filepath)) {
             touch($filepath);
         }
@@ -42,8 +44,8 @@ class Application
         $composer = $this->getManagerComposer();
         $node = $this->getManagerNode();
 
-        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
-        $installedPackages[$node->getName()] = $node->getInstalledPackages();
+        $installedPackages[$composer->getName()] = $composer->getInstalledPackages($directory);
+        $installedPackages[$node->getName()] = $node->getInstalledPackages($directory);
 
         $documentedDependencies = $this->getParser()
             ->getDocumentedDependencies($filepath);
@@ -60,6 +62,8 @@ class Application
     public function validateAction(array $options): bool
     {
         $filepath = $this->getAbsoluteFilepath($options['targetDirectory']);
+        $directory = dirname($filepath);
+
         if (!file_exists($filepath)) {
             echo sprintf('Error: Missing %s file in: %s', MarkdownParser::DEPENDENCIES_FILE, $filepath);
 
@@ -69,8 +73,8 @@ class Application
         $composer = $this->getManagerComposer();
         $node = $this->getManagerNode();
 
-        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
-        $installedPackages[$node->getName()] = $node->getInstalledPackages();
+        $installedPackages[$composer->getName()] = $composer->getInstalledPackages($directory);
+        $installedPackages[$node->getName()] = $node->getInstalledPackages($directory);
 
         $documentedDependencies = $this->getParser()
             ->getDocumentedDependencies($filepath);

@@ -4,7 +4,7 @@ namespace DepDoc\PackageManager;
 
 class ComposerPackageManager extends AbstractPackageManager
 {
-    public function getInstalledPackages()
+    public function getInstalledPackages(string $directory)
     {
         // @TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
         // @TODO: Support composer binary detection

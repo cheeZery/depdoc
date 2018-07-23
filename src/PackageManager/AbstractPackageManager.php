@@ -11,5 +11,5 @@ abstract class AbstractPackageManager
         return end($fullyQualifiedClassNameParts);
     }
 
-    abstract public function getInstalledPackages();
+    abstract public function getInstalledPackages(string $directory);
 }
