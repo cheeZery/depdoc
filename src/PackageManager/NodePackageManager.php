@@ -4,7 +4,7 @@ namespace DepDoc\PackageManager;
 
 class NodePackageManager extends AbstractPackageManager
 {
-    public function getInstalledPackages()
+    public function getInstalledPackages(string $directory)
     {
         exec("npm list -json -depth 0 -long", $output);
 
