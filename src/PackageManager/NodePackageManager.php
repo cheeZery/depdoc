@@ -6,12 +6,11 @@ class NodePackageManager extends AbstractPackageManager
 {
     public function getInstalledPackages(string $directory)
     {
+        // @TODO: Support npm binary detection
         exec("npm list -json -depth 0 -long", $output);
 
-        if ($output[0] !== '{') {
-            do {
-                array_shift($output);
-            } while (count($output) > 0 && trim($output[0]) !== '{');
+        while (count($output) > 0 && trim($output[0]) !== '{') {
+            array_shift($output);
         }
 
         if (count($output) === 0) {

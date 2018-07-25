@@ -8,12 +8,18 @@ class ComposerPackageManager extends AbstractPackageManager
     {
         // @TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
         // @TODO: Support composer binary detection
-        exec("composer show --direct --format json", $output);
+        $command = implode(' ', [
+            'composer',
+            'show',
+            '--direct',
+            '--format=json',
+            '--working-dir=' . $directory,
+        ]);
+        exec($command, $output);
 
-        if ($output[0] !== '{') {
-            do {
-                array_shift($output);
-            } while (count($output) > 0 && trim($output[0]) !== '{');
+        // Remove all lines until starting {
+        while (count($output) > 0 && trim($output[0]) !== '{') {
+            array_shift($output);
         }
 
         if (count($output) === 0) {
