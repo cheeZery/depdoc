@@ -6,7 +6,7 @@ class MarkdownWriter extends AbstractWriter
 {
     private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function createDocumentation(array $installedPackages, array $documentedDependencies)
+    public function createDocumentation(string $filepath, array $installedPackages, array $documentedDependencies)
     {
         $documentation = [];
 
@@ -51,7 +51,7 @@ class MarkdownWriter extends AbstractWriter
 
             $documentation[] = "";
 
-            $handle = @fopen(self::DEPENDENCIES_FILE, "w");
+            $handle = @fopen($filepath, "w");
 
             foreach ($documentation as $line) {
                 // @TODO: which line break?!
