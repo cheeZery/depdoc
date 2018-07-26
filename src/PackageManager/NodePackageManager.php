@@ -29,7 +29,7 @@ class NodePackageManager extends AbstractPackageManager
             exit(1);
         }
 
-        $installedPackages = array_merge($dependencies["dependencies"] ?? [], $dependencies['devDependencies'] ?? []);
+        $installedPackages = $dependencies["dependencies"] ?? [];
 
         $relevantData = array_flip(["name", "version", "description"]);
 
