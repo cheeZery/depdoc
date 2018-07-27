@@ -30,6 +30,7 @@ class Application
         $this->managerNode = new NodePackageManager();
         $this->parser = new MarkdownParser();
         $this->writer = new MarkdownWriter();
+        $this->validator = new PackageValidator();
     }
 
     public function updateAction(array $options): bool
