@@ -7,8 +7,7 @@ class NodePackageManager extends AbstractPackageManager
     public function getInstalledPackages(string $directory)
     {
         // @TODO: Support npm binary detection
-        // @TODO: Does npm has an -d/--working-dir parameter?
-        $output = shell_exec("npm list -json -depth 0 -long");
+        $output = shell_exec("cd " . escapeshellarg($directory) . " && npm list -json -depth 0 -long");
         $output = trim($output);
 
         if (strlen($output) === 0 || $output[0] !== '{') {
