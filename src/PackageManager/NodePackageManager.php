@@ -7,17 +7,15 @@ class NodePackageManager extends AbstractPackageManager
     public function getInstalledPackages(string $directory)
     {
         // @TODO: Support npm binary detection
-        exec("npm list -json -depth 0 -long", $output);
+        // @TODO: Change working directory
+        $output = shell_exec("npm list -json -depth 0 -long");
+        $output = trim($output);
 
-        while (count($output) > 0 && trim($output[0]) !== '{') {
-            array_shift($output);
-        }
-
-        if (count($output) === 0) {
+        if (strlen($output) === 0 || $output[0] !== '{') {
             return [];
         }
 
-        $dependencies = json_decode(implode("", $output), true);
+        $dependencies = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo sprintf(

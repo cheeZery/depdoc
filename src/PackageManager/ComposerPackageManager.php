@@ -13,20 +13,16 @@ class ComposerPackageManager extends AbstractPackageManager
             'show',
             '--direct',
             '--format=json',
-            '--working-dir=' . $directory,
+            '--working-dir=' . escapeshellarg($directory),
         ]);
-        exec($command, $output);
+        $output = shell_exec($command);
+        $output = trim($output);
 
-        // Remove all lines until starting {
-        while (count($output) > 0 && trim($output[0]) !== '{') {
-            array_shift($output);
-        }
-
-        if (count($output) === 0) {
+        if (strlen($output) === 0 || $output[0] !== '{') {
             return [];
         }
 
-        $dependencies = json_decode(implode("", $output), true);
+        $dependencies = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo sprintf(
@@ -40,13 +36,13 @@ class ComposerPackageManager extends AbstractPackageManager
 
         $installedPackages = $dependencies["installed"] ?? [];
 
-        $output = [];
+        $result = [];
 
         foreach ($installedPackages as $installedPackage) {
             // @TODO: Create model for installed package
-            $output[$installedPackage['name']] = $installedPackage;
+            $result[$installedPackage['name']] = $installedPackage;
         }
 
-        return $output;
+        return $result;
     }
 }

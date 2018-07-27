@@ -63,7 +63,7 @@ class Runner
                 continue;
             }
 
-            if ($argument === '-d' && count($arguments)) {
+            if (in_array($argument, ['-d', '--directory']) && count($arguments)) {
                 $parsedOptions['targetDirectory'] = array_shift($arguments);
                 continue;
             }
