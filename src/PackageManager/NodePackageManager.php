@@ -7,7 +7,7 @@ class NodePackageManager extends AbstractPackageManager
     public function getInstalledPackages(string $directory)
     {
         // @TODO: Support npm binary detection
-        // @TODO: Change working directory
+        // @TODO: Does npm has an -d/--working-dir parameter?
         $output = shell_exec("npm list -json -depth 0 -long");
         $output = trim($output);
 
@@ -19,7 +19,7 @@ class NodePackageManager extends AbstractPackageManager
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo sprintf(
-                'Error occurred while trying to read $s dependencies: %s (%s)' . PHP_EOL,
+                'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
                 $this->getName(),
                 json_last_error_msg(),
                 json_last_error()
@@ -35,10 +35,11 @@ class NodePackageManager extends AbstractPackageManager
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
+        $result = [];
         foreach ($installedPackages as $installedPackage) {
-            $output[$installedPackage['name']] = $installedPackage;
+            $result[$installedPackage['name']] = $installedPackage;
         }
 
-        return $installedPackages;
+        return $result;
     }
 }

@@ -26,7 +26,7 @@ class ComposerPackageManager extends AbstractPackageManager
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo sprintf(
-                'Error occurred while trying to read $s dependencies: %s (%s)' . PHP_EOL,
+                'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
                 $this->getName(),
                 json_last_error_msg(),
                 json_last_error()
