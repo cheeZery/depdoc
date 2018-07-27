@@ -18,11 +18,6 @@ class ComposerPackageManagerTest extends TestCase
 
     public function testGetInstalledPackages()
     {
-        $this->markTestSkipped(
-            'As prophecy dosen\'t support pass-by-reference we have to use a process manager ' .
-            'to encapsulate exec() calls.'
-        );
-
         $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
@@ -31,29 +26,28 @@ class ComposerPackageManagerTest extends TestCase
             'show',
             '--direct',
             '--format=json',
-            '--working-dir=' . $targetDirectory,
+            '--working-dir=' . escapeshellarg($targetDirectory),
         ]);
         $commandOutput = null;
         $prophecy
-            ->exec($command, $commandOutput)
+            ->shell_exec($command)
             ->shouldBeCalledTimes(1)
-            ->will(function () use ($commandOutput) {
-                $commandOutput = [
-                    '',
-                    'some',
-                    'lines',
-                    'installed' => [
-                        'name' => [
-                            'some' => 'data',
-                        ],
-                    ],
-                ];
-            });
+            ->willReturn(<<<JSON
+{
+    "installed": [
+        {
+            "name": "Test",
+            "some": "data"
+        }
+    ]
+}
+JSON
+            );
 
         $prophecy->reveal();
         $manager = new ComposerPackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertEquals(['name' => ['some' => 'data']], $packages);
+        $this->assertEquals(['Test' => ['some' => 'data', 'name' => 'Test']], $packages);
     }
 }

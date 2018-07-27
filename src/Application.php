@@ -54,7 +54,7 @@ class Application
         }
 
         $this->getWriter()
-            ->createDocumentation($installedPackages, $documentedDependencies);
+            ->createDocumentation($filepath, $installedPackages, $documentedDependencies);
 
         return true;
     }
