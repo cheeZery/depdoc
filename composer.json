@@ -1,7 +1,7 @@
 {
     "name": "cheezery/depdoc",
     "description": "Helps you document dependencies of your project",
-    "type": "library",
+    "type": "project",
     "homepage": "https://github.com/cheeZery/depdoc",
     "license": "MIT",
     "authors": [
