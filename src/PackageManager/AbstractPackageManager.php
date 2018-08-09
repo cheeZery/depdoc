@@ -2,7 +2,7 @@
 
 namespace DepDoc\PackageManager;
 
-abstract class PackageManager
+abstract class AbstractPackageManager
 {
     public function getName()
     {
@@ -11,5 +11,5 @@ abstract class PackageManager
         return end($fullyQualifiedClassNameParts);
     }
 
-    abstract public function getInstalledPackages();
+    abstract public function getInstalledPackages(string $directory);
 }
