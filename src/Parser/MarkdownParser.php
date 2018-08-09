@@ -2,25 +2,25 @@
 
 namespace DepDoc\Parser;
 
-class Markdown extends Parser
+class MarkdownParser extends AbstractParser
 {
-    private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
+    public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function getDocumentedDependencies(?string $packageManagerName = null): ?array
+    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
     {
-        if (!file_exists(self::DEPENDENCIES_FILE)) {
-            echo self::DEPENDENCIES_FILE . ' is missing!';
-            exit(1);
+        if (!file_exists($filepath)) {
+            echo $filepath . ' is missing!';
+
+            return null;
         }
 
-        $handle = @fopen(self::DEPENDENCIES_FILE, "r");
-
+        $lines = file($filepath);
         $currentPackageManagerName = null;
         $currentPackage = null;
 
         $dependencies = [];
 
-        while (($line = fgets($handle)) !== false) {
+        foreach ($lines as $line) {
 
             $line = rtrim($line);
 
@@ -42,16 +42,16 @@ class Markdown extends Parser
                 $dependencies[$currentPackageManagerName] = [];
             }
 
-            // TODO: After config file was added, add option to define used lock symbol
+            // @TODO: After config file was added, add option to define used lock symbol
             if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
                 $currentPackage = $matches[1];
 
-                // TODO: Create model for documented dependency
+                // @TODO: Create model for documented dependency
                 $dependencies[$currentPackageManagerName][$currentPackage] = [
                     'name' => $currentPackage,
                     'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
                     'usedLockSymbol' => $matches[3] ?? null,
-                    'additionalContent' => []
+                    'additionalContent' => [],
                 ];
                 continue;
             }
@@ -62,8 +62,6 @@ class Markdown extends Parser
 
             $dependencies[$currentPackageManagerName][$currentPackage]['additionalContent'][] = $line;
         }
-
-        fclose($handle);
 
         foreach ($dependencies as &$packageManagerDependencies) {
             foreach ($packageManagerDependencies as &$dependency) {
