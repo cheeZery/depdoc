@@ -26,10 +26,12 @@
     "require": {
         "php": ">=7.1.0",
         "ext-json": "*",
-        "ext-pcre": "*"
+        "ext-pcre": "*",
+        "symfony/console": "^4.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2",
-        "php-mock/php-mock-prophecy": "^0.0.2"
+        "php-mock/php-mock-prophecy": "^0.0.2",
+        "symfony/var-dumper": "^4.1"
     }
 }
