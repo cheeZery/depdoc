@@ -45,4 +45,9 @@ class ComposerPackageManager extends AbstractPackageManager
 
         return $result;
     }
+
+    public function getName()
+    {
+        return 'Composer';
+    }
 }

@@ -41,4 +41,9 @@ class NodePackageManager extends AbstractPackageManager
 
         return $result;
     }
+
+    public function getName()
+    {
+        return 'Node';
+    }
 }

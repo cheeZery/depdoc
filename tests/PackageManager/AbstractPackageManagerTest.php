@@ -10,6 +10,6 @@ class AbstractPackageManagerTest extends TestCase
     public function testGetName()
     {
         $testDouble = new AbstractPackageManagerTestDouble();
-        $this->assertEquals('AbstractPackageManagerTestDouble', $testDouble->getName());
+        $this->assertEquals('Test', $testDouble->getName());
     }
 }
