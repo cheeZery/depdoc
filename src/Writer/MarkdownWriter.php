@@ -47,18 +47,20 @@ class MarkdownWriter extends AbstractWriter
                 }
             }
 
-            // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
-
             $documentation[] = "";
-
-            $handle = @fopen($filepath, "w");
-
-            foreach ($documentation as $line) {
-                // @TODO: which line break?!
-                fwrite($handle, "$line\r\n");
-            }
-
-            fclose($handle);
         }
+
+        // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
+
+        $documentation[] = "";
+
+        $handle = @fopen($filepath, "w");
+
+        foreach ($documentation as $line) {
+            // @TODO: which line break?!
+            fwrite($handle, "$line\r\n");
+        }
+
+        fclose($handle);
     }
 }
