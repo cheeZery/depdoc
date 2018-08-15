@@ -12,7 +12,7 @@ class DependencyData
     protected $versionLockSymbol;
     /** @var bool */
     protected $isVersionLocked;
-    /** @var array */
+    /** @var DependencyDataAdditionalContent */
     protected $additionalContent;
 
     /**
@@ -33,7 +33,7 @@ class DependencyData
         $this->packageName = $packageName;
         $this->versionLockSymbol = $versionLockSymbol;
         $this->isVersionLocked = $isVersionLocked;
-        $this->additionalContent = $additionalContent ?? [];
+        $this->additionalContent = new DependencyDataAdditionalContent($additionalContent ?? []);
     }
 
     /**
@@ -69,21 +69,10 @@ class DependencyData
     }
 
     /**
-     * @return array
+     * @return DependencyDataAdditionalContent
      */
-    public function getAdditionalContent(): array
+    public function getAdditionalContent(): DependencyDataAdditionalContent
     {
         return $this->additionalContent;
-    }
-
-    /**
-     * @param string $line
-     * @return DependencyData
-     */
-    public function addAdditionalContent(string $line): DependencyData
-    {
-        $this->additionalContent[] = $line;
-
-        return $this;
     }
 }

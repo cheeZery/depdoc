@@ -2,6 +2,8 @@
 
 namespace DepDoc\Dependencies;
 
+use phpDocumentor\Reflection\Types\Boolean;
+
 class DependencyList implements \ArrayAccess
 {
     /** @var DependencyData[] */
@@ -13,18 +15,43 @@ class DependencyList implements \ArrayAccess
      */
     public function add(DependencyData $data): DependencyList
     {
-        $this[$this->getListKey($data)] = $data;
+        $this[$this->getListKey($data->getPackageManagerName(), $data->getPackageName())] = $data;
 
         return $this;
     }
 
     /**
-     * @param DependencyData $data
+     * @param string $packageManagerName
+     * @param string $packageName
+     * @return bool
+     */
+    public function has(string $packageManagerName, string $packageName): bool
+    {
+        return $this->offsetExists($this->getListKey($packageManagerName, $packageName));
+    }
+
+    /**
+     * @param string $packageManagerName
+     * @param string $packageName
+     * @return null|DependencyData
+     */
+    public function get(string $packageManagerName, string $packageName): ?DependencyData
+    {
+        if (!$this->has($packageManagerName, $packageName)) {
+            return null;
+        }
+
+        return $this[$this->getListKey($packageManagerName, $packageName)];
+    }
+
+    /**
+     * @param string $packageManagerName
+     * @param string $packageName
      * @return string
      */
-    public function getListKey(DependencyData $data): string
+    public function getListKey(string $packageManagerName, string $packageName): string
     {
-        return sprintf('%s-%s', $data->getPackageManagerName(), $data->getPackageName());
+        return sprintf('%s-%s', $packageManagerName, $packageName);
     }
 
     /**
@@ -39,7 +66,7 @@ class DependencyList implements \ArrayAccess
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 5.0.0
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->dependencies[$offset]);
     }
@@ -53,7 +80,7 @@ class DependencyList implements \ArrayAccess
      * @return DependencyData
      * @since 5.0.0
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): DependencyData
     {
         return $this->dependencies[$offset];
     }
@@ -70,7 +97,7 @@ class DependencyList implements \ArrayAccess
      * @return void
      * @since 5.0.0
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->dependencies[$offset] = $value;
     }
@@ -84,7 +111,7 @@ class DependencyList implements \ArrayAccess
      * @return void
      * @since 5.0.0
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->dependencies[$offset]);
     }

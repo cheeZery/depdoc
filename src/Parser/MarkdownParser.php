@@ -10,7 +10,7 @@ class MarkdownParser extends AbstractParser
 {
     public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
+    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): DependencyList
     {
         if (!file_exists($filepath)) {
             throw new MissingFileException($filepath);
@@ -60,23 +60,37 @@ class MarkdownParser extends AbstractParser
                 continue;
             }
 
-            $currentDependency->addAdditionalContent($line);
+            $currentDependency->getAdditionalContent()->add($line);
         }
 
+        $this->cleanupAdditionalContent($dependencies);
+
+        return $dependencies;
+    }
+
+    /**
+     * @param DependencyList $dependencies
+     */
+    protected function cleanupAdditionalContent(DependencyList $dependencies): void
+    {
         foreach ($dependencies as $dependency) {
+            // Search until first line with description (">") prefix was found; anything further is additional
             $descriptionFound = false;
+            // Used to save one empty line
             $priorLineWasEmpty = false;
 
-            foreach ($dependency->getAdditionalContent() as $index => $contentLine) {
+            $additionalContent = $dependency->getAdditionalContent();
+            foreach ($additionalContent->getAll() as $index => $contentLine) {
                 if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
                     $descriptionFound = true;
-                    unset($dependency['additionalContent'][$index]);
+                    $additionalContent->removeIndex($index);
+
                     continue;
                 }
 
                 if ($contentLine === '') {
                     if ($priorLineWasEmpty) {
-                        unset($dependency['additionalContent'][$index]);
+                        $additionalContent->removeIndex($index);
                     } else {
                         $priorLineWasEmpty = true;
                     }
@@ -86,15 +100,7 @@ class MarkdownParser extends AbstractParser
                 $priorLineWasEmpty = false;
             }
 
-            if (end($dependency['additionalContent']) === "") {
-                array_pop($dependency['additionalContent']);
-            }
+            $additionalContent->removeLasEmptyLine();
         }
-
-        if ($packageManagerName) {
-            return $dependencies[$packageManagerName] ?? [];
-        }
-
-        return $dependencies;
     }
 }

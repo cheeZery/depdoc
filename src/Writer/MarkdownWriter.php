@@ -2,10 +2,15 @@
 
 namespace DepDoc\Writer;
 
+use DepDoc\Dependencies\DependencyList;
+
 class MarkdownWriter extends AbstractWriter
 {
-    public function createDocumentation(string $filepath, array $installedPackages, array $documentedDependencies)
-    {
+    public function createDocumentation(
+        string $filepath,
+        array $installedPackages,
+        DependencyList $documentedDependencies
+    ) {
         $documentation = [];
 
         foreach ($installedPackages as $packageManagerName => $packageManagerInstalledPackages) {
@@ -24,10 +29,9 @@ class MarkdownWriter extends AbstractWriter
                 $version = $installedPackage['version'];
                 $description = $installedPackage['description'];
 
-                if (!empty($documentedDependencies[$packageManagerName])) {
-                    $documentedDependency = $documentedDependencies[$packageManagerName][$name] ?? [];
-                }
+                $documentedDependency = $documentedDependencies->get($packageManagerName, $name);
 
+                // @TODO
                 $lockedVersion = $documentedDependency['lockedVersion'] ?? null;
                 $additionalContent = $documentedDependency['additionalContent'] ?? [];
 
