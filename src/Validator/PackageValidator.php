@@ -2,12 +2,17 @@
 
 namespace DepDoc\Validator;
 
+use DepDoc\Validator\Result\BaseResult;
+use DepDoc\Validator\Result\ErrorDocumentedButNotInstalled;
+use DepDoc\Validator\Result\ErrorMissingDocumentation;
+use DepDoc\Validator\Result\ErrorVersionMissMatch;
+
 class PackageValidator
 {
     /**
      * @param array $installedPackages
      * @param array $documentedDependencies
-     * @return string[]
+     * @return BaseResult[]
      */
     public function compare(array $installedPackages, array $documentedDependencies): array
     {
@@ -21,16 +26,17 @@ class PackageValidator
                 $installedVersion = $installedPackage['version'];
 
                 if (!array_key_exists($packageName, $packageManagerNameDocumentedDependencies)) {
-                    $errors[] = "$packageManagerName package $packageName is missing documentation!";
+                    $errors[] = new ErrorMissingDocumentation($packageManagerName, $packageName);
                     continue;
                 }
 
                 $documentedDependency = $packageManagerNameDocumentedDependencies[$packageName];
 
-                $lockedVersion = $documentedDependency["lockedVersion"];
+                $lockedVersion = $documentedDependency['lockedVersion'];
 
                 if ($lockedVersion && $lockedVersion !== $installedVersion) {
-                    $errors[] = "$packageManagerName package $packageName is installed in version $installedVersion, but locked for $lockedVersion!";
+                    $errors[] = new ErrorVersionMissMatch($packageManagerName, $packageName, $installedVersion,
+                        $lockedVersion);
                     continue;
                 }
             }
@@ -44,7 +50,7 @@ class PackageValidator
                 $packageManagerNameInstalledPackages = $installedPackages[$packageManagerName] ?? [];
 
                 if (!array_key_exists($packageName, $packageManagerNameInstalledPackages)) {
-                    $errors[] = "$packageManagerName package $packageName is documented but not installed!";
+                    $errors[] = new ErrorDocumentedButNotInstalled($packageManagerName, $packageName);
                     continue;
                 }
             }

@@ -25,16 +25,15 @@ class ComposerPackageManager extends AbstractPackageManager
         $dependencies = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            echo sprintf(
+            throw new \RuntimeException(sprintf(
                 'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
                 $this->getName(),
                 json_last_error_msg(),
                 json_last_error()
-            );
-            exit(1);
+            ));
         }
 
-        $installedPackages = $dependencies["installed"] ?? [];
+        $installedPackages = $dependencies['installed'] ?? [];
 
         $result = [];
 
