@@ -4,8 +4,6 @@ namespace DepDoc\Writer;
 
 class MarkdownWriter extends AbstractWriter
 {
-    private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
-
     public function createDocumentation(string $filepath, array $installedPackages, array $documentedDependencies)
     {
         $documentation = [];
