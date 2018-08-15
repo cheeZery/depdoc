@@ -2,6 +2,8 @@
 
 namespace DepDoc\PackageManager;
 
+use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
+
 class ComposerPackageManager extends AbstractPackageManager
 {
     public function getInstalledPackages(string $directory)
@@ -25,7 +27,7 @@ class ComposerPackageManager extends AbstractPackageManager
         $dependencies = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException(sprintf(
+            throw new FailedToParseDependencyInformationException(sprintf(
                 'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
                 $this->getName(),
                 json_last_error_msg(),
