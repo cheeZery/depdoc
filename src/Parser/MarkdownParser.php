@@ -2,6 +2,10 @@
 
 namespace DepDoc\Parser;
 
+use DepDoc\Dependencies\DependencyData;
+use DepDoc\Dependencies\DependencyList;
+use DepDoc\Parser\Exception\MissingFileException;
+
 class MarkdownParser extends AbstractParser
 {
     public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
@@ -9,16 +13,15 @@ class MarkdownParser extends AbstractParser
     public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
     {
         if (!file_exists($filepath)) {
-            echo $filepath . ' is missing!';
-
-            return null;
+            throw new MissingFileException($filepath);
         }
 
         $lines = file($filepath);
         $currentPackageManagerName = null;
         $currentPackage = null;
 
-        $dependencies = [];
+        $dependencies = new DependencyList();
+        $currentDependency = null;
 
         foreach ($lines as $line) {
 
@@ -38,21 +41,18 @@ class MarkdownParser extends AbstractParser
                 continue;
             }
 
-            if (empty($dependencies[$currentPackageManagerName])) {
-                $dependencies[$currentPackageManagerName] = [];
-            }
-
             // @TODO: After config file was added, add option to define used lock symbol
             if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
                 $currentPackage = $matches[1];
 
-                // @TODO: Create model for documented dependency
-                $dependencies[$currentPackageManagerName][$currentPackage] = [
-                    'name' => $currentPackage,
-                    'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
-                    'usedLockSymbol' => $matches[3] ?? null,
-                    'additionalContent' => [],
-                ];
+                $currentDependency = new DependencyData(
+                    $currentPackageManagerName,
+                    $currentPackage,
+                    isset($matches[3]) ? $matches[2] : null,
+                    $matches[3] ?? null
+                );
+                $dependencies->add($currentDependency);
+
                 continue;
             }
 
@@ -60,36 +60,34 @@ class MarkdownParser extends AbstractParser
                 continue;
             }
 
-            $dependencies[$currentPackageManagerName][$currentPackage]['additionalContent'][] = $line;
+            $currentDependency->addAdditionalContent($line);
         }
 
-        foreach ($dependencies as &$packageManagerDependencies) {
-            foreach ($packageManagerDependencies as &$dependency) {
-                $descriptionFound = false;
-                $priorLineWasEmpty = false;
+        foreach ($dependencies as $dependency) {
+            $descriptionFound = false;
+            $priorLineWasEmpty = false;
 
-                foreach ($dependency['additionalContent'] as $index => $contentLine) {
-                    if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
-                        $descriptionFound = true;
+            foreach ($dependency->getAdditionalContent() as $index => $contentLine) {
+                if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
+                    $descriptionFound = true;
+                    unset($dependency['additionalContent'][$index]);
+                    continue;
+                }
+
+                if ($contentLine === '') {
+                    if ($priorLineWasEmpty) {
                         unset($dependency['additionalContent'][$index]);
-                        continue;
+                    } else {
+                        $priorLineWasEmpty = true;
                     }
-
-                    if ($contentLine === '') {
-                        if ($priorLineWasEmpty) {
-                            unset($dependency['additionalContent'][$index]);
-                        } else {
-                            $priorLineWasEmpty = true;
-                        }
-                        continue;
-                    }
-
-                    $priorLineWasEmpty = false;
+                    continue;
                 }
 
-                if (end($dependency['additionalContent']) === "") {
-                    array_pop($dependency['additionalContent']);
-                }
+                $priorLineWasEmpty = false;
+            }
+
+            if (end($dependency['additionalContent']) === "") {
+                array_pop($dependency['additionalContent']);
             }
         }
 
