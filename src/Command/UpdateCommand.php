@@ -24,6 +24,30 @@ class UpdateCommand extends BaseCommand
             return $exitCode;
         }
 
+
+        $filepath = $this->getAbsoluteFilepath($this->getTargetDirectoryFromInput($input));
+        $directory = dirname($filepath);
+
+        if (!file_exists($filepath)) {
+            if ($this->io->isVerbose()) {
+                $this->io->writeln(sprintf(
+                    'Creating new file at: %s',
+                    $filepath
+                ));
+            }
+
+            touch($filepath);
+        }
+
+        $installedPackages = $this->getInstalledPackages($directory);
+
+        $documentedDependencies = $this->parser->getDocumentedDependencies($filepath);
+        if ($documentedDependencies === null) {
+            return -1;
+        }
+
+        $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies);
+
         return 0;
     }
 }
