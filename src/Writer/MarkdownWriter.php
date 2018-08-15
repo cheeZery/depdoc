@@ -4,10 +4,11 @@ namespace DepDoc\Writer;
 
 class MarkdownWriter extends AbstractWriter
 {
-    private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
-
-    public function createDocumentation(string $filepath, array $installedPackages, array $documentedDependencies)
-    {
+    public function createDocumentation(
+        string $filePath,
+        array $installedPackages,
+        array $documentedDependencies
+    ) {
         $documentation = [];
 
         foreach ($installedPackages as $packageManagerName => $packageManagerInstalledPackages) {
@@ -50,15 +51,21 @@ class MarkdownWriter extends AbstractWriter
             // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
 
             $documentation[] = "";
-
-            $handle = @fopen($filepath, "w");
-
-            foreach ($documentation as $line) {
-                // @TODO: which line break?!
-                fwrite($handle, "$line\r\n");
-            }
-
-            fclose($handle);
         }
+
+        $this->writeDocumentation($filePath, $documentation);
+    }
+
+    protected function writeDocumentation(
+        string $filePath,
+        iterable $documentation
+    ): void {
+        $handle = @fopen($filePath, "w");
+
+        foreach ($documentation as $line) {
+            fwrite($handle, $line . PHP_EOL);
+        }
+
+        fclose($handle);
     }
 }
