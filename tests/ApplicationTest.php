@@ -6,9 +6,9 @@ namespace DepDocTest;
 use DepDoc\Application;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
-use DepDoc\Parser\MarkdownParserInterface;
+use DepDoc\Parser\MarkdownParser;
 use DepDoc\Validator\PackageValidator;
-use DepDoc\Writer\MarkdownWriterInterface;
+use DepDoc\Writer\MarkdownWriter;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 
@@ -45,8 +45,8 @@ class ApplicationTest extends TestCase
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
         $nodeManager = $this->prophesize(NodePackageManager::class);
-        $parser = $this->prophesize(MarkdownParserInterface::class);
-        $writer = $this->prophesize(MarkdownWriterInterface::class);
+        $parser = $this->prophesize(MarkdownParser::class);
+        $writer = $this->prophesize(MarkdownWriter::class);
 
         $prophecyDepDoc
             ->file_exists($targetDependenciesFilepath)
@@ -116,7 +116,7 @@ class ApplicationTest extends TestCase
         $prophecyDepDoc = $this->prophet->prophesize('DepDoc');
         $composerManager = $this->prophesize(ComposerPackageManager::class);
         $nodeManager = $this->prophesize(NodePackageManager::class);
-        $parser = $this->prophesize(MarkdownParserInterface::class);
+        $parser = $this->prophesize(MarkdownParser::class);
         $validator = $this->prophesize(PackageValidator::class);
 
         $prophecyDepDoc

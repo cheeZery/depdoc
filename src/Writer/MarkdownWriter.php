@@ -5,7 +5,7 @@ namespace DepDoc\Writer;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\PackageManagerPackageList;
 
-class MarkdownWriterInterface implements WriterInterface
+class MarkdownWriter implements WriterInterface
 {
     public function createDocumentation(
         string $filepath,

@@ -7,7 +7,7 @@ use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
 
-class MarkdownParserInterface implements ParserInterface
+class MarkdownParser implements ParserInterface
 {
     public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
