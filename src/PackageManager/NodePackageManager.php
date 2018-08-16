@@ -3,17 +3,20 @@
 namespace DepDoc\PackageManager;
 
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
+use Symfony\Component\VarDumper\VarDumper;
 
-class NodePackageManager extends AbstractPackageManager
+class NodePackageManager implements PackageManagerInterface
 {
-    public function getInstalledPackages(string $directory)
+    public function getInstalledPackages(string $directory): PackageManagerPackageList
     {
+        $packageList = new PackageManagerPackageList();
+
         // @TODO: Support npm binary detection
         $output = shell_exec("cd " . escapeshellarg($directory) . " && npm list -json -depth 0 -long");
         $output = trim($output);
 
         if (strlen($output) === 0 || $output[0] !== '{') {
-            return [];
+            return $packageList;
         }
 
         $dependencies = json_decode($output, true);
@@ -35,15 +38,19 @@ class NodePackageManager extends AbstractPackageManager
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
-        $result = [];
         foreach ($installedPackages as $installedPackage) {
-            $result[$installedPackage['name']] = $installedPackage;
+            $packageList->add(new NodePackage(
+                $this->getName(),
+                $installedPackage['name'],
+                $installedPackage['description'],
+                $installedPackage['version']
+            ));
         }
 
-        return $result;
+        return $packageList;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'Node';
     }

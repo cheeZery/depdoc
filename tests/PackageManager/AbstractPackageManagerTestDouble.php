@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace DepDocTest\PackageManager;
 
-use DepDoc\PackageManager\AbstractPackageManager;
+use DepDoc\PackageManager\PackageManagerInterface;
 
-class AbstractPackageManagerTestDouble extends AbstractPackageManager
+class AbstractPackageManagerTestDouble extends PackageManagerInterface
 {
     public function getName()
     {

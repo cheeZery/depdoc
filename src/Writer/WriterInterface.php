@@ -9,7 +9,7 @@ interface WriterInterface
 {
     public function createDocumentation(
         string $filepath,
-        array $installedPackages,
+        PackageManagerPackageList $installedPackages,
         PackageManagerPackageList $dependencyList,
         WriterConfiguration $configuration
     );

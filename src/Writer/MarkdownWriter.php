@@ -3,13 +3,15 @@
 namespace DepDoc\Writer;
 
 use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\ComposerPackage;
+use DepDoc\PackageManager\NodePackage;
 use DepDoc\PackageManager\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
 {
     public function createDocumentation(
         string $filepath,
-        array $installedPackages,
+        PackageManagerPackageList $installedPackages,
         PackageManagerPackageList $dependencyList,
         WriterConfiguration $configuration
     ) {
@@ -23,13 +25,14 @@ class MarkdownWriter implements WriterInterface
 
             $documentation[] = $this->createPackageManagerLine($packageManagerName);
 
+            /** @var ComposerPackage|NodePackage $installedPackage */
             foreach ($packageManagerInstalledPackages as $installedPackage) {
 
                 $documentation[] = "";
 
-                $name = $installedPackage['name'];
-                $version = $installedPackage['version'];
-                $description = $installedPackage['description'];
+                $name = $installedPackage->getPackageName();
+                $version = $installedPackage->getVersion();
+                $description = $installedPackage->getDescription();
 
                 /** @var DependencyData $documentedDependency */
                 $documentedDependency = $dependencyList->get($packageManagerName, $name);

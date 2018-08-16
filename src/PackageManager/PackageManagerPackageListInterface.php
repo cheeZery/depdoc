@@ -25,9 +25,19 @@ interface PackageManagerPackageListInterface
     public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface;
 
     /**
-     * @param string $packageManagerName
-     * @param string $packageName
-     * @return string
+     * @return PackageManagerPackageListInterface[][]
      */
-    public function getListKey(string $packageManagerName, string $packageName): string;
+    public function getAllFlat(): array;
+
+    /**
+     * @param string $manager
+     * @return PackageManagerPackageInterface[]
+     */
+    public function getAllByManager(string $manager): array;
+
+    /**
+     * @param PackageManagerPackageListInterface $packageList
+     * @return PackageManagerPackageListInterface
+     */
+    public function merge(PackageManagerPackageListInterface $packageList): PackageManagerPackageListInterface;
 }

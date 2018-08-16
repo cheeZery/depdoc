@@ -4,6 +4,7 @@ namespace DepDoc\Command;
 
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
+use DepDoc\PackageManager\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Parser\MarkdownParser;
 use DepDoc\Validator\PackageValidator;
@@ -77,17 +78,18 @@ abstract class BaseCommand extends Command
 
     /**
      * @param string $directory
-     * @return array
+     * @return PackageManagerPackageList
      */
-    protected function getInstalledPackages(string $directory): array
+    protected function getInstalledPackages(string $directory): PackageManagerPackageList
     {
         $composer = $this->managerComposer;
         $node = $this->managerNode;
 
-        return [
-            $composer->getName() => $composer->getInstalledPackages($directory),
-            $node->getName() => $node->getInstalledPackages($directory),
-        ];
+        $mergedPackageList = new PackageManagerPackageList();
+        $mergedPackageList->merge($composer->getInstalledPackages($directory));
+        $mergedPackageList->merge($node->getInstalledPackages($directory));
+
+        return $mergedPackageList;
     }
 
     /**

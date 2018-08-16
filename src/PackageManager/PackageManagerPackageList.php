@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace DepDoc\PackageManager;
 
-class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageListInterface
+class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageManagerPackageListInterface
 {
-    /** @var PackageManagerPackage[] */
+    /** @var PackageManagerPackage[][] */
     protected $dependencies = [];
 
     /**
@@ -14,7 +14,11 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
      */
     public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {
-        $this[$this->getListKey($data->getPackageManagerName(), $data->getPackageName())] = $data;
+        if (!array_key_exists($data->getPackageManagerName(), $this->dependencies)) {
+            $this->dependencies[$data->getPackageManagerName()] = [];
+        }
+
+        $this[$data->getPackageManagerName()][$data->getPackageName()] = $data;
 
         return $this;
     }
@@ -26,7 +30,11 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
      */
     public function has(string $packageManagerName, string $packageName): bool
     {
-        return $this->offsetExists($this->getListKey($packageManagerName, $packageName));
+        if ($this->offsetExists($packageManagerName) === false) {
+            return false;
+        }
+
+        return array_key_exists($packageName, $this->getAllByManager($packageManagerName));
     }
 
     /**
@@ -40,17 +48,46 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
             return null;
         }
 
-        return $this[$this->getListKey($packageManagerName, $packageName)];
+        return $this->getAllByManager($packageManagerName)[$packageName];
     }
 
     /**
-     * @param string $packageManagerName
-     * @param string $packageName
-     * @return string
+     * @return PackageManagerPackageListInterface[]
      */
-    public function getListKey(string $packageManagerName, string $packageName): string
+    public function getAllFlat(): array
     {
-        return sprintf('%s-%s', $packageManagerName, $packageName);
+        $allDependencies = [];
+        array_walk($this->dependencies, function (array $packages) use (&$allDependencies) {
+            $allDependencies = array_merge($allDependencies, $packages);
+        });
+
+        return $allDependencies;
+    }
+
+    /**
+     * @param string $manager
+     * @return PackageManagerPackageInterface[]
+     */
+    public function getAllByManager(string $manager): array
+    {
+        if (!array_key_exists($manager, $this->dependencies)) {
+            return [];
+        }
+
+        return $this->dependencies[$manager];
+    }
+
+    /**
+     * @param PackageManagerPackageListInterface $packageList
+     * @return PackageManagerPackageListInterface
+     */
+    public function merge(PackageManagerPackageListInterface $packageList): PackageManagerPackageListInterface
+    {
+        foreach ($packageList->getAllFlat() as $package) {
+            $this->add(clone $package);
+        }
+
+        return $this;
     }
 
     /**
@@ -76,10 +113,10 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
      * @param string $offset <p>
      * The offset to retrieve.
      * </p>
-     * @return PackageManagerPackage
+     * @return PackageManagerPackage[]
      * @since 5.0.0
      */
-    public function offsetGet($offset): PackageManagerPackage
+    public function offsetGet($offset): array
     {
         return $this->dependencies[$offset];
     }
@@ -98,7 +135,9 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
      */
     public function offsetSet($offset, $value): void
     {
-        $this->dependencies[$offset] = $value;
+        throw new \RuntimeException(
+            'Direct index modification is not allowed. Please use ' . __CLASS__ . '->add() oder merge().'
+        );
     }
 
     /**
@@ -113,5 +152,19 @@ class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageLi
     public function offsetUnset($offset): void
     {
         unset($this->dependencies[$offset]);
+    }
+
+    /**
+     * Count elements of an object
+     * @link http://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     * @since 5.1.0
+     */
+    public function count(): int
+    {
+        return count($this->dependencies);
     }
 }
