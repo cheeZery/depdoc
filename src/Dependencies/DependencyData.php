@@ -9,25 +9,32 @@ class DependencyData
     /** @var string */
     protected $packageName;
     /** @var null|string */
-    protected $versionLockSymbol;
+    protected $lockSymbol;
     /** @var DependencyDataAdditionalContent */
     protected $additionalContent;
+    /**
+     * @var string
+     */
+    protected $version;
 
     /**
      * @param string $packageManagerName
      * @param string $packageName
-     * @param null|string $versionLockSymbol
+     * @param string $version
+     * @param null|string $lockSymbol
      * @param array $additionalContent
      */
     public function __construct(
         string $packageManagerName,
         string $packageName,
-        string $versionLockSymbol,
+        string $version,
+        string $lockSymbol,
         array $additionalContent = []
     ) {
         $this->packageManagerName = $packageManagerName;
         $this->packageName = $packageName;
-        $this->versionLockSymbol = $versionLockSymbol;
+        $this->version = $version;
+        $this->lockSymbol = $lockSymbol;
         $this->additionalContent = new DependencyDataAdditionalContent($additionalContent ?? []);
     }
 
@@ -48,11 +55,19 @@ class DependencyData
     }
 
     /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
      * @return null|string
      */
-    public function getVersionLockSymbol(): ?string
+    public function getLockSymbol(): ?string
     {
-        return $this->versionLockSymbol;
+        return $this->lockSymbol;
     }
 
     /**
@@ -60,7 +75,7 @@ class DependencyData
      */
     public function isVersionLocked(): bool
     {
-        return $this->getVersionLockSymbol() !== null;
+        return $this->getLockSymbol() !== null;
     }
 
     /**

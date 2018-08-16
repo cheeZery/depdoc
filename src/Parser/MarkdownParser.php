@@ -42,13 +42,14 @@ class MarkdownParser extends AbstractParser
             }
 
             // @TODO: After config file was added, add option to define used lock symbol
-            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
+            if (preg_match('/^#{5}\s(?:<packageName>[^ ]+)\s`(?:<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line, $matches)) {
                 $currentPackage = $matches[1];
 
                 $currentDependency = new DependencyData(
                     $currentPackageManagerName,
                     $currentPackage,
-                    isset($matches[3]) ? $matches[2] : null
+                    $matches['version'],
+                    $matches['lockSymbol'] ?? null
                 );
                 $dependencies->add($currentDependency);
 

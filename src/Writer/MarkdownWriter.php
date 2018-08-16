@@ -81,7 +81,7 @@ class MarkdownWriter extends AbstractWriter
      */
     protected function createPackageLockedLine(string $packageName, string $version, DependencyData $dependency): string
     {
-        return "##### $packageName `$version` {$dependency->getVersionLockSymbol()}";
+        return "##### $packageName `$version` {$dependency->getLockSymbol()}";
     }
 
     /**
