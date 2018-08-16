@@ -10,7 +10,8 @@ class MarkdownWriter extends AbstractWriter
     public function createDocumentation(
         string $filepath,
         array $installedPackages,
-        DependencyList $documentedDependencies
+        DependencyList $documentedDependencies,
+        WriterConfiguration $configuration
     ) {
         $documentation = [];
 
@@ -57,8 +58,7 @@ class MarkdownWriter extends AbstractWriter
         $handle = @fopen($filepath, "w");
 
         foreach ($documentation as $line) {
-            // @TODO: which line break?!
-            fwrite($handle, "$line\r\n");
+            fwrite($handle, $line . $configuration->getNewline());
         }
 
         fclose($handle);

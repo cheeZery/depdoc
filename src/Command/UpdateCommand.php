@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
+use DepDoc\Writer\WriterConfiguration;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommand extends BaseCommand
@@ -14,7 +16,14 @@ class UpdateCommand extends BaseCommand
 
         $this
             ->setName('update')
-            ->setDescription('Update or create a DEPENDENCIES.md');
+            ->setDescription('Update or create a DEPENDENCIES.md')
+            ->addOption(
+                'newline',
+                'l',
+                InputOption::VALUE_REQUIRED,
+                'Newline character(s) used to separate the file content',
+                PHP_EOL
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -24,6 +33,7 @@ class UpdateCommand extends BaseCommand
             return $exitCode;
         }
 
+        $newline = $input->getOption('newline');
 
         $filepath = $this->getAbsoluteFilepath($this->getTargetDirectoryFromInput($input));
         $directory = dirname($filepath);
@@ -46,7 +56,10 @@ class UpdateCommand extends BaseCommand
             return -1;
         }
 
-        $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies);
+        $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies,
+            new WriterConfiguration(
+                $newline
+            ));
 
         return 0;
     }

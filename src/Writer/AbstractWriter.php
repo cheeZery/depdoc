@@ -9,6 +9,7 @@ abstract class AbstractWriter
     abstract public function createDocumentation(
         string $filepath,
         array $installedPackages,
-        DependencyList $documentedDependencies
+        DependencyList $documentedDependencies,
+        WriterConfiguration $configuration
     );
 }
