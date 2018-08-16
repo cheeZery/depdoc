@@ -2,7 +2,7 @@
 
 namespace DepDoc\Validator\Result;
 
-class ErrorMissingDocumentation extends BaseResult
+class ErrorMissingDocumentation extends AbstractErrorResult
 {
     /**
      * @return string

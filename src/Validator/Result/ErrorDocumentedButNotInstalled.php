@@ -2,7 +2,7 @@
 
 namespace DepDoc\Validator\Result;
 
-class ErrorDocumentedButNotInstalled extends BaseResult
+class ErrorDocumentedButNotInstalled extends AbstractErrorResult
 {
     /**
      * @return string

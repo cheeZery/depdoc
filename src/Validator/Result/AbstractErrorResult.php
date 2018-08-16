@@ -2,7 +2,7 @@
 
 namespace DepDoc\Validator\Result;
 
-abstract class BaseResult
+abstract class AbstractErrorResult implements ErrorResultInterface
 {
     /** @var string */
     protected $packageManagerName;
