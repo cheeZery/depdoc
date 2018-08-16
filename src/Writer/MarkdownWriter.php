@@ -10,7 +10,7 @@ class MarkdownWriter extends AbstractWriter
     public function createDocumentation(
         string $filepath,
         array $installedPackages,
-        DependencyList $documentedDependencies,
+        DependencyList $dependencyList,
         WriterConfiguration $configuration
     ) {
         $documentation = [];
@@ -31,7 +31,7 @@ class MarkdownWriter extends AbstractWriter
                 $version = $installedPackage['version'];
                 $description = $installedPackage['description'];
 
-                $documentedDependency = $documentedDependencies->get($packageManagerName, $name);
+                $documentedDependency = $dependencyList->get($packageManagerName, $name);
 
                 if ($documentedDependency && $documentedDependency->isVersionLocked()) {
                     $documentation[] = $this->createPackageLockedLine($name, $version, $documentedDependency);

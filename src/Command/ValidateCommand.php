@@ -42,12 +42,12 @@ class ValidateCommand extends BaseCommand
 
         $installedPackages = $this->getInstalledPackages($directory);
 
-        $documentedDependencies = $this->parser->getDocumentedDependencies($filepath);
-        if ($documentedDependencies === null) {
+        $dependencyList = $this->parser->getDocumentedDependencies($filepath);
+        if ($dependencyList === null) {
             return -1;
         }
 
-        $validationResult = $this->validator->compare($installedPackages, $documentedDependencies);
+        $validationResult = $this->validator->compare($installedPackages, $dependencyList);
         if (empty($validationResult)) {
             return 0;
         }
@@ -58,7 +58,7 @@ class ValidateCommand extends BaseCommand
         ));
 
         foreach ($validationResult as $line) {
-            $output->writeln($line->toString());
+            $this->io->writeln($line->toString());
         }
 
         return -1;
