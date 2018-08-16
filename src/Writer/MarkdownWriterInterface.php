@@ -3,14 +3,14 @@
 namespace DepDoc\Writer;
 
 use DepDoc\Dependencies\DependencyData;
-use DepDoc\Dependencies\DependencyList;
+use DepDoc\PackageManager\PackageManagerPackageList;
 
-class MarkdownWriter extends AbstractWriter
+class MarkdownWriterInterface implements WriterInterface
 {
     public function createDocumentation(
         string $filepath,
         array $installedPackages,
-        DependencyList $dependencyList,
+        PackageManagerPackageList $dependencyList,
         WriterConfiguration $configuration
     ) {
         $documentation = [];
@@ -31,6 +31,7 @@ class MarkdownWriter extends AbstractWriter
                 $version = $installedPackage['version'];
                 $description = $installedPackage['description'];
 
+                /** @var DependencyData $documentedDependency */
                 $documentedDependency = $dependencyList->get($packageManagerName, $name);
 
                 if ($documentedDependency && $documentedDependency->isVersionLocked()) {

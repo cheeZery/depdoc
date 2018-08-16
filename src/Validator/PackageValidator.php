@@ -2,7 +2,8 @@
 
 namespace DepDoc\Validator;
 
-use DepDoc\Dependencies\DependencyList;
+use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\PackageManagerPackageList;
 use DepDoc\Validator\Result\AbstractErrorResult;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
@@ -12,10 +13,10 @@ class PackageValidator
 {
     /**
      * @param array $installedPackages
-     * @param DependencyList $dependencyList
+     * @param PackageManagerPackageList $dependencyList
      * @return AbstractErrorResult[]
      */
-    public function compare(array $installedPackages, DependencyList $dependencyList): array
+    public function compare(array $installedPackages, PackageManagerPackageList $dependencyList): array
     {
         $errors = [];
 
@@ -29,6 +30,7 @@ class PackageValidator
                     continue;
                 }
 
+                /** @var DependencyData $dependency */
                 $dependency = $dependencyList->get($packageManagerName, $packageName);
 
                 if ($dependency->isVersionLocked() && $dependency->getVersion() !== $installedVersion) {

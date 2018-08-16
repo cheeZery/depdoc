@@ -4,11 +4,11 @@ namespace DepDoc\Command;
 
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
-use DepDoc\Parser\AbstractParser;
-use DepDoc\Parser\MarkdownParser;
+use DepDoc\Parser\ParserInterface;
+use DepDoc\Parser\MarkdownParserInterface;
 use DepDoc\Validator\PackageValidator;
-use DepDoc\Writer\AbstractWriter;
-use DepDoc\Writer\MarkdownWriter;
+use DepDoc\Writer\WriterInterface;
+use DepDoc\Writer\MarkdownWriterInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,9 +21,9 @@ abstract class BaseCommand extends Command
     protected $managerComposer;
     /** @var NodePackageManager */
     protected $managerNode;
-    /** @var AbstractParser */
+    /** @var ParserInterface */
     protected $parser;
-    /** @var AbstractWriter */
+    /** @var WriterInterface */
     protected $writer;
     /** @var PackageValidator */
     protected $validator;
@@ -36,8 +36,8 @@ abstract class BaseCommand extends Command
 
         $this->managerComposer = new ComposerPackageManager();
         $this->managerNode = new NodePackageManager();
-        $this->parser = new MarkdownParser();
-        $this->writer = new MarkdownWriter();
+        $this->parser = new MarkdownParserInterface();
+        $this->writer = new MarkdownWriterInterface();
         $this->validator = new PackageValidator();
     }
 
@@ -105,6 +105,6 @@ abstract class BaseCommand extends Command
      */
     protected function getAbsoluteFilepath(string $directory): string
     {
-        return $directory . DIRECTORY_SEPARATOR . MarkdownParser::DEPENDENCIES_FILE;
+        return $directory . DIRECTORY_SEPARATOR . MarkdownParserInterface::DEPENDENCIES_FILE;
     }
 }

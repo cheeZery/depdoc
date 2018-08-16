@@ -1,39 +1,44 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Parser;
 
 use DepDoc\Dependencies\DependencyData;
-use DepDoc\Dependencies\DependencyList;
+use DepDoc\PackageManager\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
 
-class MarkdownParser extends AbstractParser
+class MarkdownParserInterface implements ParserInterface
 {
     public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): DependencyList
-    {
+    public function getDocumentedDependencies(
+        string $filepath,
+        ?string $packageManagerName = null
+    ): PackageManagerPackageList {
         if (!file_exists($filepath)) {
             throw new MissingFileException($filepath);
         }
 
         $lines = file($filepath);
+        /** @var null|string $currentPackageManagerName */
         $currentPackageManagerName = null;
+        /** @var null|string $currentPackage */
         $currentPackage = null;
 
-        $dependencies = new DependencyList();
+        $dependencies = new PackageManagerPackageList();
         $currentDependency = null;
 
         foreach ($lines as $line) {
 
             $line = rtrim($line);
 
-            if (preg_match("/^#{3}\s(\w+)/", $line, $matches)) {
-                $currentPackageManagerName = $matches[1];
+            if (preg_match("/^#{3}\s(?<packageManagerName>\w+)/", $line, $matches)) {
+                $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
                 continue;
             }
 
-            if (!$currentPackageManagerName) {
+            if ($currentPackageManagerName === null) {
                 continue;
             }
 
@@ -42,8 +47,9 @@ class MarkdownParser extends AbstractParser
             }
 
             // @TODO: After config file was added, add option to define used lock symbol
-            if (preg_match('/^#{5}\s(?:<packageName>[^ ]+)\s`(?:<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line, $matches)) {
-                $currentPackage = $matches[1];
+            if (preg_match('/^#{5}\s(?:<packageName>[^ ]+)\s`(?:<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line,
+                $matches)) {
+                $currentPackage = $matches['packageName'];
 
                 $currentDependency = new DependencyData(
                     $currentPackageManagerName,
@@ -69,10 +75,11 @@ class MarkdownParser extends AbstractParser
     }
 
     /**
-     * @param DependencyList $dependencies
+     * @param PackageManagerPackageList $dependencies
      */
-    protected function cleanupAdditionalContent(DependencyList $dependencies): void
+    protected function cleanupAdditionalContent(PackageManagerPackageList $dependencies): void
     {
+        /** @var DependencyData $dependency */
         foreach ($dependencies as $dependency) {
             // Search until first line with description (">") prefix was found; anything further is additional
             $descriptionFound = false;

@@ -1,19 +1,18 @@
 <?php
+declare(strict_types=1);
 
-namespace DepDoc\Dependencies;
+namespace DepDoc\PackageManager;
 
-use phpDocumentor\Reflection\Types\Boolean;
-
-class DependencyList implements \ArrayAccess
+class PackageManagerPackageList implements \ArrayAccess, PackageManagerPackageListInterface
 {
-    /** @var DependencyData[] */
+    /** @var PackageManagerPackage[] */
     protected $dependencies = [];
 
     /**
-     * @param DependencyData $data
-     * @return DependencyList
+     * @param PackageManagerPackageInterface $data
+     * @return PackageManagerPackageList
      */
-    public function add(DependencyData $data): DependencyList
+    public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {
         $this[$this->getListKey($data->getPackageManagerName(), $data->getPackageName())] = $data;
 
@@ -33,9 +32,9 @@ class DependencyList implements \ArrayAccess
     /**
      * @param string $packageManagerName
      * @param string $packageName
-     * @return null|DependencyData
+     * @return null|PackageManagerPackage
      */
-    public function get(string $packageManagerName, string $packageName): ?DependencyData
+    public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface
     {
         if (!$this->has($packageManagerName, $packageName)) {
             return null;
@@ -77,10 +76,10 @@ class DependencyList implements \ArrayAccess
      * @param string $offset <p>
      * The offset to retrieve.
      * </p>
-     * @return DependencyData
+     * @return PackageManagerPackage
      * @since 5.0.0
      */
-    public function offsetGet($offset): DependencyData
+    public function offsetGet($offset): PackageManagerPackage
     {
         return $this->dependencies[$offset];
     }
@@ -91,7 +90,7 @@ class DependencyList implements \ArrayAccess
      * @param string $offset <p>
      * The offset to assign the value to.
      * </p>
-     * @param DependencyData $value <p>
+     * @param PackageManagerPackage $value <p>
      * The value to set.
      * </p>
      * @return void

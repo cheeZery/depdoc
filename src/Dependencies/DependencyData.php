@@ -1,21 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Dependencies;
 
-class DependencyData
+use DepDoc\PackageManager\PackageManagerPackage;
+
+class DependencyData extends PackageManagerPackage
 {
-    /** @var string */
-    protected $packageManagerName;
-    /** @var string */
-    protected $packageName;
     /** @var null|string */
     protected $lockSymbol;
     /** @var DependencyDataAdditionalContent */
     protected $additionalContent;
-    /**
-     * @var string
-     */
-    protected $version;
 
     /**
      * @param string $packageManagerName
@@ -28,38 +23,13 @@ class DependencyData
         string $packageManagerName,
         string $packageName,
         string $version,
-        string $lockSymbol,
+        ?string $lockSymbol,
         array $additionalContent = []
     ) {
-        $this->packageManagerName = $packageManagerName;
-        $this->packageName = $packageName;
-        $this->version = $version;
+        parent::__construct($packageManagerName, $packageName, $version);
+
         $this->lockSymbol = $lockSymbol;
         $this->additionalContent = new DependencyDataAdditionalContent($additionalContent ?? []);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPackageManagerName(): string
-    {
-        return $this->packageManagerName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPackageName(): string
-    {
-        return $this->packageName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
     }
 
     /**
