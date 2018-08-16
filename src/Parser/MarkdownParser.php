@@ -48,8 +48,7 @@ class MarkdownParser extends AbstractParser
                 $currentDependency = new DependencyData(
                     $currentPackageManagerName,
                     $currentPackage,
-                    isset($matches[3]) ? $matches[2] : null,
-                    $matches[3] ?? null
+                    isset($matches[3]) ? $matches[2] : null
                 );
                 $dependencies->add($currentDependency);
 

@@ -2,6 +2,7 @@
 
 namespace DepDoc\Writer;
 
+use DepDoc\Dependencies\DependencyData;
 use DepDoc\Dependencies\DependencyList;
 
 class MarkdownWriter extends AbstractWriter
@@ -19,7 +20,7 @@ class MarkdownWriter extends AbstractWriter
                 continue;
             }
 
-            $documentation[] = "### $packageManagerName";
+            $documentation[] = $this->createPackageManagerLine($packageManagerName);
 
             foreach ($packageManagerInstalledPackages as $installedPackage) {
 
@@ -31,21 +32,18 @@ class MarkdownWriter extends AbstractWriter
 
                 $documentedDependency = $documentedDependencies->get($packageManagerName, $name);
 
-                // @TODO
-                $lockedVersion = $documentedDependency['lockedVersion'] ?? null;
-                $additionalContent = $documentedDependency['additionalContent'] ?? [];
-
-                if ($lockedVersion) {
-                    $usedLockSymbol = $documentedDependency['usedLockSymbol'] ?? '🔒';
-                    $documentation[] = "##### $name `$lockedVersion` $usedLockSymbol";
+                if ($documentedDependency && $documentedDependency->isVersionLocked()) {
+                    $documentation[] = $this->createPackageLockedLine($name, $version, $documentedDependency);
                 } else {
-                    $documentation[] = "##### $name `$version`";
+                    $documentation[] = $this->createPackageLine($name, $version);
                 }
 
-                $documentation[] = "> $description";
+                $documentation[] = $this->createDescriptionLine($description);
 
-                foreach ($additionalContent as $contentLine) {
-                    $documentation[] = $contentLine;
+                if ($documentedDependency) {
+                    foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
+                        $documentation[] = $contentLine;
+                    }
                 }
             }
 
@@ -64,5 +62,44 @@ class MarkdownWriter extends AbstractWriter
         }
 
         fclose($handle);
+    }
+
+    /**
+     * @param string $packageManagerName
+     * @return string
+     */
+    protected function createPackageManagerLine(string $packageManagerName): string
+    {
+        return "### $packageManagerName";
+    }
+
+    /**
+     * @param string $packageName
+     * @param string $version
+     * @param DependencyData $dependency
+     * @return string
+     */
+    protected function createPackageLockedLine(string $packageName, string $version, DependencyData $dependency): string
+    {
+        return "##### $packageName `$version` {$dependency->getVersionLockSymbol()}";
+    }
+
+    /**
+     * @param string $packageName
+     * @param string $version
+     * @return string
+     */
+    protected function createPackageLine(string $packageName, string $version): string
+    {
+        return "##### $packageName `$version`";
+    }
+
+    /**
+     * @param string $description
+     * @return string
+     */
+    protected function createDescriptionLine(string $description): string
+    {
+        return "> $description";
     }
 }
