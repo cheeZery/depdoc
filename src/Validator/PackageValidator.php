@@ -4,9 +4,9 @@ namespace DepDoc\Validator;
 
 use DepDoc\Dependencies\DependencyList;
 use DepDoc\Validator\Result\AbstractErrorResult;
-use DepDoc\Validator\Result\ErrorDocumentedButNotInstalled;
-use DepDoc\Validator\Result\ErrorMissingDocumentation;
-use DepDoc\Validator\Result\ErrorVersionMissMatch;
+use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
+use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
+use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
 
 class PackageValidator
 {
@@ -25,14 +25,14 @@ class PackageValidator
                 $installedVersion = $installedPackage['version'];
 
                 if ($dependencyList->has($packageManagerName, $packageName) === false) {
-                    $errors[] = new ErrorMissingDocumentation($packageManagerName, $packageName);
+                    $errors[] = new ErrorMissingDocumentationResult($packageManagerName, $packageName);
                     continue;
                 }
 
                 $dependency = $dependencyList->get($packageManagerName, $packageName);
 
                 if ($dependency->isVersionLocked() && $dependency->getVersion() !== $installedVersion) {
-                    $errors[] = new ErrorVersionMissMatch(
+                    $errors[] = new ErrorVersionMissMatchResult(
                         $packageManagerName,
                         $packageName,
                         $installedVersion,
@@ -47,7 +47,7 @@ class PackageValidator
             $packageManagerNameInstalledPackages = $installedPackages[$dependency->getPackageManagerName()] ?? [];
 
             if (!array_key_exists($dependency->getPackageName(), $packageManagerNameInstalledPackages)) {
-                $errors[] = new ErrorDocumentedButNotInstalled(
+                $errors[] = new ErrorDocumentedButNotInstalledResult(
                     $dependency->getPackageManagerName(),
                     $dependency->getPackageName()
                 );

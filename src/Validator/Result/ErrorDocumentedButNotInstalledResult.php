@@ -2,7 +2,7 @@
 
 namespace DepDoc\Validator\Result;
 
-class ErrorMissingDocumentation extends AbstractErrorResult
+class ErrorDocumentedButNotInstalledResult extends AbstractErrorResult
 {
     /**
      * @return string
@@ -10,7 +10,7 @@ class ErrorMissingDocumentation extends AbstractErrorResult
     public function toString(): string
     {
         return sprintf(
-            "[%s] package %s is missing documentation!",
+            "[%s] package %s is documented but not installed!",
             $this->getPackageManagerName(),
             $this->getPackageName()
         );

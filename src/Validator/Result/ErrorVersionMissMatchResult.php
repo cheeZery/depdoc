@@ -2,7 +2,7 @@
 
 namespace DepDoc\Validator\Result;
 
-class ErrorVersionMissMatch extends AbstractErrorResult
+class ErrorVersionMissMatchResult extends AbstractErrorResult
 {
     /** @var string */
     protected $installedVersion;
