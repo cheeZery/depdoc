@@ -43,7 +43,7 @@ class ValidateCommand extends BaseCommand
         $installedPackages = $this->getInstalledPackages($directory);
 
         $dependencyList = $this->parser->getDocumentedDependencies($filepath);
-        if ($dependencyList === null) {
+        if ($dependencyList->countAll()) {
             return -1;
         }
 

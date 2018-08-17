@@ -3,6 +3,8 @@
 namespace DepDoc\PackageManager;
 
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
+use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class NodePackageManager implements PackageManagerInterface
 {
@@ -41,8 +43,8 @@ class NodePackageManager implements PackageManagerInterface
             $packageList->add(new NodePackage(
                 $this->getName(),
                 $installedPackage['name'],
-                $installedPackage['description'],
-                $installedPackage['version']
+                $installedPackage['version'],
+                $installedPackage['description']
             ));
         }
 

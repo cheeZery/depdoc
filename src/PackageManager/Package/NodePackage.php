@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace DepDoc\PackageManager;
+namespace DepDoc\PackageManager\Package;
 
 class NodePackage extends PackageManagerPackage
 {
@@ -8,18 +9,14 @@ class NodePackage extends PackageManagerPackage
     protected $description;
 
     /**
-     * @param string $packageManagerName
-     * @param string $packageName
+     * @param string $managerName
+     * @param string $name
      * @param string $version
      * @param null|string $description
      */
-    public function __construct(
-        string $packageManagerName,
-        string $packageName,
-        string $description,
-        string $version
-    ) {
-        parent::__construct($packageManagerName, $packageName, $version);
+    public function __construct(string $managerName, string $name, string $version, ?string $description)
+    {
+        parent::__construct($managerName, $name, $version);
 
         $this->description = $description;
     }

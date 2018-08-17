@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace DepDoc\PackageManager;
+namespace DepDoc\PackageManager\PackageList;
+
+use DepDoc\PackageManager\Package\PackageManagerPackage;
+use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 
 class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageManagerPackageListInterface
 {
@@ -14,11 +17,11 @@ class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageMana
      */
     public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {
-        if ($this->offsetExists($data->getPackageManagerName()) === false) {
-            $this->dependencies[$data->getPackageManagerName()] = [];
+        if ($this->offsetExists($data->getManagerName()) === false) {
+            $this->dependencies[$data->getManagerName()] = [];
         }
 
-        $this->dependencies[$data->getPackageManagerName()][$data->getPackageName()] = $data;
+        $this->dependencies[$data->getManagerName()][$data->getName()] = $data;
 
         return $this;
     }
@@ -166,5 +169,13 @@ class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageMana
     public function count(): int
     {
         return count($this->dependencies);
+    }
+
+    /**
+     * @return int
+     */
+    public function countAll(): int
+    {
+        return count($this->getAllFlat());
     }
 }

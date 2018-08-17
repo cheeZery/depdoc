@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DepDoc\Parser;
 
-use DepDoc\PackageManager\PackageManagerPackageList;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 interface ParserInterface
 {

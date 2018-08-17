@@ -2,8 +2,8 @@
 
 namespace DepDocTest\PackageManager;
 
-use DepDoc\PackageManager\ComposerPackage;
 use DepDoc\PackageManager\ComposerPackageManager;
+use DepDoc\PackageManager\Package\ComposerPackage;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 
@@ -55,7 +55,7 @@ JSON
         /** @var ComposerPackage $package */
         $package = $packages->get($manager->getName(), 'Test');
         $this->assertInstanceOf(ComposerPackage::class, $package);
-        $this->assertEquals('Test', $package->getPackageName());
+        $this->assertEquals('Test', $package->getName());
         $this->assertEquals('An awesome package', $package->getDescription());
         $this->assertEquals('1.0.0', $package->getVersion());
     }

@@ -4,7 +4,7 @@ namespace DepDoc\Command;
 
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
-use DepDoc\PackageManager\PackageManagerPackageList;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\MarkdownParser;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;

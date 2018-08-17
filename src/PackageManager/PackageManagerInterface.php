@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace DepDoc\PackageManager;
 
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
+
 interface PackageManagerInterface
 {
     /**

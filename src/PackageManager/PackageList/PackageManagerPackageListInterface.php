@@ -1,6 +1,9 @@
 <?php
 
-namespace DepDoc\PackageManager;
+namespace DepDoc\PackageManager\PackageList;
+
+use DepDoc\PackageManager\Package\PackageManagerPackage;
+use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 
 interface PackageManagerPackageListInterface
 {

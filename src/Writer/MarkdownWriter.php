@@ -3,9 +3,9 @@
 namespace DepDoc\Writer;
 
 use DepDoc\Dependencies\DependencyData;
-use DepDoc\PackageManager\ComposerPackage;
-use DepDoc\PackageManager\NodePackage;
-use DepDoc\PackageManager\PackageManagerPackageList;
+use DepDoc\PackageManager\Package\ComposerPackage;
+use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
 {
@@ -33,7 +33,7 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = "";
 
-                $name = $installedPackage->getPackageName();
+                $name = $installedPackage->getName();
                 $version = $installedPackage->getVersion();
                 $description = $installedPackage->getDescription();
 

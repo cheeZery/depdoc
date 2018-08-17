@@ -52,7 +52,7 @@ class UpdateCommand extends BaseCommand
         $installedPackages = $this->getInstalledPackages($directory);
 
         $documentedDependencies = $this->parser->getDocumentedDependencies($filepath);
-        if ($documentedDependencies === null) {
+        if ($documentedDependencies->countAll() === 0) {
             return -1;
         }
 

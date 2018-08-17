@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DepDoc\Parser;
 
 use DepDoc\Dependencies\DependencyData;
-use DepDoc\PackageManager\PackageManagerPackageList;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
 
 class MarkdownParser implements ParserInterface

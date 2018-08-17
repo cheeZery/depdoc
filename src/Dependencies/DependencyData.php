@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DepDoc\Dependencies;
 
-use DepDoc\PackageManager\PackageManagerPackage;
+use DepDoc\PackageManager\Package\PackageManagerPackage;
 
 class DependencyData extends PackageManagerPackage
 {
@@ -13,20 +13,20 @@ class DependencyData extends PackageManagerPackage
     protected $additionalContent;
 
     /**
-     * @param string $packageManagerName
-     * @param string $packageName
+     * @param string $managerName
+     * @param string $name
      * @param string $version
      * @param null|string $lockSymbol
      * @param array $additionalContent
      */
     public function __construct(
-        string $packageManagerName,
-        string $packageName,
+        string $managerName,
+        string $name,
         string $version,
         ?string $lockSymbol,
         array $additionalContent = []
     ) {
-        parent::__construct($packageManagerName, $packageName, $version);
+        parent::__construct($managerName, $name, $version);
 
         $this->lockSymbol = $lockSymbol;
         $this->additionalContent = new DependencyDataAdditionalContent($additionalContent ?? []);

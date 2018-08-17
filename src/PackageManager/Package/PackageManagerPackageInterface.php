@@ -1,18 +1,19 @@
 <?php
+declare(strict_types=1);
 
-namespace DepDoc\PackageManager;
+namespace DepDoc\PackageManager\Package;
 
 interface PackageManagerPackageInterface
 {
     /**
      * @return string
      */
-    public function getPackageManagerName(): string;
+    public function getManagerName(): string;
 
     /**
      * @return string
      */
-    public function getPackageName(): string;
+    public function getName(): string;
 
     /**
      * @return string

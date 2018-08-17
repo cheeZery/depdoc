@@ -3,6 +3,8 @@
 namespace DepDoc\PackageManager;
 
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
+use DepDoc\PackageManager\Package\ComposerPackage;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class ComposerPackageManager implements PackageManagerInterface
 {

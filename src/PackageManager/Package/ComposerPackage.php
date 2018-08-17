@@ -1,6 +1,6 @@
 <?php
 
-namespace DepDoc\PackageManager;
+namespace DepDoc\PackageManager\Package;
 
 class ComposerPackage extends PackageManagerPackage
 {
@@ -8,18 +8,14 @@ class ComposerPackage extends PackageManagerPackage
     protected $description;
 
     /**
-     * @param string $packageManagerName
-     * @param string $packageName
+     * @param string $managerName
+     * @param string $name
      * @param string $version
      * @param string $description
      */
-    public function __construct(
-        string $packageManagerName,
-        string $packageName,
-        string $version,
-        string $description
-    ) {
-        parent::__construct($packageManagerName, $packageName, $version);
+    public function __construct(string $managerName, string $name, string $version, ?string $description)
+    {
+        parent::__construct($managerName, $name, $version);
 
         $this->description = $description;
     }
