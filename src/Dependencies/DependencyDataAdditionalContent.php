@@ -48,7 +48,7 @@ class DependencyDataAdditionalContent
      */
     public function removeLasEmptyLine(): DependencyDataAdditionalContent
     {
-        if (end($this->lines['additionalContent']) === '') {
+        if (end($this->lines) === '') {
             array_pop($this->lines);
         }
 

@@ -31,6 +31,9 @@ class MarkdownParser implements ParserInterface
         foreach ($lines as $line) {
 
             $line = rtrim($line);
+            if (strlen($line) === 0) {
+                continue;
+            }
 
             if (preg_match("/^#{3}\s(?<packageManagerName>\w+)/", $line, $matches)) {
                 $currentPackageManagerName = $matches['packageManagerName'];
@@ -47,7 +50,8 @@ class MarkdownParser implements ParserInterface
             }
 
             // @TODO: After config file was added, add option to define used lock symbol
-            if (preg_match('/^#{5}\s(?:<packageName>[^ ]+)\s`(?:<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line,
+            $matches = null;
+            if (preg_match('/^#{5}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line,
                 $matches)) {
                 $currentPackage = $matches['packageName'];
 
@@ -80,7 +84,7 @@ class MarkdownParser implements ParserInterface
     protected function cleanupAdditionalContent(PackageManagerPackageList $dependencies): void
     {
         /** @var DependencyData $dependency */
-        foreach ($dependencies as $dependency) {
+        foreach ($dependencies->getAllFlat() as $dependency) {
             // Search until first line with description (">") prefix was found; anything further is additional
             $descriptionFound = false;
             // Used to save one empty line

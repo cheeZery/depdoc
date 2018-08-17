@@ -50,11 +50,7 @@ class UpdateCommand extends BaseCommand
         }
 
         $installedPackages = $this->getInstalledPackages($directory);
-
         $documentedDependencies = $this->parser->getDocumentedDependencies($filepath);
-        if ($documentedDependencies->countAll() === 0) {
-            return -1;
-        }
 
         $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies,
             new WriterConfiguration(

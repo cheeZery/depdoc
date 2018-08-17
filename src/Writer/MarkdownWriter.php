@@ -102,10 +102,10 @@ class MarkdownWriter implements WriterInterface
     }
 
     /**
-     * @param string $description
+     * @param null|string $description
      * @return string
      */
-    protected function createDescriptionLine(string $description): string
+    protected function createDescriptionLine(?string $description): string
     {
         return "> $description";
     }

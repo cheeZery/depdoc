@@ -22,9 +22,9 @@ class NodePackage extends PackageManagerPackage
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
