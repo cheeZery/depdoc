@@ -41,14 +41,14 @@ class ValidateCommand extends BaseCommand
         }
 
         $installedPackages = $this->getInstalledPackages($directory);
-
         $dependencyList = $this->parser->getDocumentedDependencies($filepath);
-        if ($dependencyList->countAll()) {
-            return -1;
-        }
 
         $validationResult = $this->validator->compare($installedPackages, $dependencyList);
         if (empty($validationResult)) {
+            if ($this->io->isVerbose()) {
+                $this->io->writeln('Validation result: empty, all fine.');
+            }
+
             return 0;
         }
 

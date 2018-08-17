@@ -20,7 +20,7 @@ class MarkdownWriter implements WriterInterface
     ) {
         $documentation = [];
 
-        foreach ($installedPackages as $packageManagerName => $packageManagerInstalledPackages) {
+        foreach ($installedPackages->getAll() as $packageManagerName => $packageManagerInstalledPackages) {
 
             if (count($packageManagerInstalledPackages) === 0) {
                 continue;

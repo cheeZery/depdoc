@@ -22,32 +22,27 @@ class PackageValidator
     ): array {
         $errors = [];
 
-        foreach ($installedPackages as $packageManagerName => $packageManagerNameInstalledPackages) {
-            foreach ($packageManagerNameInstalledPackages as $installedPackage) {
-                $packageName = $installedPackage->getName();
-                $installedVersion = $installedPackage->getVersion();
+        foreach ($installedPackages->getAllFlat() as $package) {
+            if ($dependencyList->has($package->getManagerName(), $package->getName()) === false) {
+                $errors[] = new ErrorMissingDocumentationResult($package->getManagerName(), $package->getName());
+                continue;
+            }
 
-                if ($dependencyList->has($packageManagerName, $packageName) === false) {
-                    $errors[] = new ErrorMissingDocumentationResult($packageManagerName, $packageName);
-                    continue;
-                }
+            /** @var DependencyData $dependency */
+            $dependency = $dependencyList->get($package->getManagerName(), $package->getName());
 
-                /** @var DependencyData $dependency */
-                $dependency = $dependencyList->get($packageManagerName, $packageName);
-
-                if ($dependency->isVersionLocked() && $dependency->getVersion() !== $installedVersion) {
-                    $errors[] = new ErrorVersionMissMatchResult(
-                        $packageManagerName,
-                        $packageName,
-                        $installedVersion,
-                        $dependency->getVersion()
-                    );
-                    continue;
-                }
+            if ($dependency->isVersionLocked() && $dependency->getVersion() !== $package->getVersion()) {
+                $errors[] = new ErrorVersionMissMatchResult(
+                    $package->getManagerName(),
+                    $package->getName(),
+                    $package->getVersion(),
+                    $dependency->getVersion()
+                );
+                continue;
             }
         }
 
-        foreach ($dependencyList as $dependency) {
+        foreach ($dependencyList->getAllFlat() as $dependency) {
             if ($installedPackages->has($dependency->getManagerName(), $dependency->getName()) === false) {
                 $errors[] = new ErrorDocumentedButNotInstalledResult(
                     $dependency->getManagerName(),
