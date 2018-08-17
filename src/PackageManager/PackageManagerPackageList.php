@@ -14,11 +14,11 @@ class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageMana
      */
     public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {
-        if (!array_key_exists($data->getPackageManagerName(), $this->dependencies)) {
+        if ($this->offsetExists($data->getPackageManagerName()) === false) {
             $this->dependencies[$data->getPackageManagerName()] = [];
         }
 
-        $this[$data->getPackageManagerName()][$data->getPackageName()] = $data;
+        $this->dependencies[$data->getPackageManagerName()][$data->getPackageName()] = $data;
 
         return $this;
     }
@@ -44,7 +44,7 @@ class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageMana
      */
     public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface
     {
-        if (!$this->has($packageManagerName, $packageName)) {
+        if ($this->has($packageManagerName, $packageName) === false) {
             return null;
         }
 
@@ -70,7 +70,7 @@ class PackageManagerPackageList implements \ArrayAccess, \Countable, PackageMana
      */
     public function getAllByManager(string $manager): array
     {
-        if (!array_key_exists($manager, $this->dependencies)) {
+        if (array_key_exists($manager, $this->dependencies) === false) {
             return [];
         }
 

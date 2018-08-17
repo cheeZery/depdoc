@@ -9,6 +9,9 @@ use DepDoc\PackageManager\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
 {
+    /**
+     * @inheritdoc
+     */
     public function createDocumentation(
         string $filepath,
         PackageManagerPackageList $installedPackages,

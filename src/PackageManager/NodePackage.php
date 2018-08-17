@@ -16,8 +16,8 @@ class NodePackage extends PackageManagerPackage
     public function __construct(
         string $packageManagerName,
         string $packageName,
-        string $version,
-        string $description
+        string $description,
+        string $version
     ) {
         parent::__construct($packageManagerName, $packageName, $version);
 

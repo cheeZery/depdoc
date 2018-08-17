@@ -3,7 +3,6 @@
 namespace DepDoc\PackageManager;
 
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
-use Symfony\Component\VarDumper\VarDumper;
 
 class NodePackageManager implements PackageManagerInterface
 {

@@ -43,8 +43,8 @@ class ComposerPackageManager implements PackageManagerInterface
             $packageList->add(new ComposerPackage(
                 $this->getName(),
                 $installedPackage['name'],
-                $installedPackage['description'],
-                $installedPackage['version']
+                $installedPackage['version'],
+                $installedPackage['description']
             ));
         }
 
