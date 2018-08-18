@@ -6,10 +6,6 @@ use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\MarkdownParser;
-use DepDoc\Parser\ParserInterface;
-use DepDoc\Validator\PackageValidator;
-use DepDoc\Writer\MarkdownWriter;
-use DepDoc\Writer\WriterInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,12 +18,6 @@ abstract class BaseCommand extends Command
     protected $managerComposer;
     /** @var NodePackageManager */
     protected $managerNode;
-    /** @var ParserInterface */
-    protected $parser;
-    /** @var WriterInterface */
-    protected $writer;
-    /** @var PackageValidator */
-    protected $validator;
     /** @var SymfonyStyle */
     protected $io;
 
@@ -37,9 +27,6 @@ abstract class BaseCommand extends Command
 
         $this->managerComposer = new ComposerPackageManager();
         $this->managerNode = new NodePackageManager();
-        $this->parser = new MarkdownParser();
-        $this->writer = new MarkdownWriter();
-        $this->validator = new PackageValidator();
     }
 
     protected function configure()

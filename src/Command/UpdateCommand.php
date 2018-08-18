@@ -3,19 +3,35 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
+use DepDoc\Parser\MarkdownParser;
+use DepDoc\Parser\ParserInterface;
+use DepDoc\Writer\MarkdownWriter;
 use DepDoc\Writer\WriterConfiguration;
+use DepDoc\Writer\WriterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommand extends BaseCommand
 {
+    /** @var WriterInterface */
+    protected $writer;
+    /** @var ParserInterface */
+    protected $parser;
+
+    public function __construct()
+    {
+        parent::__construct('update');
+
+        $this->writer = new MarkdownWriter();
+        $this->parser = new MarkdownParser();
+    }
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('update')
             ->setDescription('Update or create a DEPENDENCIES.md')
             ->addOption(
                 'newline',
