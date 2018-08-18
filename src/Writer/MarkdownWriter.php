@@ -58,7 +58,7 @@ class MarkdownWriter implements WriterInterface
             $documentation[] = "";
         }
 
-        // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
+        // @TODO: Maybe add documentation for packages which were documented but not installed (anymore)
 
         $documentation[] = "";
 
