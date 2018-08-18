@@ -4,7 +4,6 @@ namespace DepDocTest\PackageManager;
 
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\Package\NodePackage;
-use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 

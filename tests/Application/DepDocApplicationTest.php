@@ -1,6 +1,6 @@
 <?php
 
-namespace DepDocTest;
+namespace DepDocTest\Application;
 
 use DepDoc\Application\DepDocApplication;
 use PHPUnit\Framework\TestCase;
