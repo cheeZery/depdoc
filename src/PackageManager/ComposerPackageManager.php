@@ -31,12 +31,11 @@ class ComposerPackageManager implements PackageManagerInterface
         $dependencies = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new FailedToParseDependencyInformationException(sprintf(
-                'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
+            throw new FailedToParseDependencyInformationException(
                 $this->getName(),
-                json_last_error_msg(),
-                json_last_error()
-            ));
+                json_last_error(),
+                json_last_error_msg()
+            );
         }
 
         $installedPackages = $dependencies['installed'] ?? [];
