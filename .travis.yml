@@ -13,8 +13,27 @@ before_install:
   - composer clear-cache
 
 install:
-  - composer update $DEFAULT_COMPOSER_FLAGS
+  - travis_retry composer update $DEFAULT_COMPOSER_FLAGS
+  # Install coveralls.phar
+  - wget -c -nc --retry-connrefused --tries=0 https://github.com/php-coveralls/php-coveralls/releases/download/v2.0.0/php-coveralls.phar -O coveralls.phar
+  - chmod +x coveralls.phar
+  - php coveralls.phar --version
 
 before_script:
   - echo 'zend.assertions=1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - echo 'assert.exception=On' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  # Prepare build output directory
+  - mkdir build
+
+script:
+- vendor/bin/phpunit --coverage-clover=build/coverage.xml
+
+after_success:
+  # Submit coverage report to Coveralls
+- travis_retry php coveralls.phar -v
+  # Submit coverage report to codecov.io
+- bash <(curl -s https://codecov.io/bash)
+
+# Tell Travis CI to monitor only 'master' branch
+branches:
+  only: master
