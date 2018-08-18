@@ -58,5 +58,7 @@ JSON
         $this->assertEquals('Test', $package->getName());
         $this->assertEquals('An awesome package', $package->getDescription());
         $this->assertEquals('1.0.0', $package->getVersion());
+
+        $this->prophet->checkPredictions();
     }
 }
