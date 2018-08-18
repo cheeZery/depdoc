@@ -1,36 +1,47 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Parser;
 
-class MarkdownParser extends AbstractParser
+use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
+use DepDoc\Parser\Exception\MissingFileException;
+
+class MarkdownParser implements ParserInterface
 {
     public const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function getDocumentedDependencies(string $filepath, ?string $packageManagerName = null): ?array
-    {
+    public function getDocumentedDependencies(
+        string $filepath,
+        ?string $packageManagerName = null
+    ): PackageManagerPackageList {
         if (!file_exists($filepath)) {
-            echo $filepath . ' is missing!';
-
-            return null;
+            throw new MissingFileException($filepath);
         }
 
         $lines = file($filepath);
+        /** @var null|string $currentPackageManagerName */
         $currentPackageManagerName = null;
+        /** @var null|string $currentPackage */
         $currentPackage = null;
 
-        $dependencies = [];
+        $dependencies = new PackageManagerPackageList();
+        $currentDependency = null;
 
         foreach ($lines as $line) {
 
             $line = rtrim($line);
+            if (strlen($line) === 0) {
+                continue;
+            }
 
-            if (preg_match("/^#{3}\s(\w+)/", $line, $matches)) {
-                $currentPackageManagerName = $matches[1];
+            if (preg_match("/^#{3}\s(?<packageManagerName>\w+)/", $line, $matches)) {
+                $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
                 continue;
             }
 
-            if (!$currentPackageManagerName) {
+            if ($currentPackageManagerName === null) {
                 continue;
             }
 
@@ -38,21 +49,20 @@ class MarkdownParser extends AbstractParser
                 continue;
             }
 
-            if (empty($dependencies[$currentPackageManagerName])) {
-                $dependencies[$currentPackageManagerName] = [];
-            }
-
             // @TODO: After config file was added, add option to define used lock symbol
-            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
-                $currentPackage = $matches[1];
+            $matches = null;
+            if (preg_match('/^#{5}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line,
+                $matches)) {
+                $currentPackage = $matches['packageName'];
 
-                // @TODO: Create model for documented dependency
-                $dependencies[$currentPackageManagerName][$currentPackage] = [
-                    'name' => $currentPackage,
-                    'lockedVersion' => isset($matches[3]) ? $matches[2] : null,
-                    'usedLockSymbol' => $matches[3] ?? null,
-                    'additionalContent' => [],
-                ];
+                $currentDependency = new DependencyData(
+                    $currentPackageManagerName,
+                    $currentPackage,
+                    $matches['version'],
+                    $matches['lockSymbol'] ?? null
+                );
+                $dependencies->add($currentDependency);
+
                 continue;
             }
 
@@ -60,43 +70,48 @@ class MarkdownParser extends AbstractParser
                 continue;
             }
 
-            $dependencies[$currentPackageManagerName][$currentPackage]['additionalContent'][] = $line;
+            $currentDependency->getAdditionalContent()->add($line);
         }
 
-        foreach ($dependencies as &$packageManagerDependencies) {
-            foreach ($packageManagerDependencies as &$dependency) {
-                $descriptionFound = false;
-                $priorLineWasEmpty = false;
-
-                foreach ($dependency['additionalContent'] as $index => $contentLine) {
-                    if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
-                        $descriptionFound = true;
-                        unset($dependency['additionalContent'][$index]);
-                        continue;
-                    }
-
-                    if ($contentLine === '') {
-                        if ($priorLineWasEmpty) {
-                            unset($dependency['additionalContent'][$index]);
-                        } else {
-                            $priorLineWasEmpty = true;
-                        }
-                        continue;
-                    }
-
-                    $priorLineWasEmpty = false;
-                }
-
-                if (end($dependency['additionalContent']) === "") {
-                    array_pop($dependency['additionalContent']);
-                }
-            }
-        }
-
-        if ($packageManagerName) {
-            return $dependencies[$packageManagerName] ?? [];
-        }
+        $this->cleanupAdditionalContent($dependencies);
 
         return $dependencies;
+    }
+
+    /**
+     * @param PackageManagerPackageList $dependencies
+     */
+    protected function cleanupAdditionalContent(PackageManagerPackageList $dependencies): void
+    {
+        /** @var DependencyData $dependency */
+        foreach ($dependencies->getAllFlat() as $dependency) {
+            // Search until first line with description (">") prefix was found; anything further is additional
+            $descriptionFound = false;
+            // Used to save one empty line
+            $priorLineWasEmpty = false;
+
+            $additionalContent = $dependency->getAdditionalContent();
+            foreach ($additionalContent->getAll() as $index => $contentLine) {
+                if (strlen($contentLine) > 0 && $contentLine[0] === '>' && !$descriptionFound) {
+                    $descriptionFound = true;
+                    $additionalContent->removeIndex($index);
+
+                    continue;
+                }
+
+                if ($contentLine === '') {
+                    if ($priorLineWasEmpty) {
+                        $additionalContent->removeIndex($index);
+                    } else {
+                        $priorLineWasEmpty = true;
+                    }
+                    continue;
+                }
+
+                $priorLineWasEmpty = false;
+            }
+
+            $additionalContent->removeLastEmptyLine();
+        }
     }
 }

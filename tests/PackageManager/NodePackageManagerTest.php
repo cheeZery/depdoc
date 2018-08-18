@@ -3,6 +3,7 @@
 namespace DepDocTest\PackageManager;
 
 use DepDoc\PackageManager\NodePackageManager;
+use DepDoc\PackageManager\Package\NodePackage;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +22,7 @@ class NodePackageManagerTest extends TestCase
         $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
-        $command = 'npm list -json -depth 0 -long';
+        $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list -json -depth 0 -long';
         $commandOutput = null;
         $prophecy
             ->shell_exec($command)
@@ -43,10 +44,14 @@ JSON
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertEquals(['Test' => [
-            'name' => 'Test',
-            'version' => '1.0.0',
-            'description' => 'awesome package'
-        ]], $packages);
+        $this->assertCount(1, $packages->getAllFlat());
+        $this->assertTrue($packages->has($manager->getName(), 'Test'));
+
+        /** @var NodePackage $package */
+        $package = $packages->get($manager->getName(), 'Test');
+        $this->assertInstanceOf(NodePackage::class, $package);
+        $this->assertEquals('Test', $package->getName());
+        $this->assertEquals('1.0.0', $package->getVersion());
+        $this->assertEquals('awesome package', $package->getDescription());
     }
 }
