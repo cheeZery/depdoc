@@ -111,7 +111,7 @@ class MarkdownParser implements ParserInterface
                 $priorLineWasEmpty = false;
             }
 
-            $additionalContent->removeLasEmptyLine();
+            $additionalContent->removeLastEmptyLine();
         }
     }
 }
