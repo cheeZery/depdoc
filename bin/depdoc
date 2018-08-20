@@ -12,5 +12,6 @@ require $composerAutoload;
 
 array_shift($argv);
 
-$exitCode = (new DepDoc\Runner())->run($argv);
+$application = new \DepDoc\Application\DepDocApplication();
+$exitCode = $application->run();
 exit($exitCode);

@@ -2,51 +2,53 @@
 
 namespace DepDoc\Validator;
 
+use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
+use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
+use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
+use DepDoc\Validator\Result\ErrorResultInterface;
+use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
+
 class PackageValidator
 {
     /**
-     * @param array $installedPackages
-     * @param array $documentedDependencies
-     * @return string[]
+     * @param PackageManagerPackageList $installedPackages
+     * @param PackageManagerPackageList $dependencyList
+     * @return ErrorResultInterface[]
      */
-    public function compare(array $installedPackages, array $documentedDependencies): array
-    {
+    public function compare(
+        PackageManagerPackageList $installedPackages,
+        PackageManagerPackageList $dependencyList
+    ): array {
         $errors = [];
 
-        foreach ($installedPackages as $packageManagerName => $packageManagerNameInstalledPackages) {
-            $packageManagerNameDocumentedDependencies = $documentedDependencies[$packageManagerName] ?? [];
+        foreach ($installedPackages->getAllFlat() as $package) {
+            if ($dependencyList->has($package->getManagerName(), $package->getName()) === false) {
+                $errors[] = new ErrorMissingDocumentationResult($package->getManagerName(), $package->getName());
+                continue;
+            }
 
-            foreach ($packageManagerNameInstalledPackages as $installedPackage) {
-                $packageName = $installedPackage['name'];
-                $installedVersion = $installedPackage['version'];
+            /** @var DependencyData $dependency */
+            $dependency = $dependencyList->get($package->getManagerName(), $package->getName());
 
-                if (!array_key_exists($packageName, $packageManagerNameDocumentedDependencies)) {
-                    $errors[] = "$packageManagerName package $packageName is missing documentation!";
-                    continue;
-                }
-
-                $documentedDependency = $packageManagerNameDocumentedDependencies[$packageName];
-
-                $lockedVersion = $documentedDependency["lockedVersion"];
-
-                if ($lockedVersion && $lockedVersion !== $installedVersion) {
-                    $errors[] = "$packageManagerName package $packageName is installed in version $installedVersion, but locked for $lockedVersion!";
-                    continue;
-                }
+            if ($dependency->isVersionLocked() && $dependency->getVersion() !== $package->getVersion()) {
+                $errors[] = new ErrorVersionMissMatchResult(
+                    $package->getManagerName(),
+                    $package->getName(),
+                    $package->getVersion(),
+                    $dependency->getVersion()
+                );
+                continue;
             }
         }
 
-        foreach ($documentedDependencies as $packageManagerName => $packageManagerNameDocumentedDependencies) {
-
-            foreach ($packageManagerNameDocumentedDependencies as $documentedDependency) {
-                $packageName = $documentedDependency['name'];
-
-                $packageManagerNameInstalledPackages = $installedPackages[$packageManagerName] ?? [];
-
-                if (!array_key_exists($packageName, $packageManagerNameInstalledPackages)) {
-                    $errors[] = "$packageManagerName package $packageName is documented but not installed!";
-                    continue;
-                }
+        foreach ($dependencyList->getAllFlat() as $dependency) {
+            if ($installedPackages->has($dependency->getManagerName(), $dependency->getName()) === false) {
+                $errors[] = new ErrorDocumentedButNotInstalledResult(
+                    $dependency->getManagerName(),
+                    $dependency->getName()
+                );
+                continue;
             }
         }
 

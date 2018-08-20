@@ -3,6 +3,7 @@
 namespace DepDocTest\PackageManager;
 
 use DepDoc\PackageManager\ComposerPackageManager;
+use DepDoc\PackageManager\Package\ComposerPackage;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 
@@ -37,7 +38,8 @@ class ComposerPackageManagerTest extends TestCase
     "installed": [
         {
             "name": "Test",
-            "some": "data"
+            "description": "An awesome package",
+            "version": "1.0.0"
         }
     ]
 }
@@ -48,6 +50,15 @@ JSON
         $manager = new ComposerPackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertEquals(['Test' => ['some' => 'data', 'name' => 'Test']], $packages);
+        $this->assertCount(1, $packages->getAllFlat());
+
+        /** @var ComposerPackage $package */
+        $package = $packages->get($manager->getName(), 'Test');
+        $this->assertInstanceOf(ComposerPackage::class, $package);
+        $this->assertEquals('Test', $package->getName());
+        $this->assertEquals('An awesome package', $package->getDescription());
+        $this->assertEquals('1.0.0', $package->getVersion());
+
+        $this->prophet->checkPredictions();
     }
 }

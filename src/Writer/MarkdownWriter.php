@@ -2,63 +2,111 @@
 
 namespace DepDoc\Writer;
 
-class MarkdownWriter extends AbstractWriter
-{
-    private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
+use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\Package\ComposerPackage;
+use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
-    public function createDocumentation(string $filepath, array $installedPackages, array $documentedDependencies)
-    {
+class MarkdownWriter implements WriterInterface
+{
+    /**
+     * @inheritdoc
+     */
+    public function createDocumentation(
+        string $filepath,
+        PackageManagerPackageList $installedPackages,
+        PackageManagerPackageList $dependencyList,
+        WriterConfiguration $configuration
+    ) {
         $documentation = [];
 
-        foreach ($installedPackages as $packageManagerName => $packageManagerInstalledPackages) {
+        foreach ($installedPackages->getAll() as $packageManagerName => $packageManagerInstalledPackages) {
 
             if (count($packageManagerInstalledPackages) === 0) {
                 continue;
             }
 
-            $documentation[] = "### $packageManagerName";
+            $documentation[] = $this->createPackageManagerLine($packageManagerName);
 
+            /** @var ComposerPackage|NodePackage $installedPackage */
             foreach ($packageManagerInstalledPackages as $installedPackage) {
 
                 $documentation[] = "";
 
-                $name = $installedPackage['name'];
-                $version = $installedPackage['version'];
-                $description = $installedPackage['description'];
+                $name = $installedPackage->getName();
+                $version = $installedPackage->getVersion();
+                $description = $installedPackage->getDescription();
 
-                if (!empty($documentedDependencies[$packageManagerName])) {
-                    $documentedDependency = $documentedDependencies[$packageManagerName][$name] ?? [];
-                }
+                /** @var DependencyData $documentedDependency */
+                $documentedDependency = $dependencyList->get($packageManagerName, $name);
 
-                $lockedVersion = $documentedDependency['lockedVersion'] ?? null;
-                $additionalContent = $documentedDependency['additionalContent'] ?? [];
-
-                if ($lockedVersion) {
-                    $usedLockSymbol = $documentedDependency['usedLockSymbol'] ?? '🔒';
-                    $documentation[] = "##### $name `$lockedVersion` $usedLockSymbol";
+                if ($documentedDependency && $documentedDependency->isVersionLocked()) {
+                    $documentation[] = $this->createPackageLockedLine($name, $version, $documentedDependency);
                 } else {
-                    $documentation[] = "##### $name `$version`";
+                    $documentation[] = $this->createPackageLine($name, $version);
                 }
 
-                $documentation[] = "> $description";
+                $documentation[] = $this->createDescriptionLine($description);
 
-                foreach ($additionalContent as $contentLine) {
-                    $documentation[] = $contentLine;
+                if ($documentedDependency) {
+                    foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
+                        $documentation[] = $contentLine;
+                    }
                 }
             }
-
-            // @TODO: Maybe add documentation for packages who were documented but not installed (anymore)
 
             $documentation[] = "";
-
-            $handle = @fopen($filepath, "w");
-
-            foreach ($documentation as $line) {
-                // @TODO: which line break?!
-                fwrite($handle, "$line\r\n");
-            }
-
-            fclose($handle);
         }
+
+        // @TODO: Maybe add documentation for packages which were documented but not installed (anymore)
+
+        $documentation[] = "";
+
+        $handle = @fopen($filepath, "w");
+
+        foreach ($documentation as $line) {
+            fwrite($handle, $line . $configuration->getNewline());
+        }
+
+        fclose($handle);
+    }
+
+    /**
+     * @param string $packageManagerName
+     * @return string
+     */
+    protected function createPackageManagerLine(string $packageManagerName): string
+    {
+        return "### $packageManagerName";
+    }
+
+    /**
+     * @param string $packageName
+     * @param string $version
+     * @param DependencyData $dependency
+     * @return string
+     */
+    protected function createPackageLockedLine(string $packageName, string $version, DependencyData $dependency): string
+    {
+        return "##### $packageName `$version` {$dependency->getLockSymbol()}";
+    }
+
+    /**
+     * @param string $packageName
+     * @param string $version
+     * @return string
+     */
+    protected function createPackageLine(string $packageName, string $version): string
+    {
+        return "##### $packageName `$version`";
+    }
+
+    /**
+     * @param null|string $description
+     * @return string
+     */
+    protected function createDescriptionLine(?string $description): string
+    {
+        return "> $description";
     }
 }
