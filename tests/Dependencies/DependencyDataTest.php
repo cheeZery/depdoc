@@ -21,4 +21,13 @@ class DependencyDataTest extends TestCase
         $dependency = new DependencyData('manager', 'name', 'version', null, [1, 2, 3]);
         $this->assertEquals([1, 2, 3], $dependency->getAdditionalContent()->getAll());
     }
+
+    public function testItKnowsItLockedIfLockSymbolProvided()
+    {
+        $dependency = new DependencyData('manager', 'name', 'version', 'symbol');
+        $this->assertTrue($dependency->isVersionLocked());
+
+        $dependency = new DependencyData('manager', 'name', 'version', null);
+        $this->assertFalse($dependency->isVersionLocked());
+    }
 }
