@@ -14,6 +14,9 @@ class DepDocApplication extends Application
         parent::__construct('DepDoc', '1.0');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function getDefaultCommands(): array
     {
         return array_merge(parent::getDefaultCommands(), [

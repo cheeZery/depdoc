@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
+use DepDoc\Configuration\ApplicationConfiguration;
+use DepDoc\Configuration\ConfigurationManager;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
@@ -19,6 +21,10 @@ abstract class BaseCommand extends Command
     protected $managerComposer;
     /** @var NodePackageManager */
     protected $managerNode;
+    /** @var ConfigurationManager */
+    protected $configurationManager;
+    /** @var null|ApplicationConfiguration */
+    protected $configuration;
     /** @var SymfonyStyle */
     protected $io;
 
@@ -28,6 +34,7 @@ abstract class BaseCommand extends Command
 
         $this->managerComposer = new ComposerPackageManager();
         $this->managerNode = new NodePackageManager();
+        $this->configurationManager = new ConfigurationManager();
     }
 
     protected function configure()
@@ -60,6 +67,11 @@ abstract class BaseCommand extends Command
         if ($this->io->isVerbose()) {
             $this->io->writeln('<info>Target directory:</info> ' . $targetDirectory);
         }
+
+        $this->configuration = $this->configurationManager->loadFromDirectory($targetDirectory);
+        echo __FILE__ . ':' . __LINE__ . PHP_EOL;
+        \Symfony\Component\VarDumper\VarDumper::dump($this->configuration);
+        exit;
 
         return 0;
     }
