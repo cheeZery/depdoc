@@ -19,6 +19,9 @@ class UpdateCommand extends BaseCommand
     /** @var ParserInterface */
     protected $parser;
 
+    /**
+     * @inheritdoc
+     */
     public function __construct()
     {
         parent::__construct('update');
@@ -27,6 +30,9 @@ class UpdateCommand extends BaseCommand
         $this->parser = new MarkdownParser();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -42,6 +48,9 @@ class UpdateCommand extends BaseCommand
             );
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $exitCode = parent::execute($input, $output);
@@ -70,7 +79,8 @@ class UpdateCommand extends BaseCommand
 
         $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies,
             new WriterConfiguration(
-                $newline
+                $this->configuration ? $this->configuration->getNewlineCharacter() : $newline,
+                $this->configuration ? $this->configuration->isExportExternalLink() : true
             ));
 
         return 0;

@@ -19,4 +19,9 @@ interface PackageManagerPackageInterface
      * @return string
      */
     public function getVersion(): string;
+
+    /**
+     * @return string
+     */
+    public function getExternalLink(): string;
 }

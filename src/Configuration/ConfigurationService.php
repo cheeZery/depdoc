@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Encoder\YamlEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class ConfigurationManager
+class ConfigurationService
 {
     /** @var Serializer */
     protected $serializer;

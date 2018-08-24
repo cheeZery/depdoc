@@ -16,6 +16,9 @@ class ValidateCommand extends BaseCommand
     /** @var PackageValidator */
     protected $validator;
 
+    /**
+     * @inheritdoc
+     */
     public function __construct()
     {
         parent::__construct('validate');
@@ -24,6 +27,9 @@ class ValidateCommand extends BaseCommand
         $this->parser = new MarkdownParser();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();

@@ -9,6 +9,9 @@ use Symfony\Component\Console\Application;
 
 class DepDocApplication extends Application
 {
+    /**
+     * @inheritdoc
+     */
     public function __construct()
     {
         parent::__construct('DepDoc', '1.0');

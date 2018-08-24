@@ -6,6 +6,7 @@ namespace DepDoc\Writer;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\Package\ComposerPackage;
 use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
@@ -34,20 +35,23 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = "";
 
-                $name = $installedPackage->getName();
-                $version = $installedPackage->getVersion();
-                $description = $installedPackage->getDescription();
-
                 /** @var DependencyData $documentedDependency */
-                $documentedDependency = $dependencyList->get($packageManagerName, $name);
+                $documentedDependency = $dependencyList->get($packageManagerName, $installedPackage->getName());
 
                 if ($documentedDependency && $documentedDependency->isVersionLocked()) {
-                    $documentation[] = $this->createPackageLockedLine($name, $version, $documentedDependency);
+                    $documentation[] = $this->createPackageLockedLine(
+                        $installedPackage,
+                        $documentedDependency,
+                        $configuration->isExportExternalLink()
+                    );
                 } else {
-                    $documentation[] = $this->createPackageLine($name, $version);
+                    $documentation[] = $this->createPackageLine(
+                        $installedPackage,
+                        $configuration->isExportExternalLink()
+                    );
                 }
 
-                $documentation[] = $this->createDescriptionLine($description);
+                $documentation[] = $this->createDescriptionLine($installedPackage->getDescription());
 
                 if ($documentedDependency) {
                     foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
@@ -82,24 +86,37 @@ class MarkdownWriter implements WriterInterface
     }
 
     /**
-     * @param string $packageName
-     * @param string $version
+     * @param PackageManagerPackageInterface $package
      * @param DependencyData $dependency
+     * @param bool $exportExternalLink
      * @return string
      */
-    protected function createPackageLockedLine(string $packageName, string $version, DependencyData $dependency): string
-    {
-        return "##### $packageName `$version` {$dependency->getLockSymbol()}";
+    protected function createPackageLockedLine(
+        PackageManagerPackageInterface $package,
+        DependencyData $dependency,
+        bool $exportExternalLink
+    ): string {
+        $line = "##### {$package->getName()} `{$package->getVersion()}` {$dependency->getLockSymbol()}";
+        if ($exportExternalLink) {
+            $line .= " {$this->createExternalLink($package)}";
+        }
+
+        return $line;
     }
 
     /**
-     * @param string $packageName
-     * @param string $version
+     * @param PackageManagerPackageInterface $package
+     * @param bool $exportExternalLink
      * @return string
      */
-    protected function createPackageLine(string $packageName, string $version): string
+    protected function createPackageLine(PackageManagerPackageInterface $package, bool $exportExternalLink): string
     {
-        return "##### $packageName `$version`";
+        $line = "##### {$package->getName()} `{$package->getVersion()}`";
+        if ($exportExternalLink) {
+            $line .= " {$this->createExternalLink($package)}";
+        }
+
+        return $line;
     }
 
     /**
@@ -109,5 +126,14 @@ class MarkdownWriter implements WriterInterface
     protected function createDescriptionLine(?string $description): string
     {
         return "> $description";
+    }
+
+    /**
+     * @param PackageManagerPackageInterface $package
+     * @return string
+     */
+    protected function createExternalLink(PackageManagerPackageInterface $package): string
+    {
+        return " [link]({$package->getExternalLink()})";
     }
 }

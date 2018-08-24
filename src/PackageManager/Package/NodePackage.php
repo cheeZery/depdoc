@@ -28,4 +28,12 @@ class NodePackage extends PackageManagerPackage
     {
         return $this->description;
     }
+
+    /**
+     * @return string
+     */
+    public function getExternalLink(): string
+    {
+        return sprintf('https://www.npmjs.com/package/%s', $this->getName());
+    }
 }

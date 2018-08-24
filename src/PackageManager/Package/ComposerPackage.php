@@ -28,4 +28,12 @@ class ComposerPackage extends PackageManagerPackage
     {
         return $this->description;
     }
+
+    /**
+     * @return string
+     */
+    public function getExternalLink(): string
+    {
+        return sprintf('https://packagist.org/packages/%s', $this->getName());
+    }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DepDoc\Command;
 
 use DepDoc\Configuration\ApplicationConfiguration;
-use DepDoc\Configuration\ConfigurationManager;
+use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
@@ -21,22 +21,28 @@ abstract class BaseCommand extends Command
     protected $managerComposer;
     /** @var NodePackageManager */
     protected $managerNode;
-    /** @var ConfigurationManager */
+    /** @var ConfigurationService */
     protected $configurationManager;
     /** @var null|ApplicationConfiguration */
     protected $configuration;
     /** @var SymfonyStyle */
     protected $io;
 
+    /**
+     * @inheritdoc
+     */
     public function __construct(string $name = null)
     {
         parent::__construct($name);
 
         $this->managerComposer = new ComposerPackageManager();
         $this->managerNode = new NodePackageManager();
-        $this->configurationManager = new ConfigurationManager();
+        $this->configurationManager = new ConfigurationService();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -50,6 +56,9 @@ abstract class BaseCommand extends Command
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -69,9 +78,6 @@ abstract class BaseCommand extends Command
         }
 
         $this->configuration = $this->configurationManager->loadFromDirectory($targetDirectory);
-        echo __FILE__ . ':' . __LINE__ . PHP_EOL;
-        \Symfony\Component\VarDumper\VarDumper::dump($this->configuration);
-        exit;
 
         return 0;
     }
