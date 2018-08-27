@@ -67,13 +67,9 @@ class MarkdownWriter implements WriterInterface
 
         $documentation[] = "";
 
-        $handle = @fopen($filepath, "w");
-
-        foreach ($documentation as $line) {
-            fwrite($handle, $line . $configuration->getNewline());
-        }
-
-        fclose($handle);
+        file_put_contents($filepath, array_map(function ($line) use ($configuration) {
+            return $line . $configuration->getNewline();
+        }, $documentation), LOCK_EX);
     }
 
     /**
@@ -134,6 +130,6 @@ class MarkdownWriter implements WriterInterface
      */
     protected function createExternalLink(PackageManagerPackageInterface $package): string
     {
-        return " [link]({$package->getExternalLink()})";
+        return "[link]({$package->getExternalLink()})";
     }
 }
