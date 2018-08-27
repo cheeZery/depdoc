@@ -49,7 +49,7 @@ class MarkdownWriterTest extends TestCase
         $lockedDependency = $this->getDependencyDataProphecy(true);
         $lockedDependency->getLockSymbol()->willReturn('!')->shouldBeCalled();
 
-        $lockedDependencyWithContent = $this->getDependencyDataProphecy(true, ['line 1', 'line 2']);
+        $lockedDependencyWithContent = $this->getDependencyDataProphecy(true, ['line 1', '', 'line 3']);
         $lockedDependencyWithContent->getLockSymbol()->willReturn('!')->shouldBeCalled();
 
         $dependencyList->get('Composer', 't1p1')->willReturn(null)->shouldBeCalled();
@@ -87,7 +87,8 @@ class MarkdownWriterTest extends TestCase
             '##### t1p4 `4.0.0` ! [link](https://packagist.org/packages/t1p4)#nl',
             '> With content#nl',
             'line 1#nl',
-            'line 2#nl',
+            '#nl',
+            'line 3#nl',
             '#nl',
             '### Node#nl',
             '#nl',

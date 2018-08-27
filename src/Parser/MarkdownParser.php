@@ -31,9 +31,6 @@ class MarkdownParser implements ParserInterface
         foreach ($lines as $line) {
 
             $line = rtrim($line);
-            if (strlen($line) === 0) {
-                continue;
-            }
 
             if (preg_match("/^#{3}\s(?<packageManagerName>\w+)/", $line, $matches)) {
                 $currentPackageManagerName = $matches['packageManagerName'];
