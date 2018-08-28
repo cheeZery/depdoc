@@ -55,4 +55,18 @@ class PackageManagerPackage implements PackageManagerPackageInterface
     {
         throw new \RuntimeException(__CLASS__ . ' does not have an external url');
     }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            '[%s] %s (%s / %s)',
+            $this->getManagerName(),
+            $this->getName(),
+            $this->getVersion(),
+            $this->getExternalLink()
+        );
+    }
 }

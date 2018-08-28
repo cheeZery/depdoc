@@ -10,6 +10,8 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 {
     /** @var PackageManagerPackage[][] */
     protected $dependencies = [];
+    /** @var PackageManagerPackage[] */
+    protected $cachedFlatDependencies;
 
     /**
      * @param PackageManagerPackageInterface $data
@@ -22,6 +24,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
         }
 
         $this->dependencies[$data->getManagerName()][$data->getName()] = $data;
+        $this->cachedFlatDependencies = null;
 
         return $this;
     }
@@ -67,12 +70,19 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
      */
     public function getAllFlat(): array
     {
-        $allDependencies = [];
-        array_walk($this->dependencies, function (array $packages) use (&$allDependencies) {
-            $allDependencies = array_merge($allDependencies, $packages);
-        });
+        if ($this->cachedFlatDependencies) {
+            return $this->cachedFlatDependencies;
+        }
 
-        return $allDependencies;
+        $this->cachedFlatDependencies = [];
+        foreach ($this->dependencies as $managerDependencies) {
+            $this->cachedFlatDependencies = array_merge(
+                $this->cachedFlatDependencies,
+                array_values($managerDependencies)
+            );
+        }
+
+        return $this->cachedFlatDependencies;
     }
 
     /**

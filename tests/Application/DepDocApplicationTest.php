@@ -11,6 +11,7 @@ class DepDocApplicationTest extends TestCase
     {
         $application = new DepDocApplication();
 
+        $this->assertEquals('DepDoc', $application->getName());
         $this->assertTrue($application->has('update'));
         $this->assertTrue($application->has('validate'));
     }

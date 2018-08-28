@@ -18,26 +18,33 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 abstract class BaseCommand extends Command
 {
     /** @var ComposerPackageManager */
-    protected $managerComposer;
+    protected $composerManager;
     /** @var NodePackageManager */
-    protected $managerNode;
+    protected $nodeManager;
     /** @var ConfigurationService */
-    protected $configurationManager;
+    protected $configurationService;
     /** @var null|ApplicationConfiguration */
     protected $configuration;
     /** @var SymfonyStyle */
     protected $io;
 
     /**
-     * @inheritdoc
+     * @param string|null $name
+     * @param ComposerPackageManager|null $managerComposer
+     * @param NodePackageManager|null $managerNode
+     * @param ConfigurationService|null $configurationService
      */
-    public function __construct(string $name = null)
-    {
+    public function __construct(
+        string $name = null,
+        ComposerPackageManager $managerComposer = null,
+        NodePackageManager $managerNode = null,
+        ConfigurationService $configurationService = null
+    ) {
         parent::__construct($name);
 
-        $this->managerComposer = new ComposerPackageManager();
-        $this->managerNode = new NodePackageManager();
-        $this->configurationManager = new ConfigurationService();
+        $this->composerManager = $managerComposer ?? new ComposerPackageManager();
+        $this->nodeManager = $managerNode ?? new NodePackageManager();
+        $this->configurationService = $configurationService ?? new ConfigurationService();
     }
 
     /**
@@ -77,7 +84,7 @@ abstract class BaseCommand extends Command
             $this->io->writeln('<info>Target directory:</info> ' . $targetDirectory);
         }
 
-        $this->configuration = $this->configurationManager->loadFromDirectory($targetDirectory);
+        $this->configuration = $this->configurationService->loadFromDirectory($targetDirectory);
 
         return 0;
     }
@@ -88,12 +95,9 @@ abstract class BaseCommand extends Command
      */
     protected function getInstalledPackages(string $directory): PackageManagerPackageList
     {
-        $composer = $this->managerComposer;
-        $node = $this->managerNode;
-
         $mergedPackageList = new PackageManagerPackageList();
-        $mergedPackageList->merge($composer->getInstalledPackages($directory));
-        $mergedPackageList->merge($node->getInstalledPackages($directory));
+        $mergedPackageList->merge($this->composerManager->getInstalledPackages($directory));
+        $mergedPackageList->merge($this->nodeManager->getInstalledPackages($directory));
 
         return $mergedPackageList;
     }

@@ -2,6 +2,12 @@
 
 namespace DepDocTest\Command;
 
+use DepDoc\Configuration\ConfigurationService;
+use DepDoc\PackageManager\ComposerPackageManager;
+use DepDoc\PackageManager\NodePackageManager;
+use DepDoc\PackageManager\Package\ComposerPackage;
+use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -103,7 +109,8 @@ class BaseCommandTest extends TestCase
             ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
             ->shouldBeCalled();
         $output->write("\n")->shouldBeCalled();
-        $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '), 1)->shouldBeCalled();
+        $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
+            1)->shouldBeCalled();
 
         $command = new BaseCommandTestDouble('test');
         $result = $command->runExecute($input->reveal(), $output->reveal());
@@ -129,7 +136,8 @@ class BaseCommandTest extends TestCase
             ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
             ->shouldBeCalled();
         $output->write("\n")->shouldBeCalled();
-        $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '), 1)->shouldBeCalled();
+        $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
+            1)->shouldBeCalled();
 
         $prophecy->reveal();
 
@@ -137,5 +145,104 @@ class BaseCommandTest extends TestCase
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(-1, $result);
+    }
+
+    public function testItUsesOptionalConstructorParameters()
+    {
+        $composerManager = $this->prophesize(ComposerPackageManager::class);
+        $nodeManager = $this->prophesize(NodePackageManager::class);
+        $configurationService = $this->prophesize(ConfigurationService::class);
+
+        $command = new BaseCommandTestDouble(
+            null,
+            $composerManager->reveal(),
+            $nodeManager->reveal(),
+            $configurationService->reveal()
+        );
+
+        $this->assertEquals($composerManager->reveal(), $command->getComposerManager());
+        $this->assertEquals($nodeManager->reveal(), $command->getNodeManager());
+        $this->assertEquals($configurationService->reveal(), $command->getConfigurationService());
+
+        $command = new BaseCommandTestDouble();
+        $this->assertInstanceOf(ComposerPackageManager::class, $command->getComposerManager());
+        $this->assertInstanceOf(NodePackageManager::class, $command->getNodeManager());
+        $this->assertInstanceOf(ConfigurationService::class, $command->getConfigurationService());
+    }
+
+    public function testItCombinesAllInstalledPackages()
+    {
+        $targetDirectory = '/some/dir';
+
+        $composerManager = $this->prophesize(ComposerPackageManager::class);
+        $nodeManager = $this->prophesize(NodePackageManager::class);
+        $configurationService = $this->prophesize(ConfigurationService::class);
+        $composerPackageList = $this->prophesize(PackageManagerPackageList::class);
+        $nodePackageList = $this->prophesize(PackageManagerPackageList::class);
+        $composerPackage1 = $this->getComposerPackage('t1');
+        $composerPackage2 = $this->getComposerPackage('t2');
+        $composerPackage3 = $this->getComposerPackage('t3');
+        $nodePackage1 = $this->getNodePackage('t1');
+        $nodePackage2 = $this->getNodePackage('t2');
+        $nodePackage3 = $this->getNodePackage('t3');
+
+        $composerManager->getInstalledPackages($targetDirectory)->willReturn($composerPackageList->reveal());
+        $nodeManager->getInstalledPackages($targetDirectory)->willReturn($nodePackageList->reveal());
+
+        $composerPackageList->getAllFlat()->willReturn([
+            $composerPackage1->reveal(),
+            $composerPackage2->reveal(),
+            $composerPackage3->reveal(),
+        ]);
+
+        $nodePackageList->getAllFlat()->willReturn([
+            $nodePackage1->reveal(),
+            $nodePackage2->reveal(),
+            $nodePackage3->reveal(),
+        ]);
+
+        $command = new BaseCommandTestDouble(
+            null,
+            $composerManager->reveal(),
+            $nodeManager->reveal(),
+            $configurationService->reveal()
+        );
+
+        $packages = $command->testGetInstalledPackages($targetDirectory);
+        $this->assertTrue($packages->has('Composer', 't1'));
+        $this->assertTrue($packages->has('Composer', 't2'));
+        $this->assertTrue($packages->has('Composer', 't3'));
+        $this->assertTrue($packages->has('Node', 't1'));
+        $this->assertTrue($packages->has('Node', 't2'));
+        $this->assertTrue($packages->has('Node', 't3'));
+        $this->assertCount(6, $packages->getAllFlat());
+    }
+
+    /**
+     * @param string $name
+     * @return ComposerPackage|\Prophecy\Prophecy\ObjectProphecy
+     */
+    protected function getComposerPackage(string $name)
+    {
+        $package = $this->prophesize(ComposerPackage::class);
+
+        $package->getManagerName()->willReturn('Composer');
+        $package->getName()->willReturn($name);
+
+        return $package;
+    }
+
+    /**
+     * @param string $name
+     * @return NodePackage|\Prophecy\Prophecy\ObjectProphecy
+     */
+    protected function getNodePackage(string $name)
+    {
+        $package = $this->prophesize(NodePackage::class);
+
+        $package->getManagerName()->willReturn('Node');
+        $package->getName()->willReturn($name);
+
+        return $package;
     }
 }

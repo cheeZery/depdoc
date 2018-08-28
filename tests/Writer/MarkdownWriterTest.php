@@ -70,7 +70,7 @@ class MarkdownWriterTest extends TestCase
         )->shouldBeCalled();
 
         $configuration->isExportExternalLink()->willReturn(true)->shouldBeCalledTimes(6);
-        $configuration->getNewline()->willReturn('#nl')->shouldBeCalledTimes(25);
+        $configuration->getNewline()->willReturn('#nl')->shouldBeCalledTimes(26);
 
         $prophecy->file_put_contents($filepath, [
             '### Composer#nl',
