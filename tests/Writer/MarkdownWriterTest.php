@@ -11,7 +11,6 @@ use DepDoc\Writer\MarkdownWriter;
 use DepDoc\Writer\WriterConfiguration;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 class MarkdownWriterTest extends TestCase
 {
@@ -103,12 +102,11 @@ class MarkdownWriterTest extends TestCase
 
         $prophecy->reveal();
 
-        $writer = new MarkdownWriter();
+        $writer = new MarkdownWriter($configuration->reveal());
         $writer->createDocumentation(
             $filepath,
             $installedPackages->reveal(),
-            $dependencyList->reveal(),
-            $configuration->reveal()
+            $dependencyList->reveal()
         );
 
         $this->prophet->checkPredictions();
