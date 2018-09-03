@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace DepDoc\Parser;
 
+use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
@@ -46,9 +47,9 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            // @TODO: After config file was added, add option to define used lock symbol
             $matches = null;
-            if (preg_match('/^#{5}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?(?<lockSymbol>🔒|🛇|⚠|✋)?/', $line,
+            $lockSymbolRegex = '(?<lockSymbol>' . implode('|', ApplicationConfiguration::ALLOWED_LOCK_SYMBOLS) . ')?';
+            if (preg_match('/^#{5}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
                 $matches)) {
                 $currentPackage = $matches['packageName'];
 

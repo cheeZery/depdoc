@@ -5,12 +5,20 @@ namespace DepDoc\Configuration;
 
 class ApplicationConfiguration
 {
+    /** @var string[] */
+    public const ALLOWED_LOCK_SYMBOLS = [
+        '🔒',
+        '🛇',
+        '⚠',
+        '✋',
+    ];
+
     /** @var string */
-    protected $newlineCharacter;
+    protected $newlineCharacter = PHP_EOL;
     /** @var string */
-    protected $lockSymbol;
+    protected $lockSymbol = '⚠';
     /** @var boolean */
-    protected $exportExternalLink;
+    protected $exportExternalLink = true;
 
     /**
      * @return string

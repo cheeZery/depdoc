@@ -6,10 +6,8 @@ namespace DepDoc\Command;
 use DepDoc\Parser\MarkdownParser;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Writer\MarkdownWriter;
-use DepDoc\Writer\WriterConfiguration;
 use DepDoc\Writer\WriterInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommand extends BaseCommand
@@ -24,10 +22,10 @@ class UpdateCommand extends BaseCommand
      */
     public function __construct()
     {
-        parent::__construct('update');
-
         $this->writer = new MarkdownWriter();
         $this->parser = new MarkdownParser();
+
+        parent::__construct('update');
     }
 
     /**
@@ -37,15 +35,7 @@ class UpdateCommand extends BaseCommand
     {
         parent::configure();
 
-        $this
-            ->setDescription('Update or create a DEPENDENCIES.md')
-            ->addOption(
-                'newline',
-                'l',
-                InputOption::VALUE_REQUIRED,
-                'Newline character(s) used to separate the file content',
-                PHP_EOL
-            );
+        $this->setDescription('Update or create a DEPENDENCIES.md');
     }
 
     /**
@@ -57,8 +47,6 @@ class UpdateCommand extends BaseCommand
         if ($exitCode !== 0) {
             return $exitCode;
         }
-
-        $newline = $input->getOption('newline');
 
         $filepath = $this->getAbsoluteFilepath($this->getTargetDirectoryFromInput($input));
         $directory = dirname($filepath);
@@ -77,11 +65,8 @@ class UpdateCommand extends BaseCommand
         $installedPackages = $this->getInstalledPackages($directory);
         $documentedDependencies = $this->parser->getDocumentedDependencies($filepath);
 
-        $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies,
-            new WriterConfiguration(
-                $this->configuration ? $this->configuration->getNewlineCharacter() : $newline,
-                $this->configuration ? $this->configuration->isExportExternalLink() : true
-            ));
+        $this->writer->getConfiguration()->setNewline($this->configuration->getNewlineCharacter());
+        $this->writer->createDocumentation($filepath, $installedPackages, $documentedDependencies);
 
         return 0;
     }

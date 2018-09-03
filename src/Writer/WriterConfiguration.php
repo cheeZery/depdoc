@@ -6,18 +6,22 @@ namespace DepDoc\Writer;
 class WriterConfiguration
 {
     /** @var string */
-    protected $newline;
+    protected $newline = PHP_EOL;
     /** @var boolean */
-    protected $exportExternalLink;
+    protected $exportExternalLink = true;
 
     /**
-     * @param string $newline
-     * @param bool $exportExternalLink
+     * @param null|string $newline
+     * @param bool|null $exportExternalLink
      */
-    public function __construct(string $newline, bool $exportExternalLink)
+    public function __construct(?string $newline = null, ?bool $exportExternalLink = null)
     {
-        $this->newline = $newline;
-        $this->exportExternalLink = $exportExternalLink;
+        if ($newline !== null) {
+            $this->newline = $newline;
+        }
+        if ($exportExternalLink !== null) {
+            $this->exportExternalLink = $exportExternalLink;
+        }
     }
 
     /**
@@ -29,10 +33,32 @@ class WriterConfiguration
     }
 
     /**
+     * @param string $newline
+     * @return $this
+     */
+    public function setNewline(string $newline): WriterConfiguration
+    {
+        $this->newline = $newline;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isExportExternalLink(): bool
     {
         return $this->exportExternalLink;
+    }
+
+    /**
+     * @param bool $exportExternalLink
+     * @return $this
+     */
+    public function setExportExternalLink(bool $exportExternalLink): WriterConfiguration
+    {
+        $this->exportExternalLink = $exportExternalLink;
+
+        return $this;
     }
 }

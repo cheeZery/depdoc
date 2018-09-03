@@ -40,11 +40,11 @@ abstract class BaseCommand extends Command
         NodePackageManager $managerNode = null,
         ConfigurationService $configurationService = null
     ) {
-        parent::__construct($name);
-
         $this->composerManager = $managerComposer ?? new ComposerPackageManager();
         $this->nodeManager = $managerNode ?? new NodePackageManager();
         $this->configurationService = $configurationService ?? new ConfigurationService();
+
+        parent::__construct($name);
     }
 
     /**
@@ -85,6 +85,9 @@ abstract class BaseCommand extends Command
         }
 
         $this->configuration = $this->configurationService->loadFromDirectory($targetDirectory);
+        if ($this->configuration === null) {
+            $this->configuration = new ApplicationConfiguration();
+        }
 
         return 0;
     }
