@@ -62,11 +62,10 @@ class PackageManagerPackage implements PackageManagerPackageInterface
     public function __toString(): string
     {
         return sprintf(
-            '[%s] %s (%s / %s)',
+            '[%s] %s (%s)',
             $this->getManagerName(),
             $this->getName(),
-            $this->getVersion(),
-            $this->getExternalLink()
+            $this->getVersion()
         );
     }
 }
