@@ -17,17 +17,17 @@ class ConfigurationService
     protected $supportedConfigurationFiles = [];
 
     /**
-     * @param ConfigurationFileDefinition[] $supportedConfigurationFiles
+     * @param ConfigurationFileDefinition[] $additionalConfigurationFiles
      * @param array $normalizers
      * @param array $encoders
      */
-    public function __construct(array $supportedConfigurationFiles = [], array $normalizers = [], array $encoders = [])
+    public function __construct(array $additionalConfigurationFiles = [], array $normalizers = [], array $encoders = [])
     {
         $this->supportedConfigurationFiles = array_merge([
             new ConfigurationFileDefinition('.depdoc.json', 'json'),
             new ConfigurationFileDefinition('.depdoc.yaml', 'yaml'),
             new ConfigurationFileDefinition('.depdoc.yml', 'yaml'),
-        ], $supportedConfigurationFiles);
+        ], $additionalConfigurationFiles);
 
         $this->serializer = new Serializer(
             array_merge([new GetSetMethodNormalizer()], $normalizers),
