@@ -29,10 +29,9 @@ class ConfigurationService
             new ConfigurationFileDefinition('.depdoc.yml', 'yaml'),
         ], $additionalConfigurationFiles);
 
-        $this->serializer = new Serializer(
-            array_merge([new GetSetMethodNormalizer()], $normalizers),
-            array_merge([new JsonDecode(true), new YamlEncoder()], $encoders)
-        );
+        $normalizers = array_merge([new GetSetMethodNormalizer()], $normalizers);
+        $encoders = array_merge([new JsonDecode(true), new YamlEncoder()], $encoders);
+        $this->serializer = new Serializer($normalizers, $encoders);
     }
 
 
