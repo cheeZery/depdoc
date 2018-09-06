@@ -110,12 +110,4 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 
         return $this;
     }
-
-    /**
-     * @return int
-     */
-    public function countAll(): int
-    {
-        return count($this->getAllFlat());
-    }
 }
