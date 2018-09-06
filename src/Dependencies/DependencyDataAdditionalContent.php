@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace DepDoc\Dependencies;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DependencyDataAdditionalContent
 {
     /** @var string[] */

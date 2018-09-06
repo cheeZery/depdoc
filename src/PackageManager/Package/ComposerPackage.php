@@ -36,4 +36,18 @@ class ComposerPackage extends PackageManagerPackage
     {
         return sprintf('https://packagist.org/packages/%s', $this->getName());
     }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            '[%s] %s (%s / %s)',
+            $this->getManagerName(),
+            $this->getName(),
+            $this->getVersion(),
+            $this->getExternalLink()
+        );
+    }
 }

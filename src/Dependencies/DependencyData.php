@@ -5,6 +5,9 @@ namespace DepDoc\Dependencies;
 
 use DepDoc\PackageManager\Package\PackageManagerPackage;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DependencyData extends PackageManagerPackage
 {
     /** @var null|string */

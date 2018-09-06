@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace DepDoc\Validator\Result;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ErrorMissingDocumentationResult extends AbstractErrorResult
 {
     /**
