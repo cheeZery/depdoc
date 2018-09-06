@@ -10,7 +10,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 {
     /** @var PackageManagerPackage[][] */
     protected $dependencies = [];
-    /** @var PackageManagerPackage[] */
+    /** @var null|PackageManagerPackage[] */
     protected $cachedFlatDependencies;
 
     /**
