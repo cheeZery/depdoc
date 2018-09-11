@@ -8,11 +8,9 @@ use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Encoder\YamlEncoder;
-use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerAwareInterface;
 
 class ConfigurationService
 {
@@ -23,8 +21,8 @@ class ConfigurationService
 
     /**
      * @param ConfigurationFileDefinition[] $additionalConfigurationFiles
-     * @param SerializerAwareInterface[]|DenormalizerAwareInterface[]|NormalizerAwareInterface[] $normalizers
-     * @param SerializerAwareInterface[]|DecoderInterface[]|EncoderInterface[] $encodersAndDecoders
+     * @param AbstractNormalizer[] $normalizers
+     * @param DecoderInterface[]|EncoderInterface[] $encodersAndDecoders
      */
     public function __construct(
         array $additionalConfigurationFiles = [],
