@@ -47,4 +47,25 @@ class PackageManagerPackage implements PackageManagerPackageInterface
     {
         return $this->version;
     }
+
+    /**
+     * @return string
+     */
+    public function getExternalLink(): string
+    {
+        throw new \RuntimeException(__CLASS__ . ' does not have an external url');
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            '[%s] %s (%s)',
+            $this->getManagerName(),
+            $this->getName(),
+            $this->getVersion()
+        );
+    }
 }

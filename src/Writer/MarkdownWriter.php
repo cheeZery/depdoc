@@ -1,23 +1,36 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Writer;
 
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\Package\ComposerPackage;
 use DepDoc\PackageManager\Package\NodePackage;
+use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
 {
+    /** @var WriterConfiguration */
+    protected $configuration;
+
+    /**
+     * @param WriterConfiguration|null $configuration
+     */
+    public function __construct(?WriterConfiguration $configuration = null)
+    {
+        $this->configuration = $configuration ?? new WriterConfiguration();
+    }
+
+
     /**
      * @inheritdoc
      */
     public function createDocumentation(
         string $filepath,
         PackageManagerPackageList $installedPackages,
-        PackageManagerPackageList $dependencyList,
-        WriterConfiguration $configuration
-    ) {
+        PackageManagerPackageList $dependencyList
+    ): void {
         $documentation = [];
 
         foreach ($installedPackages->getAll() as $packageManagerName => $packageManagerInstalledPackages) {
@@ -33,20 +46,16 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = "";
 
-                $name = $installedPackage->getName();
-                $version = $installedPackage->getVersion();
-                $description = $installedPackage->getDescription();
-
                 /** @var DependencyData $documentedDependency */
-                $documentedDependency = $dependencyList->get($packageManagerName, $name);
+                $documentedDependency = $dependencyList->get($packageManagerName, $installedPackage->getName());
 
                 if ($documentedDependency && $documentedDependency->isVersionLocked()) {
-                    $documentation[] = $this->createPackageLockedLine($name, $version, $documentedDependency);
+                    $documentation[] = $this->createPackageLockedLine($installedPackage, $documentedDependency);
                 } else {
-                    $documentation[] = $this->createPackageLine($name, $version);
+                    $documentation[] = $this->createPackageLine($installedPackage);
                 }
 
-                $documentation[] = $this->createDescriptionLine($description);
+                $documentation[] = $this->createDescriptionLine($installedPackage->getDescription());
 
                 if ($documentedDependency) {
                     foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
@@ -62,13 +71,9 @@ class MarkdownWriter implements WriterInterface
 
         $documentation[] = "";
 
-        $handle = @fopen($filepath, "w");
-
-        foreach ($documentation as $line) {
-            fwrite($handle, $line . $configuration->getNewline());
-        }
-
-        fclose($handle);
+        file_put_contents($filepath, array_map(function ($line) {
+            return $line . $this->configuration->getNewline();
+        }, $documentation), LOCK_EX);
     }
 
     /**
@@ -81,24 +86,34 @@ class MarkdownWriter implements WriterInterface
     }
 
     /**
-     * @param string $packageName
-     * @param string $version
+     * @param PackageManagerPackageInterface $package
      * @param DependencyData $dependency
      * @return string
      */
-    protected function createPackageLockedLine(string $packageName, string $version, DependencyData $dependency): string
-    {
-        return "##### $packageName `$version` {$dependency->getLockSymbol()}";
+    protected function createPackageLockedLine(
+        PackageManagerPackageInterface $package,
+        DependencyData $dependency
+    ): string {
+        $line = "##### {$package->getName()} `{$package->getVersion()}` {$dependency->getLockSymbol()}";
+        if ($this->getConfiguration()->isExportExternalLink()) {
+            $line .= " {$this->createExternalLink($package)}";
+        }
+
+        return $line;
     }
 
     /**
-     * @param string $packageName
-     * @param string $version
+     * @param PackageManagerPackageInterface $package
      * @return string
      */
-    protected function createPackageLine(string $packageName, string $version): string
+    protected function createPackageLine(PackageManagerPackageInterface $package): string
     {
-        return "##### $packageName `$version`";
+        $line = "##### {$package->getName()} `{$package->getVersion()}`";
+        if ($this->getConfiguration()->isExportExternalLink()) {
+            $line .= " {$this->createExternalLink($package)}";
+        }
+
+        return $line;
     }
 
     /**
@@ -108,5 +123,22 @@ class MarkdownWriter implements WriterInterface
     protected function createDescriptionLine(?string $description): string
     {
         return "> $description";
+    }
+
+    /**
+     * @param PackageManagerPackageInterface $package
+     * @return string
+     */
+    protected function createExternalLink(PackageManagerPackageInterface $package): string
+    {
+        return "[link]({$package->getExternalLink()})";
+    }
+
+    /**
+     * @return WriterConfiguration
+     */
+    public function getConfiguration(): WriterConfiguration
+    {
+        return $this->configuration;
     }
 }

@@ -10,18 +10,22 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 {
     /** @var PackageManagerPackage[][] */
     protected $dependencies = [];
+    /** @var null|PackageManagerPackage[] */
+    protected $cachedFlatDependencies;
 
     /**
-     * @param PackageManagerPackageInterface $data
+     * @param PackageManagerPackageInterface $package
      * @return PackageManagerPackageList
      */
-    public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
+    public function add(PackageManagerPackageInterface $package): PackageManagerPackageListInterface
     {
-        if (isset($this->dependencies[$data->getManagerName()]) === false) {
-            $this->dependencies[$data->getManagerName()] = [];
+        if (isset($this->dependencies[$package->getManagerName()]) === false) {
+            $this->dependencies[$package->getManagerName()] = [];
         }
 
-        $this->dependencies[$data->getManagerName()][$data->getName()] = $data;
+        // @TODO: Check for same package name and throw exception in case somebody edits the file manually
+        $this->dependencies[$package->getManagerName()][$package->getName()] = $package;
+        $this->cachedFlatDependencies = null;
 
         return $this;
     }
@@ -67,12 +71,19 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
      */
     public function getAllFlat(): array
     {
-        $allDependencies = [];
-        array_walk($this->dependencies, function (array $packages) use (&$allDependencies) {
-            $allDependencies = array_merge($allDependencies, $packages);
-        });
+        if ($this->cachedFlatDependencies) {
+            return $this->cachedFlatDependencies;
+        }
 
-        return $allDependencies;
+        $this->cachedFlatDependencies = [];
+        foreach ($this->dependencies as $managerDependencies) {
+            $this->cachedFlatDependencies = array_merge(
+                $this->cachedFlatDependencies,
+                array_values($managerDependencies)
+            );
+        }
+
+        return $this->cachedFlatDependencies;
     }
 
     /**
@@ -99,13 +110,5 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
         }
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function countAll(): int
-    {
-        return count($this->getAllFlat());
     }
 }

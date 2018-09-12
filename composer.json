@@ -27,7 +27,11 @@
         "php": ">=7.1.0",
         "ext-json": "*",
         "ext-pcre": "*",
-        "symfony/console": "^4.1"
+        "symfony/console": "^4.1",
+        "symfony/yaml": "^4.1",
+        "symfony/serializer": "^4.1",
+        "symfony/property-access": "^4.1",
+        "zendframework/zend-servicemanager": "^3.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2",

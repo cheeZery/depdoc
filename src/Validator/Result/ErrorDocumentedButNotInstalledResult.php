@@ -1,7 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Validator\Result;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ErrorDocumentedButNotInstalledResult extends AbstractErrorResult
 {
     /**

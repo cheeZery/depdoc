@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc\Command;
 
+use DepDoc\Configuration\ApplicationConfiguration;
+use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
@@ -15,20 +18,38 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 abstract class BaseCommand extends Command
 {
     /** @var ComposerPackageManager */
-    protected $managerComposer;
+    protected $composerManager;
     /** @var NodePackageManager */
-    protected $managerNode;
+    protected $nodeManager;
+    /** @var ConfigurationService */
+    protected $configurationService;
+    /** @var null|ApplicationConfiguration */
+    protected $configuration;
     /** @var SymfonyStyle */
     protected $io;
 
-    public function __construct(string $name = null)
-    {
-        parent::__construct($name);
+    /**
+     * @param string|null $name
+     * @param ComposerPackageManager|null $managerComposer
+     * @param NodePackageManager|null $managerNode
+     * @param ConfigurationService|null $configurationService
+     */
+    public function __construct(
+        string $name = null,
+        ComposerPackageManager $managerComposer = null,
+        NodePackageManager $managerNode = null,
+        ConfigurationService $configurationService = null
+    ) {
+        $this->composerManager = $managerComposer ?? new ComposerPackageManager();
+        $this->nodeManager = $managerNode ?? new NodePackageManager();
+        $this->configurationService = $configurationService ?? new ConfigurationService();
 
-        $this->managerComposer = new ComposerPackageManager();
-        $this->managerNode = new NodePackageManager();
+        parent::__construct($name);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -42,6 +63,9 @@ abstract class BaseCommand extends Command
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -60,6 +84,11 @@ abstract class BaseCommand extends Command
             $this->io->writeln('<info>Target directory:</info> ' . $targetDirectory);
         }
 
+        $this->configuration = $this->configurationService->loadFromDirectory($targetDirectory);
+        if ($this->configuration === null) {
+            $this->configuration = new ApplicationConfiguration();
+        }
+
         return 0;
     }
 
@@ -69,12 +98,9 @@ abstract class BaseCommand extends Command
      */
     protected function getInstalledPackages(string $directory): PackageManagerPackageList
     {
-        $composer = $this->managerComposer;
-        $node = $this->managerNode;
-
         $mergedPackageList = new PackageManagerPackageList();
-        $mergedPackageList->merge($composer->getInstalledPackages($directory));
-        $mergedPackageList->merge($node->getInstalledPackages($directory));
+        $mergedPackageList->merge($this->composerManager->getInstalledPackages($directory));
+        $mergedPackageList->merge($this->nodeManager->getInstalledPackages($directory));
 
         return $mergedPackageList;
     }

@@ -7,10 +7,20 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 interface WriterInterface
 {
+    /**
+     * @param string $filepath
+     * @param PackageManagerPackageList $installedPackages
+     * @param PackageManagerPackageList $dependencyList
+     * @return void
+     */
     public function createDocumentation(
         string $filepath,
         PackageManagerPackageList $installedPackages,
-        PackageManagerPackageList $dependencyList,
-        WriterConfiguration $configuration
-    );
+        PackageManagerPackageList $dependencyList
+    ): void;
+
+    /**
+     * @return WriterConfiguration
+     */
+    public function getConfiguration(): WriterConfiguration;
 }
