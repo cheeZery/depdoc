@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class DepDocApplicationTest extends TestCase
 {
-    public function testIstShouldHaveExpectedCommands()
+    public function testItShouldHaveExpectedCommands()
     {
         $application = new DepDocApplication();
 

@@ -12,7 +12,7 @@ class ComposerPackage extends PackageManagerPackage
      * @param string $managerName
      * @param string $name
      * @param string $version
-     * @param string $description
+     * @param null|string $description
      */
     public function __construct(string $managerName, string $name, string $version, ?string $description)
     {
