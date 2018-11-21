@@ -13,7 +13,6 @@ class ComposerPackageManager implements PackageManagerInterface
     {
         $packageList = new PackageManagerPackageList();
 
-        // @TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
         // @TODO: Support composer binary detection
         $command = implode(' ', [
             'composer',
@@ -25,11 +24,14 @@ class ComposerPackageManager implements PackageManagerInterface
         $output = shell_exec($command);
         $output = trim($output);
 
-        if (strlen($output) === 0 || $output[0] !== '{') {
+        // Trimming Composer warnings prepended to JSON output
+        $trimmedOutput = preg_replace('/^[^\{]+/', '', $output);
+
+        if (strlen($trimmedOutput) === 0 || $trimmedOutput[0] !== '{') {
             return $packageList;
         }
 
-        $dependencies = json_decode($output, true);
+        $dependencies = json_decode($trimmedOutput, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new FailedToParseDependencyInformationException(
@@ -46,7 +48,7 @@ class ComposerPackageManager implements PackageManagerInterface
                 $this->getName(),
                 $installedPackage['name'],
                 $installedPackage['version'],
-                $installedPackage['description']
+                $installedPackage['description'] ?? null
             ));
         }
 

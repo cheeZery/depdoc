@@ -44,7 +44,7 @@ class NodePackageManager implements PackageManagerInterface
                 $this->getName(),
                 $installedPackage['name'],
                 $installedPackage['version'],
-                $installedPackage['description']
+                $installedPackage['description'] ?? null
             ));
         }
 

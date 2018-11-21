@@ -15,7 +15,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 
     /**
      * @param PackageManagerPackageInterface $package
-     * @return PackageManagerPackageList
+     * @return PackageManagerPackageListInterface
      */
     public function add(PackageManagerPackageInterface $package): PackageManagerPackageListInterface
     {
@@ -47,7 +47,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
     /**
      * @param string $packageManagerName
      * @param string $packageName
-     * @return null|PackageManagerPackage
+     * @return null|PackageManagerPackageInterface
      */
     public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface
     {
