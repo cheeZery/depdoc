@@ -108,7 +108,7 @@ class BaseCommandTest extends TestCase
             ->getFormatter()
             ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
             ->shouldBeCalled();
-        $output->write(Argument::containingString("\n"))->shouldBeCalled();
+        $output->write("\n")->shouldBeCalled();
         $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
             1)->shouldBeCalled();
 
@@ -135,7 +135,7 @@ class BaseCommandTest extends TestCase
             ->getFormatter()
             ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
             ->shouldBeCalled();
-        $output->write(Argument::containingString("\n"))->shouldBeCalled();
+        $output->write("\n")->shouldBeCalled();
         $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
             1)->shouldBeCalled();
 
