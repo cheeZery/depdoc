@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
+use Composer\Factory;
+use Composer\IO\ConsoleIO;
 use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
@@ -40,7 +42,7 @@ abstract class BaseCommand extends Command
         NodePackageManager $managerNode = null,
         ConfigurationService $configurationService = null
     ) {
-        $this->composerManager = $managerComposer ?? new ComposerPackageManager();
+        $this->composerManager = $managerComposer;
         $this->nodeManager = $managerNode ?? new NodePackageManager();
         $this->configurationService = $configurationService ?? new ConfigurationService();
 
@@ -69,6 +71,7 @@ abstract class BaseCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
+        $this->composerManager = $this->buildComposerManager($input, $output);
 
         $targetDirectory = $this->getTargetDirectoryFromInput($input);
         if (!$targetDirectory || realpath($targetDirectory) === false) {
@@ -90,6 +93,19 @@ abstract class BaseCommand extends Command
         }
 
         return 0;
+    }
+
+    protected function buildComposerManager(InputInterface $input, OutputInterface $output): ComposerPackageManager
+    {
+        if ($this->composerManager instanceof ComposerPackageManager) {
+            return $this->composerManager;
+        }
+
+        $composer = Factory::create(
+            new ConsoleIO($input, $output, $this->getHelperSet())
+        );
+
+        return new ComposerPackageManager($composer);
     }
 
     /**
