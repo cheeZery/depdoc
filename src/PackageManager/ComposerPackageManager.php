@@ -63,8 +63,17 @@ class ComposerPackageManager implements PackageManagerInterface
     {
         $package = $this->composer->getPackage();
 
-        return array_merge(
-            $package->getRequires(), $package->getDevRequires()
-        );
+        $requirements = [];
+
+        /** @var Link[] $mergedRequirements */
+        $mergedRequirements = array_merge($package->getRequires(), $package->getDevRequires());
+
+        foreach ($mergedRequirements as $requirement) {
+            $requirements[$requirement->getTarget()] = $requirement;
+        }
+
+        ksort($requirements);
+
+        return $requirements;
     }
 }
