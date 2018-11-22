@@ -16,9 +16,6 @@ class ComposerPackageManager implements PackageManagerInterface
      */
     protected $composer;
 
-    /**
-     * @param Composer $composer
-     */
     public function __construct(Composer $composer)
     {
         $this->composer = $composer;
