@@ -31,7 +31,8 @@
         "symfony/yaml": "^4.1",
         "symfony/serializer": "^4.1",
         "symfony/property-access": "^4.1",
-        "zendframework/zend-servicemanager": "^3.3"
+        "zendframework/zend-servicemanager": "^3.3",
+        "composer/composer": "^1.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2",

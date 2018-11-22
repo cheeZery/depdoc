@@ -3,53 +3,52 @@ declare(strict_types=1);
 
 namespace DepDoc\PackageManager;
 
-use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
+use Composer\Composer;
+use Composer\Package\CompletePackage;
+use Composer\Package\Link;
 use DepDoc\PackageManager\Package\ComposerPackage;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class ComposerPackageManager implements PackageManagerInterface
 {
+    /**
+     * @var Composer
+     */
+    protected $composer;
+
+    /**
+     * @param Composer $composer
+     */
+    public function __construct(Composer $composer)
+    {
+        $this->composer = $composer;
+    }
+
     public function getInstalledPackages(string $directory): PackageManagerPackageList
     {
         $packageList = new PackageManagerPackageList();
 
-        // @TODO: Support composer binary detection
-        $command = implode(' ', [
-            'composer',
-            'show',
-            '--direct',
-            '--format=json',
-            '--working-dir=' . escapeshellarg($directory),
-        ]);
-        $output = shell_exec($command);
-        $output = trim($output);
+        $requiredPackages = $this->loadCurrentRequirements();
 
-        // Trimming Composer warnings prepended to JSON output
-        $trimmedOutput = preg_replace('/^[^\{]+/', '', $output);
+        $lockedRepository = $this->composer->getLocker()->getLockedRepository(true);
+        $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
 
-        if (strlen($trimmedOutput) === 0 || $trimmedOutput[0] !== '{') {
-            return $packageList;
-        }
+        foreach ($requiredPackages as $package) {
+            $lockedPackage = $lockedRepository->findPackage($package->getTarget(), $package->getConstraint());
+            $localPackage = $localRepository->findPackage($package->getTarget(), $package->getConstraint());
 
-        $dependencies = json_decode($trimmedOutput, true);
+            if ($lockedPackage === null) {
+                continue;
+            }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new FailedToParseDependencyInformationException(
-                $this->getName(),
-                json_last_error(),
-                json_last_error_msg()
+            $packageList->add(
+                new ComposerPackage(
+                    $this->getName(),
+                    $lockedPackage->getName(),
+                    $lockedPackage->getPrettyVersion(),
+                    $localPackage instanceof CompletePackage ? $localPackage->getDescription() : null
+                )
             );
-        }
-
-        $installedPackages = $dependencies['installed'] ?? [];
-
-        foreach ($installedPackages as $installedPackage) {
-            $packageList->add(new ComposerPackage(
-                $this->getName(),
-                $installedPackage['name'],
-                $installedPackage['version'],
-                $installedPackage['description'] ?? null
-            ));
         }
 
         return $packageList;
@@ -58,5 +57,17 @@ class ComposerPackageManager implements PackageManagerInterface
     public function getName(): string
     {
         return 'Composer';
+    }
+
+    /**
+     * @return Link[]
+     */
+    protected function loadCurrentRequirements(): array
+    {
+        $package = $this->composer->getPackage();
+
+        return array_merge(
+            $package->getRequires(), $package->getDevRequires()
+        );
     }
 }
