@@ -33,9 +33,9 @@ class BaseCommandTestDouble extends BaseCommand
     }
 
     /**
-     * @return ComposerPackageManager
+     * @return ComposerPackageManager|null
      */
-    public function getComposerManager(): ComposerPackageManager
+    public function getComposerManager(): ?ComposerPackageManager
     {
         return $this->composerManager;
     }
