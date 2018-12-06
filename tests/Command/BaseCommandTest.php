@@ -12,6 +12,7 @@ use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,7 +28,12 @@ class BaseCommandTest extends TestCase
 
     public function testItConfiguresDirectoryOption()
     {
+        $helperSet = $this->prophesize(HelperSet::class);
+
         $command = new BaseCommandTestDouble('test');
+
+        $command->setHelperSet($helperSet->reveal());
+
         $definition = $command->getDefinition();
         $this->assertTrue($definition->hasOption('directory'));
 
@@ -58,7 +64,11 @@ class BaseCommandTest extends TestCase
 
         $prophecy->reveal();
 
+        $helperSet = $this->prophesize(HelperSet::class);
+
         $command = new BaseCommandTestDouble('test');
+
+        $command->setHelperSet($helperSet->reveal());
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(0, $result);
@@ -87,7 +97,12 @@ class BaseCommandTest extends TestCase
 
         $prophecy->reveal();
 
+        $helperSet = $this->prophesize(HelperSet::class);
+
         $command = new BaseCommandTestDouble('test');
+
+        $command->setHelperSet($helperSet->reveal());
+
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(0, $result);
@@ -112,7 +127,12 @@ class BaseCommandTest extends TestCase
         $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
             1)->shouldBeCalled();
 
+        $helperSet = $this->prophesize(HelperSet::class);
+
         $command = new BaseCommandTestDouble('test');
+
+        $command->setHelperSet($helperSet->reveal());
+
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(-1, $result);
@@ -141,7 +161,12 @@ class BaseCommandTest extends TestCase
 
         $prophecy->reveal();
 
+        $helperSet = $this->prophesize(HelperSet::class);
+
         $command = new BaseCommandTestDouble('test');
+
+        $command->setHelperSet($helperSet->reveal());
+
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(-1, $result);
@@ -165,7 +190,7 @@ class BaseCommandTest extends TestCase
         $this->assertEquals($configurationService->reveal(), $command->getConfigurationService());
 
         $command = new BaseCommandTestDouble();
-        $this->assertInstanceOf(ComposerPackageManager::class, $command->getComposerManager());
+        $this->assertNull($command->getComposerManager());
         $this->assertInstanceOf(NodePackageManager::class, $command->getNodeManager());
         $this->assertInstanceOf(ConfigurationService::class, $command->getConfigurationService());
     }
