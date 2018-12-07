@@ -1,4 +1,4 @@
-### Composer
+# Composer
 
 ## composer/composer `1.8.0` [link](https://packagist.org/packages/composer/composer)
 > Composer helps you declare, manage and install dependencies of PHP projects, ensuring you have the right stack everywhere.

@@ -82,7 +82,7 @@ class MarkdownWriter implements WriterInterface
      */
     protected function createPackageManagerLine(string $packageManagerName): string
     {
-        return "### $packageManagerName";
+        return "# $packageManagerName";
     }
 
     /**

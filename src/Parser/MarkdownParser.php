@@ -33,7 +33,7 @@ class MarkdownParser implements ParserInterface
 
             $line = ltrim($line);
 
-            if (preg_match("/^#{3}\s(?<packageManagerName>\w+)/", $line, $matches)) {
+            if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches)) {
                 $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
                 continue;
@@ -49,7 +49,7 @@ class MarkdownParser implements ParserInterface
 
             $matches = null;
             $lockSymbolRegex = '(?<lockSymbol>' . implode('|', ApplicationConfiguration::ALLOWED_LOCK_SYMBOLS) . ')?';
-            if (preg_match('/^#{5}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
+            if (preg_match('/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
                 $matches)) {
                 $currentPackage = $matches['packageName'];
 
