@@ -9,6 +9,9 @@
 ##### phpunit/phpunit `7.4.4` [link](https://packagist.org/packages/phpunit/phpunit)
 > The PHP Unit Testing framework.
 
+##### symfony/config `v4.2.1` [link](https://packagist.org/packages/symfony/config)
+> Symfony Config Component
+
 ##### symfony/console `v4.1.7` [link](https://packagist.org/packages/symfony/console)
 > Symfony Console Component
 
