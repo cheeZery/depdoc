@@ -1,0 +1,13 @@
+services:
+    ValidateCommand:
+        class: \DepDoc\Command\ValidateCommand
+        arguments: ['@PackageValidator', '@MarkdownParser']
+    UpdateCommand:
+        class: \DepDoc\Command\UpdateCommand
+        arguments: ['@MarkdownWriter', '@MarkdownParser']
+    PackageValidator:
+        class: \DepDoc\Validator\PackageValidator
+    MarkdownParser:
+        class: \DepDoc\Parser\MarkdownParser
+    MarkdownWriter:
+        class: \DepDoc\Writer\MarkdownWriter
