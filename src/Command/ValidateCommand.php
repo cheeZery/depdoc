@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
-use DepDoc\Parser\MarkdownParser;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,12 +18,12 @@ class ValidateCommand extends BaseCommand
     /**
      * @inheritdoc
      */
-    public function __construct()
+    public function __construct(PackageValidator $validator, ParserInterface $parser)
     {
         parent::__construct('validate');
 
-        $this->validator = new PackageValidator();
-        $this->parser = new MarkdownParser();
+        $this->validator = $validator;
+        $this->parser = $parser;
     }
 
     /**

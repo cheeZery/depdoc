@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
-use DepDoc\Parser\MarkdownParser;
 use DepDoc\Parser\ParserInterface;
-use DepDoc\Writer\MarkdownWriter;
 use DepDoc\Writer\WriterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,10 +18,10 @@ class UpdateCommand extends BaseCommand
     /**
      * @inheritdoc
      */
-    public function __construct()
+    public function __construct(WriterInterface $writer, ParserInterface $parser)
     {
-        $this->writer = new MarkdownWriter();
-        $this->parser = new MarkdownParser();
+        $this->writer = $writer;
+        $this->parser = $parser;
 
         parent::__construct('update');
     }

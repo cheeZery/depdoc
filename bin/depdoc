@@ -12,6 +12,10 @@ require $composerAutoload;
 
 array_shift($argv);
 
-$application = new \DepDoc\Application\DepDocApplication();
+$containerBuilder = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+$loader = new \Symfony\Component\DependencyInjection\Loader\YamlFileLoader($containerBuilder, new \Symfony\Component\Config\FileLocator(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config'));
+$loader->load('services.yml');
+
+$application = new \DepDoc\Application\DepDocApplication($containerBuilder);
 $exitCode = $application->run();
 exit($exitCode);
