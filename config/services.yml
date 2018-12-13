@@ -1,13 +1,27 @@
 services:
     ValidateCommand:
         class: \DepDoc\Command\ValidateCommand
-        arguments: ['@PackageValidator', '@MarkdownParser']
+        arguments: ['@PackageValidator', '@MarkdownParser', '@ComposerPackageManager', '@NodePackageManager', '@ConfigurationService']
     UpdateCommand:
         class: \DepDoc\Command\UpdateCommand
-        arguments: ['@MarkdownWriter', '@MarkdownParser']
+        arguments: ['@MarkdownWriter', '@MarkdownParser', '@ComposerPackageManager', '@NodePackageManager', '@ConfigurationService']
+
     PackageValidator:
         class: \DepDoc\Validator\PackageValidator
+
     MarkdownParser:
         class: \DepDoc\Parser\MarkdownParser
     MarkdownWriter:
         class: \DepDoc\Writer\MarkdownWriter
+    WriterConfiguration:
+        class: \DepDoc\Writer\WriterConfiguration
+
+    ComposerPackageManager:
+        class: \DepDoc\PackageManager\ComposerPackageManager
+        factory: [\DepDoc\PackageManager\Factory\ComposerPackageManagerFactory, create]
+
+    NodePackageManager:
+        class: \DepDoc\PackageManager\NodePackageManager
+
+    ConfigurationService:
+        class: \DepDoc\Configuration\ConfigurationService
