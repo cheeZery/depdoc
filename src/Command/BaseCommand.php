@@ -105,7 +105,8 @@ abstract class BaseCommand extends Command
      *
      * @return PackageManagerPackageList
      */
-    protected function getInstalledPackages(string $directory
+    protected function getInstalledPackages(
+        string $directory
     ): PackageManagerPackageList {
         $mergedPackageList = new PackageManagerPackageList();
         $mergedPackageList->merge(
@@ -123,7 +124,8 @@ abstract class BaseCommand extends Command
      *
      * @return string
      */
-    protected function getTargetDirectoryFromInput(InputInterface $input
+    protected function getTargetDirectoryFromInput(
+        InputInterface $input
     ): string {
         return (string)$input->getOption('directory');
     }
