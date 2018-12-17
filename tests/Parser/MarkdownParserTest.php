@@ -49,6 +49,11 @@ class MarkdownParserTest extends TestCase
         $this->assertNotNull($package);
         $this->assertCount(3, $package->getAdditionalContent()->getAll());
         $this->assertEquals(['', 'test 1  ', 'test 2'], array_values($package->getAdditionalContent()->getAll()));
+
+        $package = $packageList->get('Composer', 'symfony/yaml');
+        $this->assertNotNull($package);
+        $this->assertCount(4, $package->getAdditionalContent()->getAll());
+        $this->assertEquals(['', 'Will leave only one', '', 'consecutive empty line'], array_values($package->getAdditionalContent()->getAll()));
     }
 
     public function getValidDependenciesFileData(): string
@@ -83,6 +88,12 @@ test 2
 
 ##### symfony/yaml `v4.1.3` [link](https://packagist.org/packages/symfony/yaml)
 > Symfony Yaml Component
+
+Will leave only one
+
+
+
+consecutive empty line
 
 ##### zendframework/zend-servicemanager `3.3.2` [link](https://packagist.org/packages/zendframework/zend-servicemanager)
 > Factory-Driven Dependency Injection Container
