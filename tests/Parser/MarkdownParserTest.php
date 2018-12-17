@@ -48,7 +48,7 @@ class MarkdownParserTest extends TestCase
         $package = $packageList->get('Composer', 'symfony/console');
         $this->assertNotNull($package);
         $this->assertCount(3, $package->getAdditionalContent()->getAll());
-        $this->assertEquals(['', 'test 1', 'test 2'], array_values($package->getAdditionalContent()->getAll()));
+        $this->assertEquals(['', 'test 1  ', 'test 2'], array_values($package->getAdditionalContent()->getAll()));
     }
 
     public function getValidDependenciesFileData(): string
@@ -69,7 +69,7 @@ amazing!
 ## symfony/console `v4.1.3` [link](https://packagist.org/packages/symfony/console)
 > Symfony Console Component
 
-test 1
+test 1  
 test 2
 
 ## symfony/property-access `v4.1.3` [link](https://packagist.org/packages/symfony/property-access)
