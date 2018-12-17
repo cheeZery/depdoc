@@ -82,7 +82,7 @@ class MarkdownWriter implements WriterInterface
      */
     protected function createPackageManagerLine(string $packageManagerName): string
     {
-        return "### $packageManagerName";
+        return "# $packageManagerName";
     }
 
     /**
@@ -94,7 +94,7 @@ class MarkdownWriter implements WriterInterface
         PackageManagerPackageInterface $package,
         DependencyData $dependency
     ): string {
-        $line = "##### {$package->getName()} `{$package->getVersion()}` {$dependency->getLockSymbol()}";
+        $line = "## {$package->getName()} `{$package->getVersion()}` {$dependency->getLockSymbol()}";
         if ($this->getConfiguration()->isExportExternalLink()) {
             $line .= " {$this->createExternalLink($package)}";
         }
@@ -108,7 +108,7 @@ class MarkdownWriter implements WriterInterface
      */
     protected function createPackageLine(PackageManagerPackageInterface $package): string
     {
-        $line = "##### {$package->getName()} `{$package->getVersion()}`";
+        $line = "## {$package->getName()} `{$package->getVersion()}`";
         if ($this->getConfiguration()->isExportExternalLink()) {
             $line .= " {$this->createExternalLink($package)}";
         }
