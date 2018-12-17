@@ -68,7 +68,10 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            $currentDependency->getAdditionalContent()->add($line);
+            // Trim line breaks, because they will be added by the writer
+            $trimmedLine = trim($line, "\n\r");
+
+            $currentDependency->getAdditionalContent()->add($trimmedLine);
         }
 
         $this->cleanupAdditionalContent($dependencies);
