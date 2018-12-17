@@ -1,8 +1,8 @@
 DepDoc helps you document the dependencies of your project, currently supporting Composer and Node packages.
 
-#### Usage 
+# Usage
 
-###### Creating and updating dependencies file
+## Creating and updating dependencies file
 
 ```
 ./vendor/bin/depdoc update
@@ -12,7 +12,7 @@ Creates and updates a DEPENDENCIES.md file in your repository, which contains ev
 
 By adding a lock emoji (🔒) after the version number, you can document that this package should not be updated. Alternatively you can use 🛇, ⚠, or ✋.
 
-###### Validating dependencies file
+## Validating dependencies file
 
 ```
 ./vendor/bin/depdoc validate
