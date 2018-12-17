@@ -24,10 +24,12 @@ class ApplicationBuilder
      */
     private $loader;
 
-    public function __construct()
-    {
-        $this->containerBuilder = new ContainerBuilder();
-        $this->loader = new YamlFileLoader(
+    public function __construct(
+        ContainerBuilder $containerBuilder = null,
+        LoaderInterface $fileLoader = null
+    ) {
+        $this->containerBuilder = $containerBuilder ?: new ContainerBuilder();
+        $this->loader = $fileLoader ?: new YamlFileLoader(
             $this->containerBuilder,
             new FileLocator(self::CONFIG_DIRECTORY)
         );
