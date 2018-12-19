@@ -4,20 +4,25 @@ declare(strict_types=1);
 namespace DepDoc\Validator;
 
 use DepDoc\Dependencies\DependencyData;
+use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorResultInterface;
 use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
+use vierbergenlars\SemVer\version;
 
 class PackageValidator
 {
     /**
+     * @param StrictMode                $mode
      * @param PackageManagerPackageList $installedPackages
      * @param PackageManagerPackageList $dependencyList
+     *
      * @return ErrorResultInterface[]
      */
     public function compare(
+        StrictMode $mode,
         PackageManagerPackageList $installedPackages,
         PackageManagerPackageList $dependencyList
     ): array {
@@ -32,7 +37,7 @@ class PackageValidator
             /** @var DependencyData $dependency */
             $dependency = $dependencyList->get($package->getManagerName(), $package->getName());
 
-            if ($dependency->isVersionLocked() && $dependency->getVersion() !== $package->getVersion()) {
+            if (!$this->doesVersionMatch($mode, $dependency, $package)) {
                 $errors[] = new ErrorVersionMissMatchResult(
                     $package->getManagerName(),
                     $package->getName(),
@@ -54,5 +59,37 @@ class PackageValidator
         }
 
         return $errors;
+    }
+
+    /**
+     * @param StrictMode                     $mode
+     * @param DependencyData                 $dependency
+     * @param PackageManagerPackageInterface $package
+     *
+     * @return bool
+     */
+    protected function doesVersionMatch(
+        StrictMode $mode,
+        DependencyData $dependency,
+        PackageManagerPackageInterface $package
+    ): bool {
+        if ($mode->isExistingOrLocked()) {
+            return (
+                $dependency->isVersionLocked()
+                && $dependency->getVersion() === $package->getVersion()
+            );
+        }
+
+        if ($mode->isMajorAndMinor()) {
+            $dependencyVersion = new version($dependency->getVersion());
+            $packageVersion = new version($package->getVersion());
+
+            return (
+                $dependencyVersion->getMajor() === $packageVersion->getMajor()
+                && $dependencyVersion->getMinor() === $packageVersion->getMinor()
+            );
+        }
+
+        return $dependency->getVersion() === $package->getVersion();
     }
 }
