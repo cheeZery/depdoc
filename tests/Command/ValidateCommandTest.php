@@ -132,11 +132,15 @@ class ValidateCommandTest extends TestCase
         $input = $this->getDefaultInputProphecy();
         $output = $this->getDefaultOutputProphecy();
 
-        $input->getOption('directory')->willReturn(__DIR__ . '/../resources');
+        $input->getOption('directory')->willReturn('/test');
 
         $prophecy = $this->prophet->prophesize('DepDoc\\Command');
         $prophecy
             ->file_exists(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+        $prophecy
+            ->realpath(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
