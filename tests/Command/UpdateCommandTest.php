@@ -13,6 +13,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Writer\WriterConfiguration;
 use DepDoc\Writer\WriterInterface;
+use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -29,6 +30,11 @@ class UpdateCommandTest extends TestCase
     protected function setUp()
     {
         $this->prophet = new PHPProphet();
+    }
+
+    protected function tearDown()
+    {
+        MockRegistry::getInstance()->unregisterAll();
     }
 
     public function testItHasSetDescription(): void
@@ -133,11 +139,15 @@ class UpdateCommandTest extends TestCase
         $input = $this->getDefaultInputProphecy();
         $output = $this->getDefaultOutputProphecy();
 
-        $input->getOption('directory')->willReturn(__DIR__ . '/../resources');
+        $input->getOption('directory')->willReturn('/test');
 
         $prophecy = $this->prophet->prophesize('DepDoc\\Command');
         $prophecy
             ->file_exists(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+        $prophecy
+            ->realpath(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
@@ -147,6 +157,8 @@ class UpdateCommandTest extends TestCase
             0,
             $command->run($input->reveal(), $output->reveal())
         );
+
+        $this->prophet->checkPredictions();
     }
 
     /**

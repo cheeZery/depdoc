@@ -12,6 +12,7 @@ use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
+use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -28,6 +29,11 @@ class ValidateCommandTest extends TestCase
     protected function setUp()
     {
         $this->prophet = new PHPProphet();
+    }
+
+    protected function tearDown()
+    {
+        MockRegistry::getInstance()->unregisterAll();
     }
 
     public function testItHasSetDescription(): void
@@ -140,6 +146,8 @@ class ValidateCommandTest extends TestCase
             0,
             $command->run($input->reveal(), $output->reveal())
         );
+
+        $this->prophet->checkPredictions();
     }
 
     /**
