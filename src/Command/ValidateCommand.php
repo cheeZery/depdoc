@@ -41,7 +41,7 @@ class ValidateCommand extends BaseCommand
     {
         parent::configure();
 
-        $this->setDescription('Validate a already generated DEPENDENCIES.md');
+        $this->setDescription('Validate an already generated DEPENDENCIES.md');
     }
 
     /**
