@@ -6,7 +6,7 @@
 ## php-mock/php-mock-prophecy `0.0.2` [link](https://packagist.org/packages/php-mock/php-mock-prophecy)
 > Mock built-in PHP functions (e.g. time()) with Prophecy. This package relies on PHP's namespace fallback policy. No further extension is needed.
 
-## phpunit/phpunit `7.4.5` [link](https://packagist.org/packages/phpunit/phpunit)
+## phpunit/phpunit `7.5.1` [link](https://packagist.org/packages/phpunit/phpunit)
 > The PHP Unit Testing framework.
 
 ## symfony/console `v4.2.1` [link](https://packagist.org/packages/symfony/console)
@@ -23,6 +23,9 @@
 
 ## symfony/yaml `v4.2.1` [link](https://packagist.org/packages/symfony/yaml)
 > Symfony Yaml Component
+
+## vierbergenlars/php-semver `3.0.2` [link](https://packagist.org/packages/vierbergenlars/php-semver)
+> The Semantic Versioner for PHP
 
 ## zendframework/zend-servicemanager `3.3.2` [link](https://packagist.org/packages/zendframework/zend-servicemanager)
 > Factory-Driven Dependency Injection Container
