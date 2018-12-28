@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
-use Composer\Factory;
-use Composer\IO\ConsoleIO;
 use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
@@ -31,20 +29,20 @@ abstract class BaseCommand extends Command
     protected $io;
 
     /**
-     * @param string|null $name
-     * @param ComposerPackageManager|null $managerComposer
-     * @param NodePackageManager|null $managerNode
-     * @param ConfigurationService|null $configurationService
+     * @param string $name
+     * @param ComposerPackageManager $managerComposer
+     * @param NodePackageManager $managerNode
+     * @param ConfigurationService $configurationService
      */
     public function __construct(
-        string $name = null,
-        ComposerPackageManager $managerComposer = null,
-        NodePackageManager $managerNode = null,
-        ConfigurationService $configurationService = null
+        string $name,
+        ComposerPackageManager $managerComposer,
+        NodePackageManager $managerNode,
+        ConfigurationService $configurationService
     ) {
         $this->composerManager = $managerComposer;
-        $this->nodeManager = $managerNode ?? new NodePackageManager();
-        $this->configurationService = $configurationService ?? new ConfigurationService();
+        $this->nodeManager = $managerNode;
+        $this->configurationService = $configurationService;
 
         parent::__construct($name);
     }
@@ -68,26 +66,33 @@ abstract class BaseCommand extends Command
     /**
      * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    protected function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $this->io = new SymfonyStyle($input, $output);
-        $this->composerManager = $this->buildComposerManager($input, $output);
 
         $targetDirectory = $this->getTargetDirectoryFromInput($input);
         if (!$targetDirectory || realpath($targetDirectory) === false) {
-            $this->io->error(sprintf(
-                'Invalid target directory given: %s',
-                $targetDirectory
-            ));
+            $this->io->error(
+                sprintf(
+                    'Invalid target directory given: %s',
+                    $targetDirectory
+                )
+            );
 
             return -1;
         }
 
         if ($this->io->isVerbose()) {
-            $this->io->writeln('<info>Target directory:</info> ' . $targetDirectory);
+            $this->io->writeln(
+                '<info>Target directory:</info> ' . $targetDirectory
+            );
         }
 
-        $this->configuration = $this->configurationService->loadFromDirectory($targetDirectory);
+        $this->configuration = $this->configurationService->loadFromDirectory(
+            $targetDirectory
+        );
         if ($this->configuration === null) {
             $this->configuration = new ApplicationConfiguration();
         }
@@ -95,43 +100,39 @@ abstract class BaseCommand extends Command
         return 0;
     }
 
-    protected function buildComposerManager(InputInterface $input, OutputInterface $output): ComposerPackageManager
-    {
-        if ($this->composerManager instanceof ComposerPackageManager) {
-            return $this->composerManager;
-        }
-
-        $composer = Factory::create(
-            new ConsoleIO($input, $output, $this->getHelperSet())
-        );
-
-        return new ComposerPackageManager($composer);
-    }
-
     /**
      * @param string $directory
+     *
      * @return PackageManagerPackageList
      */
-    protected function getInstalledPackages(string $directory): PackageManagerPackageList
-    {
+    protected function getInstalledPackages(
+        string $directory
+    ): PackageManagerPackageList {
         $mergedPackageList = new PackageManagerPackageList();
-        $mergedPackageList->merge($this->composerManager->getInstalledPackages($directory));
-        $mergedPackageList->merge($this->nodeManager->getInstalledPackages($directory));
+        $mergedPackageList->merge(
+            $this->composerManager->getInstalledPackages($directory)
+        );
+        $mergedPackageList->merge(
+            $this->nodeManager->getInstalledPackages($directory)
+        );
 
         return $mergedPackageList;
     }
 
     /**
      * @param InputInterface $input
+     *
      * @return string
      */
-    protected function getTargetDirectoryFromInput(InputInterface $input): string
-    {
+    protected function getTargetDirectoryFromInput(
+        InputInterface $input
+    ): string {
         return (string)$input->getOption('directory');
     }
 
     /**
      * @param string $directory
+     *
      * @return string
      */
     protected function getAbsoluteFilepath(string $directory): string

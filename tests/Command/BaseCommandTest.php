@@ -30,7 +30,12 @@ class BaseCommandTest extends TestCase
     {
         $helperSet = $this->prophesize(HelperSet::class);
 
-        $command = new BaseCommandTestDouble('test');
+        $command = new BaseCommandTestDouble(
+            'test',
+            $this->prophesize(ComposerPackageManager::class)->reveal(),
+            $this->prophesize(NodePackageManager::class)->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
 
         $command->setHelperSet($helperSet->reveal());
 
@@ -66,7 +71,12 @@ class BaseCommandTest extends TestCase
 
         $helperSet = $this->prophesize(HelperSet::class);
 
-        $command = new BaseCommandTestDouble('test');
+        $command = new BaseCommandTestDouble(
+            'test',
+            $this->prophesize(ComposerPackageManager::class)->reveal(),
+            $this->prophesize(NodePackageManager::class)->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
 
         $command->setHelperSet($helperSet->reveal());
         $result = $command->runExecute($input->reveal(), $output->reveal());
@@ -99,7 +109,12 @@ class BaseCommandTest extends TestCase
 
         $helperSet = $this->prophesize(HelperSet::class);
 
-        $command = new BaseCommandTestDouble('test');
+        $command = new BaseCommandTestDouble(
+            'test',
+            $this->prophesize(ComposerPackageManager::class)->reveal(),
+            $this->prophesize(NodePackageManager::class)->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
 
         $command->setHelperSet($helperSet->reveal());
 
@@ -129,7 +144,12 @@ class BaseCommandTest extends TestCase
 
         $helperSet = $this->prophesize(HelperSet::class);
 
-        $command = new BaseCommandTestDouble('test');
+        $command = new BaseCommandTestDouble(
+            'test',
+            $this->prophesize(ComposerPackageManager::class)->reveal(),
+            $this->prophesize(NodePackageManager::class)->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
 
         $command->setHelperSet($helperSet->reveal());
 
@@ -163,36 +183,18 @@ class BaseCommandTest extends TestCase
 
         $helperSet = $this->prophesize(HelperSet::class);
 
-        $command = new BaseCommandTestDouble('test');
+        $command = new BaseCommandTestDouble(
+            'test',
+            $this->prophesize(ComposerPackageManager::class)->reveal(),
+            $this->prophesize(NodePackageManager::class)->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
 
         $command->setHelperSet($helperSet->reveal());
 
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
         $this->assertEquals(-1, $result);
-    }
-
-    public function testItUsesOptionalConstructorParameters()
-    {
-        $composerManager = $this->prophesize(ComposerPackageManager::class);
-        $nodeManager = $this->prophesize(NodePackageManager::class);
-        $configurationService = $this->prophesize(ConfigurationService::class);
-
-        $command = new BaseCommandTestDouble(
-            null,
-            $composerManager->reveal(),
-            $nodeManager->reveal(),
-            $configurationService->reveal()
-        );
-
-        $this->assertEquals($composerManager->reveal(), $command->getComposerManager());
-        $this->assertEquals($nodeManager->reveal(), $command->getNodeManager());
-        $this->assertEquals($configurationService->reveal(), $command->getConfigurationService());
-
-        $command = new BaseCommandTestDouble();
-        $this->assertNull($command->getComposerManager());
-        $this->assertInstanceOf(NodePackageManager::class, $command->getNodeManager());
-        $this->assertInstanceOf(ConfigurationService::class, $command->getConfigurationService());
     }
 
     public function testItCombinesAllInstalledPackages()
@@ -227,7 +229,7 @@ class BaseCommandTest extends TestCase
         ]);
 
         $command = new BaseCommandTestDouble(
-            null,
+            'test',
             $composerManager->reveal(),
             $nodeManager->reveal(),
             $configurationService->reveal()

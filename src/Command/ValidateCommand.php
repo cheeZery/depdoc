@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace DepDoc\Command;
 
-use DepDoc\Parser\MarkdownParser;
+use DepDoc\Configuration\ConfigurationService;
+use DepDoc\PackageManager\ComposerPackageManager;
+use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,12 +21,17 @@ class ValidateCommand extends BaseCommand
     /**
      * @inheritdoc
      */
-    public function __construct()
-    {
-        parent::__construct('validate');
+    public function __construct(
+        PackageValidator $validator,
+        ParserInterface $parser,
+        ComposerPackageManager $managerComposer,
+        NodePackageManager $managerNode,
+        ConfigurationService $configurationService
+    ) {
+        parent::__construct('validate', $managerComposer, $managerNode, $configurationService);
 
-        $this->validator = new PackageValidator();
-        $this->parser = new MarkdownParser();
+        $this->validator = $validator;
+        $this->parser = $parser;
     }
 
     /**
@@ -34,7 +41,7 @@ class ValidateCommand extends BaseCommand
     {
         parent::configure();
 
-        $this->setDescription('Validate a already generated DEPENDENCIES.md');
+        $this->setDescription('Validate an already generated DEPENDENCIES.md');
     }
 
     /**

@@ -5,16 +5,24 @@ namespace DepDoc\Application;
 
 use DepDoc\Command\UpdateCommand;
 use DepDoc\Command\ValidateCommand;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 
 class DepDocApplication extends Application
 {
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @inheritdoc
      */
-    public function __construct()
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct('DepDoc', '1.0');
+
+        $this->container = $container;
     }
 
     /**
@@ -23,8 +31,8 @@ class DepDocApplication extends Application
     protected function getDefaultCommands(): array
     {
         return array_merge(parent::getDefaultCommands(), [
-            new ValidateCommand(),
-            new UpdateCommand(),
+            $this->container->get('ValidateCommand'),
+            $this->container->get('UpdateCommand'),
         ]);
     }
 }
