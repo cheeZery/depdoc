@@ -9,12 +9,12 @@ use DepDoc\Validator\PackageValidator;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
+use DepDoc\Validator\StrictMode;
 use PHPUnit\Framework\TestCase;
 
 class PackageValidatorTest extends TestCase
 {
-
-    public function testItComparesCorrectly()
+    public function testItComparesCorrectlyForExistingOrLocked()
     {
         $installedPackages = $this->prophesize(PackageManagerPackageList::class);
         $dependencyList = $this->prophesize(PackageManagerPackageList::class);
@@ -41,7 +41,11 @@ class PackageValidatorTest extends TestCase
         $installedPackages->has('Composer', 'test3')->willReturn(false)->shouldBeCalled();
 
         $validator = new PackageValidator();
-        $errorResultList = $validator->compare($installedPackages->reveal(), $dependencyList->reveal());
+        $errorResultList = $validator->compare(
+            StrictMode::existingOrLocked(),
+            $installedPackages->reveal(),
+            $dependencyList->reveal()
+        );
 
         $this->assertCount(3, $errorResultList);
         foreach ($errorResultList as $errorResult) {
@@ -51,6 +55,101 @@ class PackageValidatorTest extends TestCase
                 $this->assertEquals($errorResult->getPackageName(), 'test2');
             } elseif ($errorResult instanceof ErrorDocumentedButNotInstalledResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test3');
+            } else {
+                $this->fail('Unexpected error result: ' . get_class($errorResult));
+            }
+        }
+    }
+
+    public function testItComparesCorrectlyForMajorAndMinor()
+    {
+        $installedPackages = $this->prophesize(PackageManagerPackageList::class);
+        $dependencyList = $this->prophesize(PackageManagerPackageList::class);
+
+        $versionMissMatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
+        $versionMissMatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0');
+
+        $versionMissMatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
+        $versionMissMatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
+
+        $installedPackages->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
+        $installedPackages->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+
+        $installedPackages->getAllFlat()->willReturn([
+            $versionMissMatchPatchPackage->reveal(),
+            $versionMissMatchPackage->reveal(),
+        ])->shouldBeCalled();
+
+        $dependencyList->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
+        $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+
+        $dependencyList->get('Composer', 'test1')->willReturn($versionMissMatchPatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test2')->willReturn($versionMissMatchDependency->reveal())->shouldBeCalled();
+
+        $dependencyList->getAllFlat()->willReturn([
+              $versionMissMatchDependency->reveal(),
+              $versionMissMatchPatchDependency->reveal(),
+        ])->shouldBeCalled();
+
+        $validator = new PackageValidator();
+        $errorResultList = $validator->compare(
+            StrictMode::majorAndMinor(),
+            $installedPackages->reveal(),
+            $dependencyList->reveal()
+        );
+
+        $this->assertCount(1, $errorResultList);
+        foreach ($errorResultList as $errorResult) {
+            if ($errorResult instanceof ErrorVersionMissMatchResult) {
+                $this->assertEquals($errorResult->getPackageName(), 'test2');
+            } else {
+                $this->fail('Unexpected error result: ' . get_class($errorResult));
+            }
+        }
+    }
+
+
+    public function testItComparesCorrectlyForFullSemanticVersion()
+    {
+        $installedPackages = $this->prophesize(PackageManagerPackageList::class);
+        $dependencyList = $this->prophesize(PackageManagerPackageList::class);
+
+        $versionMatchingPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
+        $versionMatchingDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.0.0');
+
+        $versionMissMatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
+        $versionMissMatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
+
+        $installedPackages->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
+        $installedPackages->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+
+        $installedPackages->getAllFlat()->willReturn([
+            $versionMissMatchPatchPackage->reveal(),
+            $versionMatchingPackage->reveal(),
+        ])->shouldBeCalled();
+
+        $dependencyList->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
+        $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+
+        $dependencyList->get('Composer', 'test1')->willReturn($versionMissMatchPatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test2')->willReturn($versionMatchingDependency->reveal())->shouldBeCalled();
+
+        $dependencyList->getAllFlat()->willReturn([
+            $versionMatchingDependency->reveal(),
+            $versionMissMatchPatchDependency->reveal(),
+        ])->shouldBeCalled();
+
+        $validator = new PackageValidator();
+        $errorResultList = $validator->compare(
+            StrictMode::fullSemVerMatch(),
+            $installedPackages->reveal(),
+            $dependencyList->reveal()
+        );
+
+        $this->assertCount(1, $errorResultList);
+        foreach ($errorResultList as $errorResult) {
+            if ($errorResult instanceof ErrorVersionMissMatchResult) {
+                $this->assertEquals($errorResult->getPackageName(), 'test1');
             } else {
                 $this->fail('Unexpected error result: ' . get_class($errorResult));
             }

@@ -12,6 +12,7 @@ use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
+use DepDoc\Validator\StrictMode;
 use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
@@ -109,16 +110,15 @@ class ValidateCommandTest extends TestCase
             ->willReturn($packages->reveal())
             ->shouldBeCalled();
 
-        $parser = $this->prophesize(ParserInterface::class);
-        $parser->getDocumentedDependencies(
-            Argument::type('string')
-        )->willReturn(
-            $this->prophesize(PackageManagerPackageList::class)->reveal()
-        );
+        $parser = $this->getDefaultParser();
 
         $validator = $this->prophesize(PackageValidator::class);
         $validator
-            ->compare(Argument::type(PackageManagerPackageList::class), Argument::type(PackageManagerPackageList::class))
+            ->compare(
+                Argument::type(StrictMode::class),
+                Argument::type(PackageManagerPackageList::class),
+                Argument::type(PackageManagerPackageList::class)
+            )
             ->willReturn([]);
 
         $command = new ValidateCommand(
@@ -133,22 +133,150 @@ class ValidateCommandTest extends TestCase
         $output = $this->getDefaultOutputProphecy();
 
         $input->getOption('directory')->willReturn('/test');
+        $input->getOption('very-strict')->willReturn('');
 
-        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
-        $prophecy
-            ->file_exists(Argument::type('string'))
-            ->shouldBeCalledTimes(1)
-            ->willReturn(true);
-        $prophecy
-            ->realpath(Argument::type('string'))
-            ->shouldBeCalledTimes(1)
-            ->willReturn(true);
-
-        $prophecy->reveal();
+        $this->prophesizeSystemCalls();
 
         $this->assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal())
+        );
+
+        $this->prophet->checkPredictions();
+    }
+
+    public function testItDeterminesVeryStrictMode(): void
+    {
+        $composerPackageManager = $this->getDefaultComposerPackageManager();
+        $nodePackageManager = $this->getDefaultNodePackageManager();
+
+        $parser = $this->getDefaultParser();
+
+        $validator = $this->prophesize(PackageValidator::class);
+        $validator
+            ->compare(
+                Argument::that(function (StrictMode $strictMode) {
+                    $this->assertTrue($strictMode->isFullSemVerMatch(), 'strict mode should be full semver match');
+
+                    return true;
+                }),
+                Argument::type(PackageManagerPackageList::class),
+                Argument::type(PackageManagerPackageList::class)
+            )
+            ->willReturn([]);
+
+        $command = new ValidateCommand(
+            $validator->reveal(),
+            $parser->reveal(),
+            $composerPackageManager->reveal(),
+            $nodePackageManager->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
+
+        $input = $this->getDefaultInputProphecy();
+        $output = $this->getDefaultOutputProphecy();
+
+        $input->getOption('directory')->willReturn('/test');
+        $input->getOption('very-strict')->willReturn('');
+
+        $this->prophesizeSystemCalls();
+
+        $this->assertEquals(
+            0,
+            $command->run($input->reveal(), $output->reveal()),
+            'exit code should match'
+        );
+
+        $this->prophet->checkPredictions();
+    }
+
+    public function testItDeterminesStrictMode(): void
+    {
+        $composerPackageManager = $this->getDefaultComposerPackageManager();
+        $nodePackageManager = $this->getDefaultNodePackageManager();
+
+        $parser = $this->getDefaultParser();
+
+        $validator = $this->prophesize(PackageValidator::class);
+        $validator
+            ->compare(
+                Argument::that(function (StrictMode $strictMode) {
+                    $this->assertTrue($strictMode->isMajorAndMinor(), 'strict mode should be major and minor');
+
+                    return true;
+                }),
+                Argument::type(PackageManagerPackageList::class),
+                Argument::type(PackageManagerPackageList::class)
+            )
+            ->willReturn([]);
+
+        $command = new ValidateCommand(
+            $validator->reveal(),
+            $parser->reveal(),
+            $composerPackageManager->reveal(),
+            $nodePackageManager->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
+
+        $input = $this->getDefaultInputProphecy();
+        $output = $this->getDefaultOutputProphecy();
+
+        $input->getOption('directory')->willReturn('/test');
+        $input->getOption('very-strict')->willReturn(false);
+        $input->getOption('strict')->willReturn('')->shouldBeCalled();
+
+        $this->prophesizeSystemCalls();
+
+        $this->assertEquals(
+            0,
+            $command->run($input->reveal(), $output->reveal()),
+            'exit code should match'
+        );
+
+        $this->prophet->checkPredictions();
+    }
+
+    public function testItDeterminesDefaultStrictMode(): void
+    {
+        $composerPackageManager = $this->getDefaultComposerPackageManager();
+        $nodePackageManager = $this->getDefaultNodePackageManager();
+
+        $parser = $this->getDefaultParser();
+
+        $validator = $this->prophesize(PackageValidator::class);
+        $validator
+            ->compare(
+                Argument::that(function (StrictMode $strictMode) {
+                    $this->assertTrue($strictMode->isExistingOrLocked(), 'strict mode should be existing or locked');
+
+                    return true;
+                }),
+                Argument::type(PackageManagerPackageList::class),
+                Argument::type(PackageManagerPackageList::class)
+            )
+            ->willReturn([]);
+
+        $command = new ValidateCommand(
+            $validator->reveal(),
+            $parser->reveal(),
+            $composerPackageManager->reveal(),
+            $nodePackageManager->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
+
+        $input = $this->getDefaultInputProphecy();
+        $output = $this->getDefaultOutputProphecy();
+
+        $input->getOption('directory')->willReturn('/test');
+        $input->getOption('very-strict')->willReturn(false);
+        $input->getOption('strict')->willReturn(false);
+
+        $this->prophesizeSystemCalls();
+
+        $this->assertEquals(
+            0,
+            $command->run($input->reveal(), $output->reveal()),
+            'exit code should match'
         );
 
         $this->prophet->checkPredictions();
@@ -187,5 +315,71 @@ class ValidateCommandTest extends TestCase
         $output->isVeryVerbose()->willReturn(false);
 
         return $output;
+    }
+
+    protected function getDefaultComposerPackageManager()
+    {
+        $packages = $this->prophesize(PackageManagerPackageList::class);
+        $packages
+            ->getAllFlat()
+            ->willReturn([])
+            ->shouldBeCalled();
+
+        $composerPackageManager = $this->prophesize(
+            ComposerPackageManager::class
+        );
+        $composerPackageManager
+            ->getInstalledPackages(Argument::type('string'))
+            ->willReturn($packages->reveal())
+            ->shouldBeCalled();
+
+        return $composerPackageManager;
+    }
+
+    protected function getDefaultNodePackageManager()
+    {
+        $packages = $this->prophesize(PackageManagerPackageList::class);
+        $packages
+            ->getAllFlat()
+            ->willReturn([])
+            ->shouldBeCalled();
+
+        $nodePackageManager = $this->prophesize(NodePackageManager::class);
+        $nodePackageManager
+            ->getInstalledPackages(Argument::type('string'))
+            ->willReturn($packages->reveal())
+            ->shouldBeCalled();
+
+        return $nodePackageManager;
+    }
+
+    /**
+     * @return ParserInterface|ObjectProphecy
+     */
+    protected function getDefaultParser()
+    {
+        $parser = $this->prophesize(ParserInterface::class);
+        $parser->getDocumentedDependencies(
+            Argument::type('string')
+        )->willReturn(
+            $this->prophesize(PackageManagerPackageList::class)->reveal()
+        );
+
+        return $parser;
+    }
+
+    protected function prophesizeSystemCalls(): void
+    {
+        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
+        $prophecy
+            ->file_exists(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+        $prophecy
+            ->realpath(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+
+        $prophecy->reveal();
     }
 }

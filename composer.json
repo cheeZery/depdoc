@@ -33,7 +33,8 @@
         "symfony/property-access": "^4.1",
         "symfony/dependency-injection": "^4.2",
         "composer/composer": "^1.7",
-        "symfony/config": "^4.2"
+        "symfony/config": "^4.2",
+        "vierbergenlars/php-semver": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2",
