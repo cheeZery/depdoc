@@ -6,7 +6,7 @@ namespace DepDoc\Validator\Result;
 /**
  * @codeCoverageIgnore
  */
-class ErrorVersionMissMatchResult extends AbstractErrorResult
+class ErrorVersionMismatchResult extends AbstractErrorResult
 {
     /** @var string */
     protected $installedVersion;

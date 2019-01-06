@@ -8,7 +8,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\PackageValidator;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
-use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
+use DepDoc\Validator\Result\ErrorVersionMismatchResult;
 use DepDoc\Validator\StrictMode;
 use PHPUnit\Framework\TestCase;
 
@@ -20,19 +20,19 @@ class PackageValidatorTest extends TestCase
         $dependencyList = $this->prophesize(PackageManagerPackageList::class);
 
         $notExistingPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
-        $versionMissMatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
-        $versionMissMatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0', true);
+        $versionMismatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
+        $versionMismatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0', true);
         $notExistingDependency = $this->getDependencyPackageProphecy('Composer', 'test3', '1.0.0');
 
         $installedPackages->getAllFlat()->willReturn([
             $notExistingPackage->reveal(),
-            $versionMissMatchPackage->reveal(),
+            $versionMismatchPackage->reveal(),
         ])->shouldBeCalled();
 
         $dependencyList->has('Composer', 'test1')->willReturn(false)->shouldBeCalled();
         $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
 
-        $dependencyList->get('Composer', 'test2')->willReturn($versionMissMatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test2')->willReturn($versionMismatchDependency->reveal())->shouldBeCalled();
 
         $dependencyList->getAllFlat()->willReturn([
             $notExistingDependency->reveal(),
@@ -51,7 +51,7 @@ class PackageValidatorTest extends TestCase
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorMissingDocumentationResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test1');
-            } elseif ($errorResult instanceof ErrorVersionMissMatchResult) {
+            } elseif ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test2');
             } elseif ($errorResult instanceof ErrorDocumentedButNotInstalledResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test3');
@@ -66,29 +66,29 @@ class PackageValidatorTest extends TestCase
         $installedPackages = $this->prophesize(PackageManagerPackageList::class);
         $dependencyList = $this->prophesize(PackageManagerPackageList::class);
 
-        $versionMissMatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
-        $versionMissMatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0');
+        $versionMismatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
+        $versionMismatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0');
 
-        $versionMissMatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
-        $versionMissMatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
+        $versionMismatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
+        $versionMismatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
 
         $installedPackages->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
         $installedPackages->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
 
         $installedPackages->getAllFlat()->willReturn([
-            $versionMissMatchPatchPackage->reveal(),
-            $versionMissMatchPackage->reveal(),
+            $versionMismatchPatchPackage->reveal(),
+            $versionMismatchPackage->reveal(),
         ])->shouldBeCalled();
 
         $dependencyList->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
         $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
 
-        $dependencyList->get('Composer', 'test1')->willReturn($versionMissMatchPatchDependency->reveal())->shouldBeCalled();
-        $dependencyList->get('Composer', 'test2')->willReturn($versionMissMatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test1')->willReturn($versionMismatchPatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test2')->willReturn($versionMismatchDependency->reveal())->shouldBeCalled();
 
         $dependencyList->getAllFlat()->willReturn([
-              $versionMissMatchDependency->reveal(),
-              $versionMissMatchPatchDependency->reveal(),
+              $versionMismatchDependency->reveal(),
+              $versionMismatchPatchDependency->reveal(),
         ])->shouldBeCalled();
 
         $validator = new PackageValidator();
@@ -100,7 +100,7 @@ class PackageValidatorTest extends TestCase
 
         $this->assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
-            if ($errorResult instanceof ErrorVersionMissMatchResult) {
+            if ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test2');
             } else {
                 $this->fail('Unexpected error result: ' . get_class($errorResult));
@@ -117,26 +117,26 @@ class PackageValidatorTest extends TestCase
         $versionMatchingPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
         $versionMatchingDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.0.0');
 
-        $versionMissMatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
-        $versionMissMatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
+        $versionMismatchPatchPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
+        $versionMismatchPatchDependency = $this->getDependencyPackageProphecy('Composer', 'test1', '1.0.1');
 
         $installedPackages->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
         $installedPackages->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
 
         $installedPackages->getAllFlat()->willReturn([
-            $versionMissMatchPatchPackage->reveal(),
+            $versionMismatchPatchPackage->reveal(),
             $versionMatchingPackage->reveal(),
         ])->shouldBeCalled();
 
         $dependencyList->has('Composer', 'test1')->willReturn(true)->shouldBeCalled();
         $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
 
-        $dependencyList->get('Composer', 'test1')->willReturn($versionMissMatchPatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test1')->willReturn($versionMismatchPatchDependency->reveal())->shouldBeCalled();
         $dependencyList->get('Composer', 'test2')->willReturn($versionMatchingDependency->reveal())->shouldBeCalled();
 
         $dependencyList->getAllFlat()->willReturn([
             $versionMatchingDependency->reveal(),
-            $versionMissMatchPatchDependency->reveal(),
+            $versionMismatchPatchDependency->reveal(),
         ])->shouldBeCalled();
 
         $validator = new PackageValidator();
@@ -148,7 +148,7 @@ class PackageValidatorTest extends TestCase
 
         $this->assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
-            if ($errorResult instanceof ErrorVersionMissMatchResult) {
+            if ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test1');
             } else {
                 $this->fail('Unexpected error result: ' . get_class($errorResult));
