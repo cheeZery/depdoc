@@ -8,7 +8,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\PackageValidator;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
-use DepDoc\Validator\Result\ErrorVersionMisMatchResult;
+use DepDoc\Validator\Result\ErrorVersionMismatchResult;
 use DepDoc\Validator\StrictMode;
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +51,7 @@ class PackageValidatorTest extends TestCase
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorMissingDocumentationResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test1');
-            } elseif ($errorResult instanceof ErrorVersionMisMatchResult) {
+            } elseif ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test2');
             } elseif ($errorResult instanceof ErrorDocumentedButNotInstalledResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test3');
@@ -100,7 +100,7 @@ class PackageValidatorTest extends TestCase
 
         $this->assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
-            if ($errorResult instanceof ErrorVersionMisMatchResult) {
+            if ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test2');
             } else {
                 $this->fail('Unexpected error result: ' . get_class($errorResult));
@@ -148,7 +148,7 @@ class PackageValidatorTest extends TestCase
 
         $this->assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
-            if ($errorResult instanceof ErrorVersionMisMatchResult) {
+            if ($errorResult instanceof ErrorVersionMismatchResult) {
                 $this->assertEquals($errorResult->getPackageName(), 'test1');
             } else {
                 $this->fail('Unexpected error result: ' . get_class($errorResult));
