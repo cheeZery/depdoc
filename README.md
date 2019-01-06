@@ -30,4 +30,4 @@ Checks for major and minor version to match, i.e. installed **1.0.1** and docume
 ```
 ./vendor/bin/depdoc validate --very-strict
 ```
-Checks for full semantic versioning match, i.e. installed 1.0.1 and documented 1.0.0 will not bypass validation.
+Checks for full semantic versioning match, i.e. installed **1.0.1** and documented **1.0.0** will not bypass validation.
