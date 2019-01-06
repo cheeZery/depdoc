@@ -9,7 +9,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorResultInterface;
-use DepDoc\Validator\Result\ErrorVersionMismatchResult;
+use DepDoc\Validator\Result\ErrorVersionMissMatchResult;
 use vierbergenlars\SemVer\version;
 
 class PackageValidator
@@ -38,7 +38,7 @@ class PackageValidator
             $dependency = $dependencyList->get($package->getManagerName(), $package->getName());
 
             if (!$this->doesVersionMatch($mode, $dependency, $package)) {
-                $errors[] = new ErrorVersionMismatchResult(
+                $errors[] = new ErrorVersionMissMatchResult(
                     $package->getManagerName(),
                     $package->getName(),
                     $package->getVersion(),

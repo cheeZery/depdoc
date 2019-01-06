@@ -25,7 +25,7 @@ Use strict modes to verify your package version matches the documented dependenc
 ```
 ./vendor/bin/depdoc validate --strict
 ```
-Checks for major and minor version to match, i.e. installed 1.0.1 and documented 1.0.0 will bypass validation.
+Checks for major and minor version to match, i.e. installed **1.0.1** and documented **1.0.0** will bypass validation but installed **1.1.0** and documented **1.0.0** won't.
 
 ```
 ./vendor/bin/depdoc validate --very-strict

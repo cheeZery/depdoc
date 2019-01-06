@@ -8,7 +8,9 @@ use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
+use DepDoc\Validator\StrictMode;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ValidateCommand extends BaseCommand
@@ -42,6 +44,22 @@ class ValidateCommand extends BaseCommand
         parent::configure();
 
         $this->setDescription('Validate an already generated DEPENDENCIES.md');
+
+        $this->addOption(
+            '--strict',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Strict mode checks for major and minor versions',
+            false
+        );
+
+        $this->addOption(
+            '--very-strict',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Very strict mode checks for full semantic versioning match',
+            false
+        );
     }
 
     /**
@@ -70,7 +88,11 @@ class ValidateCommand extends BaseCommand
         $installedPackages = $this->getInstalledPackages($directory);
         $dependencyList = $this->parser->getDocumentedDependencies($filepath);
 
-        $validationResult = $this->validator->compare($installedPackages, $dependencyList);
+        $validationResult = $this->validator->compare(
+            $this->getStrictMode($input),
+            $installedPackages,
+            $dependencyList
+        );
         if (empty($validationResult)) {
             if ($this->io->isVerbose()) {
                 $this->io->writeln('Validation result: empty, all fine.');
@@ -89,5 +111,18 @@ class ValidateCommand extends BaseCommand
         }
 
         return -1;
+    }
+
+    protected function getStrictMode(InputInterface $input): StrictMode
+    {
+        if ($input->getOption('very-strict') !== false) {
+            return StrictMode::fullSemVerMatch();
+        }
+
+        if ($input->getOption('strict') !== false) {
+            return StrictMode::majorAndMinor();
+        }
+
+        return StrictMode::existingOrLocked();
     }
 }
