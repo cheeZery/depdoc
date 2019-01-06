@@ -9,7 +9,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorResultInterface;
-use DepDoc\Validator\Result\ErrorVersionMisMatchResult;
+use DepDoc\Validator\Result\ErrorVersionMismatchResult;
 use vierbergenlars\SemVer\version;
 
 class PackageValidator

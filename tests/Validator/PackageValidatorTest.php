@@ -8,7 +8,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Validator\PackageValidator;
 use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
-use DepDoc\Validator\Result\ErrorVersionMisMatchResult;
+use DepDoc\Validator\Result\ErrorVersionMismatchResult;
 use DepDoc\Validator\StrictMode;
 use PHPUnit\Framework\TestCase;
 
