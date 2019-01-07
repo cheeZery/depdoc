@@ -50,7 +50,7 @@ abstract class BaseCommand extends Command
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -73,7 +73,7 @@ abstract class BaseCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
 
         $targetDirectory = $this->getTargetDirectoryFromInput($input);
-        if (!$targetDirectory || realpath($targetDirectory) === false) {
+        if (strlen($targetDirectory) === 0 || realpath($targetDirectory) === false) {
             $this->io->error(
                 sprintf(
                     'Invalid target directory given: %s',
@@ -129,7 +129,13 @@ abstract class BaseCommand extends Command
     protected function getTargetDirectoryFromInput(
         InputInterface $input
     ): string {
-        return (string) $input->getOption('directory');
+        $targetDirectory = $input->getOption('directory');
+
+        if (!is_string($targetDirectory)) {
+            $targetDirectory = '';
+        }
+
+        return $targetDirectory;
     }
 
     /**

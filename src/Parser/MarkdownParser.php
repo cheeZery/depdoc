@@ -39,7 +39,7 @@ class MarkdownParser implements ParserInterface
 
             $line = ltrim($line);
 
-            if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches)) {
+            if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches) === 1) {
                 $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
                 continue;
@@ -49,14 +49,14 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if ($packageManagerName && $packageManagerName !== $currentPackageManagerName) {
+            if ($packageManagerName !== null && $packageManagerName !== $currentPackageManagerName) {
                 continue;
             }
 
             $matches = null;
             $lockSymbolRegex = '(?<lockSymbol>' . implode('|', ApplicationConfiguration::ALLOWED_LOCK_SYMBOLS) . ')?';
             if (preg_match('/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
-                $matches)) {
+                $matches) === 1) {
                 $currentPackage = $matches['packageName'];
 
                 $currentDependency = new DependencyData(
@@ -70,7 +70,7 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if (!$currentPackage || !$currentDependency) {
+            if (!$currentPackage || !$currentDependency instanceof DependencyData) {
                 continue;
             }
 

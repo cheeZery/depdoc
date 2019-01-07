@@ -46,7 +46,7 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = "";
 
-                /** @var DependencyData $documentedDependency|null */
+                /** @var DependencyData|null $documentedDependency */
                 $documentedDependency = $dependencyList->get($packageManagerName, $installedPackage->getName());
 
                 if ($documentedDependency !== null && $documentedDependency->isVersionLocked()) {
