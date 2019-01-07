@@ -5,7 +5,7 @@ namespace DepDoc\PackageManager\Package;
 
 class ComposerPackage extends PackageManagerPackage
 {
-    /** @var string */
+    /** @var string|null */
     protected $description;
 
     /**

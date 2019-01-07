@@ -29,7 +29,7 @@ interface PackageManagerPackageListInterface
     public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface;
 
     /**
-     * @return PackageManagerPackageListInterface[][]
+     * @return PackageManagerPackageInterface[]
      */
     public function getAllFlat(): array;
 

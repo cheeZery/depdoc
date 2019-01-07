@@ -7,6 +7,7 @@ use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
+use DepDoc\Parser\Exception\ParseFailedException;
 
 class MarkdownParser implements ParserInterface
 {
@@ -21,6 +22,11 @@ class MarkdownParser implements ParserInterface
         }
 
         $lines = file($filepath);
+
+        if ($lines === false) {
+            throw new ParseFailedException($filepath);
+        }
+
         /** @var null|string $currentPackageManagerName */
         $currentPackageManagerName = null;
         /** @var null|string $currentPackage */
@@ -64,7 +70,7 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if (!$currentPackage) {
+            if (!$currentPackage || !$currentDependency) {
                 continue;
             }
 

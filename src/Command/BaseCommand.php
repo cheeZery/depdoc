@@ -23,7 +23,7 @@ abstract class BaseCommand extends Command
     protected $nodeManager;
     /** @var ConfigurationService */
     protected $configurationService;
-    /** @var null|ApplicationConfiguration */
+    /** @var ApplicationConfiguration */
     protected $configuration;
     /** @var SymfonyStyle */
     protected $io;
@@ -90,12 +90,14 @@ abstract class BaseCommand extends Command
             );
         }
 
-        $this->configuration = $this->configurationService->loadFromDirectory(
+        $configuration = $this->configurationService->loadFromDirectory(
             $targetDirectory
         );
-        if ($this->configuration === null) {
-            $this->configuration = new ApplicationConfiguration();
+        if ($configuration === null) {
+            $configuration = new ApplicationConfiguration();
         }
+
+        $this->configuration = $configuration;
 
         return 0;
     }
@@ -127,7 +129,7 @@ abstract class BaseCommand extends Command
     protected function getTargetDirectoryFromInput(
         InputInterface $input
     ): string {
-        return (string)$input->getOption('directory');
+        return (string) $input->getOption('directory');
     }
 
     /**
