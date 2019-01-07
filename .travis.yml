@@ -22,6 +22,7 @@ before_script:
   - mkdir build
 
 script:
+  - vendor/bin/phpstan analyse
   - vendor/bin/phpunit --coverage-clover=build/coverage.xml
 
 after_success:
