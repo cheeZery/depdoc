@@ -2,3 +2,6 @@ parameters:
     level: max
     paths:
         - src
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
