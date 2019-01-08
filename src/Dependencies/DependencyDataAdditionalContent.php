@@ -48,6 +48,16 @@ class DependencyDataAdditionalContent
     }
 
     /**
+     * @param int $index
+     *
+     * @return string|null
+     */
+    public function getLine(int $index): ?string
+    {
+        return $this->lines[$index] ?? null;
+    }
+
+    /**
      * @return DependencyDataAdditionalContent
      */
     public function removeLastEmptyLine(): DependencyDataAdditionalContent

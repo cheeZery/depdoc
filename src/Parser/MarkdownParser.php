@@ -42,6 +42,7 @@ class MarkdownParser implements ParserInterface
             if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches) === 1) {
                 $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
+                $currentDependency = null;
                 continue;
             }
 
@@ -94,8 +95,6 @@ class MarkdownParser implements ParserInterface
         foreach ($dependencies->getAllFlat() as $dependency) {
             // Search until first line with description (">") prefix was found; anything further is additional
             $descriptionFound = false;
-            // Used to save one empty line
-            $priorLineWasEmpty = false;
 
             $additionalContent = $dependency->getAdditionalContent();
             foreach ($additionalContent->getAll() as $index => $contentLine) {
@@ -107,15 +106,14 @@ class MarkdownParser implements ParserInterface
                 }
 
                 if ($contentLine === '') {
-                    if ($priorLineWasEmpty) {
+                    $priorLineIsEmpty = $additionalContent->getLine($index - 1) === '';
+
+                    if ($priorLineIsEmpty) {
                         $additionalContent->removeIndex($index);
-                    } else {
-                        $priorLineWasEmpty = true;
                     }
+
                     continue;
                 }
-
-                $priorLineWasEmpty = false;
             }
 
             $additionalContent->removeLastEmptyLine();
