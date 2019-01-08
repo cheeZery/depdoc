@@ -52,9 +52,16 @@ class DependencyDataAdditionalContent
      *
      * @return string|null
      */
-    public function getLine(int $index): ?string
+    public function getPreviousLine(int $index): ?string
     {
-        return $this->lines[$index] ?? null;
+        $lines = $this->lines;
+        while (key($lines) !== $index) {
+            next($lines);
+        }
+
+        $previousValue = prev($lines);
+
+        return $previousValue === false ? null : $previousValue;
     }
 
     /**

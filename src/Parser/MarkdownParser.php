@@ -106,7 +106,7 @@ class MarkdownParser implements ParserInterface
                 }
 
                 if ($contentLine === '') {
-                    $priorLineIsEmpty = $additionalContent->getLine($index - 1) === '';
+                    $priorLineIsEmpty = $additionalContent->getPreviousLine($index) === '';
 
                     if ($priorLineIsEmpty) {
                         $additionalContent->removeIndex($index);
