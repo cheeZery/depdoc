@@ -56,8 +56,9 @@ class MarkdownParser implements ParserInterface
 
             $matches = null;
             $lockSymbolRegex = '(?<lockSymbol>' . implode('|', ApplicationConfiguration::ALLOWED_LOCK_SYMBOLS) . ')?';
-            if (preg_match('/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
-                $matches) === 1) {
+            $packageAndVersionRegex = '/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/';
+
+            if (preg_match($packageAndVersionRegex, $line, $matches) === 1) {
                 $currentPackage = $matches['packageName'];
 
                 $currentDependency = new DependencyData(
