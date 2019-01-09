@@ -79,6 +79,6 @@ JSON
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertCount(0, $packages->getAllFlat(), 'there should be not package');
+        $this->assertCount(0, $packages->getAllFlat(), 'there should be no packages');
     }
 }
