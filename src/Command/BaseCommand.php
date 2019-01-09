@@ -109,12 +109,18 @@ abstract class BaseCommand extends Command
         string $directory
     ): PackageManagerPackageList {
         $mergedPackageList = new PackageManagerPackageList();
-        $mergedPackageList->merge(
-            $this->composerManager->getInstalledPackages($directory)
-        );
-        $mergedPackageList->merge(
-            $this->nodeManager->getInstalledPackages($directory)
-        );
+
+        if ($this->configuration->isComposer()) {
+            $mergedPackageList->merge(
+                $this->composerManager->getInstalledPackages($directory)
+            );
+        }
+
+        if ($this->configuration->isNpm()) {
+            $mergedPackageList->merge(
+                $this->nodeManager->getInstalledPackages($directory)
+            );
+        }
 
         return $mergedPackageList;
     }
