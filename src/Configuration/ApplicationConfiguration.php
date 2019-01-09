@@ -22,6 +22,10 @@ class ApplicationConfiguration
     protected $lockSymbol = '⚠';
     /** @var boolean */
     protected $exportExternalLink = true;
+    /** @var boolean */
+    protected $composer = true;
+    /** @var boolean */
+    protected $npm = true;
 
     /**
      * @return string
@@ -76,6 +80,46 @@ class ApplicationConfiguration
     public function setExportExternalLink(bool $exportExternalLink): ApplicationConfiguration
     {
         $this->exportExternalLink = $exportExternalLink;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isComposer(): bool
+    {
+        return $this->composer;
+    }
+
+    /**
+     * @param bool $composer
+     *
+     * @return self
+     */
+    public function setComposer(bool $composer): self
+    {
+        $this->composer = $composer;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNpm(): bool
+    {
+        return $this->npm;
+    }
+
+    /**
+     * @param bool $npm
+     *
+     * @return self
+     */
+    public function setNpm(bool $npm): self
+    {
+        $this->npm = $npm;
 
         return $this;
     }
