@@ -39,7 +39,7 @@ class ValidateCommand extends BaseCommand
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 
@@ -93,7 +93,7 @@ class ValidateCommand extends BaseCommand
             $installedPackages,
             $dependencyList
         );
-        if (empty($validationResult)) {
+        if (count($validationResult) === 0) {
             if ($this->io->isVerbose()) {
                 $this->io->writeln('Validation result: empty, all fine.');
             }

@@ -71,7 +71,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
      */
     public function getAllFlat(): array
     {
-        if ($this->cachedFlatDependencies) {
+        if ($this->cachedFlatDependencies !== null) {
             return $this->cachedFlatDependencies;
         }
 

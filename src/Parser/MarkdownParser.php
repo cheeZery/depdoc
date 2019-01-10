@@ -7,6 +7,7 @@ use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\Exception\MissingFileException;
+use DepDoc\Parser\Exception\ParseFailedException;
 
 class MarkdownParser implements ParserInterface
 {
@@ -21,6 +22,11 @@ class MarkdownParser implements ParserInterface
         }
 
         $lines = file($filepath);
+
+        if ($lines === false) {
+            throw new ParseFailedException($filepath);
+        }
+
         /** @var null|string $currentPackageManagerName */
         $currentPackageManagerName = null;
         /** @var null|string $currentPackage */
@@ -33,9 +39,10 @@ class MarkdownParser implements ParserInterface
 
             $line = ltrim($line);
 
-            if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches)) {
+            if (preg_match("/^#{1}\s(?<packageManagerName>\w+)/", $line, $matches) === 1) {
                 $currentPackageManagerName = $matches['packageManagerName'];
                 $currentPackage = null;
+                $currentDependency = null;
                 continue;
             }
 
@@ -43,14 +50,15 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if ($packageManagerName && $packageManagerName !== $currentPackageManagerName) {
+            if ($packageManagerName !== null && $packageManagerName !== $currentPackageManagerName) {
                 continue;
             }
 
             $matches = null;
             $lockSymbolRegex = '(?<lockSymbol>' . implode('|', ApplicationConfiguration::ALLOWED_LOCK_SYMBOLS) . ')?';
-            if (preg_match('/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/', $line,
-                $matches)) {
+            $packageAndVersionRegex = '/^#{2}\s(?<packageName>[^ ]+)\s`(?<version>[^`]+)`\s?' . $lockSymbolRegex . '/';
+
+            if (preg_match($packageAndVersionRegex, $line, $matches) === 1) {
                 $currentPackage = $matches['packageName'];
 
                 $currentDependency = new DependencyData(
@@ -64,7 +72,7 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if (!$currentPackage) {
+            if (!$currentPackage || !$currentDependency instanceof DependencyData) {
                 continue;
             }
 
@@ -88,8 +96,6 @@ class MarkdownParser implements ParserInterface
         foreach ($dependencies->getAllFlat() as $dependency) {
             // Search until first line with description (">") prefix was found; anything further is additional
             $descriptionFound = false;
-            // Used to save one empty line
-            $priorLineWasEmpty = false;
 
             $additionalContent = $dependency->getAdditionalContent();
             foreach ($additionalContent->getAll() as $index => $contentLine) {
@@ -101,15 +107,14 @@ class MarkdownParser implements ParserInterface
                 }
 
                 if ($contentLine === '') {
-                    if ($priorLineWasEmpty) {
+                    $priorLineIsEmpty = $additionalContent->getPreviousLine($index) === '';
+
+                    if ($priorLineIsEmpty) {
                         $additionalContent->removeIndex($index);
-                    } else {
-                        $priorLineWasEmpty = true;
                     }
+
                     continue;
                 }
-
-                $priorLineWasEmpty = false;
             }
 
             $additionalContent->removeLastEmptyLine();

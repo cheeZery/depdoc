@@ -48,6 +48,23 @@ class DependencyDataAdditionalContent
     }
 
     /**
+     * @param int $index
+     *
+     * @return string|null
+     */
+    public function getPreviousLine(int $index): ?string
+    {
+        $lines = $this->lines;
+        while (key($lines) !== $index) {
+            next($lines);
+        }
+
+        $previousValue = prev($lines);
+
+        return $previousValue === false ? null : $previousValue;
+    }
+
+    /**
      * @return DependencyDataAdditionalContent
      */
     public function removeLastEmptyLine(): DependencyDataAdditionalContent
