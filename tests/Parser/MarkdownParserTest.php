@@ -3,7 +3,9 @@
 namespace DepDocTest\Parser;
 
 use DepDoc\Dependencies\DependencyData;
+use DepDoc\Parser\Exception\ParseFailedException;
 use DepDoc\Parser\MarkdownParser;
+use phpmock\Mock;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +17,13 @@ class MarkdownParserTest extends TestCase
     protected function setUp()
     {
         $this->prophet = new PHPProphet();
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        Mock::disableAll();
     }
 
     public function testItParsesDependenciesFileCorrectlyWithoutFilter()
@@ -100,5 +109,27 @@ consecutive empty line
 
 DATA;
 
+    }
+
+    public function testItThrowsExceptionIfLinesCouldNotBeRead()
+    {
+        $this->expectException(ParseFailedException::class);
+
+        $filepath = '/some/file';
+        $prophecy = $this->prophet->prophesize('DepDoc\\Parser');
+
+        $prophecy
+            ->file_exists($filepath)
+            ->willReturn(true)
+            ->shouldBeCalled();
+        $prophecy
+            ->file($filepath)
+            ->willReturn(false)
+            ->shouldBeCalled();
+
+        $prophecy->reveal();
+
+        $parser = new MarkdownParser();
+        $parser->getDocumentedDependencies($filepath, null);
     }
 }

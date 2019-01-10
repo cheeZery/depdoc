@@ -15,6 +15,11 @@ class NodePackageManager implements PackageManagerInterface
 
         // @TODO: Support npm binary detection
         $output = shell_exec("cd " . escapeshellarg($directory) . " && npm list -json -depth 0 -long");
+
+        if ($output === null) {
+            return $packageList;
+        }
+
         $output = trim($output);
 
         if (strlen($output) === 0 || $output[0] !== '{') {

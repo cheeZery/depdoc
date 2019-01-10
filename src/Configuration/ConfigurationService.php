@@ -36,7 +36,7 @@ class ConfigurationService
         ], $additionalConfigurationFiles);
 
         $normalizers = array_merge([new GetSetMethodNormalizer()], $normalizers);
-        $encodersAndDecoders = array_merge([new JsonDecode(true), new YamlEncoder()], $encodersAndDecoders);
+        $encodersAndDecoders = array_merge([new JsonDecode(), new YamlEncoder()], $encodersAndDecoders);
         $this->serializer = new Serializer($normalizers, $encodersAndDecoders);
     }
 

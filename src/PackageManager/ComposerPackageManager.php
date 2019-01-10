@@ -31,6 +31,11 @@ class ComposerPackageManager implements PackageManagerInterface
         $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
 
         foreach ($requiredPackages as $package) {
+
+            if ($package->getConstraint() === null) {
+                continue; // Can't handle a package without a constraint.
+            }
+
             $lockedPackage = $lockedRepository->findPackage($package->getTarget(), $package->getConstraint());
             $localPackage = $localRepository->findPackage($package->getTarget(), $package->getConstraint());
 

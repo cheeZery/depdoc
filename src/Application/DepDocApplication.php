@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace DepDoc\Application;
 
-use DepDoc\Command\UpdateCommand;
-use DepDoc\Command\ValidateCommand;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 

@@ -46,10 +46,10 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = "";
 
-                /** @var DependencyData $documentedDependency */
+                /** @var DependencyData|null $documentedDependency */
                 $documentedDependency = $dependencyList->get($packageManagerName, $installedPackage->getName());
 
-                if ($documentedDependency && $documentedDependency->isVersionLocked()) {
+                if ($documentedDependency !== null && $documentedDependency->isVersionLocked()) {
                     $documentation[] = $this->createPackageLockedLine($installedPackage, $documentedDependency);
                 } else {
                     $documentation[] = $this->createPackageLine($installedPackage);
@@ -57,7 +57,7 @@ class MarkdownWriter implements WriterInterface
 
                 $documentation[] = $this->createDescriptionLine($installedPackage->getDescription());
 
-                if ($documentedDependency) {
+                if ($documentedDependency !== null) {
                     foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
                         $documentation[] = $contentLine;
                     }
