@@ -2,6 +2,7 @@
 
 namespace DepDocTest\Command;
 
+use DepDoc\Configuration\ApplicationConfiguration;
 use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
@@ -206,9 +207,15 @@ class BaseCommandTest extends TestCase
         $configurationService = $this->prophesize(ConfigurationService::class);
         $composerPackageList = $this->prophesize(PackageManagerPackageList::class);
         $nodePackageList = $this->prophesize(PackageManagerPackageList::class);
+        $configuration = $this->prophesize(ApplicationConfiguration::class);
+
+        $configuration->isComposer()->willReturn(true)->shouldBeCalled();
+        $configuration->isNpm()->willReturn(true)->shouldBeCalled();
+
         $composerPackage1 = $this->getComposerPackage('t1');
         $composerPackage2 = $this->getComposerPackage('t2');
         $composerPackage3 = $this->getComposerPackage('t3');
+
         $nodePackage1 = $this->getNodePackage('t1');
         $nodePackage2 = $this->getNodePackage('t2');
         $nodePackage3 = $this->getNodePackage('t3');
@@ -235,6 +242,8 @@ class BaseCommandTest extends TestCase
             $configurationService->reveal()
         );
 
+        $command->setConfiguration($configuration->reveal());
+
         $packages = $command->testGetInstalledPackages($targetDirectory);
         $this->assertTrue($packages->has('Composer', 't1'));
         $this->assertTrue($packages->has('Composer', 't2'));
@@ -243,6 +252,34 @@ class BaseCommandTest extends TestCase
         $this->assertTrue($packages->has('Node', 't2'));
         $this->assertTrue($packages->has('Node', 't3'));
         $this->assertCount(6, $packages->getAllFlat());
+    }
+
+    public function testItReadsOnlyConfiguredManagers()
+    {
+        $targetDirectory = '/some/dir';
+
+        $composerManager = $this->prophesize(ComposerPackageManager::class);
+        $nodeManager = $this->prophesize(NodePackageManager::class);
+        $configurationService = $this->prophesize(ConfigurationService::class);
+        $configuration = $this->prophesize(ApplicationConfiguration::class);
+
+        $configuration->isComposer()->willReturn(false)->shouldBeCalled();
+        $configuration->isNpm()->willReturn(false)->shouldBeCalled();
+
+        $composerManager->getInstalledPackages($targetDirectory)->shouldNotBeCalled();
+        $nodeManager->getInstalledPackages($targetDirectory)->shouldNotBeCalled();
+
+        $command = new BaseCommandTestDouble(
+            'test',
+            $composerManager->reveal(),
+            $nodeManager->reveal(),
+            $configurationService->reveal()
+        );
+
+        $command->setConfiguration($configuration->reveal());
+
+        $packages = $command->testGetInstalledPackages($targetDirectory);
+        $this->assertCount(0, $packages->getAllFlat(), 'no packages should be read');
     }
 
     /**
