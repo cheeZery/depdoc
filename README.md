@@ -44,7 +44,7 @@ Default is _\n_ but if you need a different one you can provide it.
 
 **lockSymbol**
 
-Default is "⚠" but you can choose whatever you like, i.e. if you like "!!" better.
+Default is "⚠" but you can also use '⚠' or '✋'.
 
 **exportExternalLink**
 
