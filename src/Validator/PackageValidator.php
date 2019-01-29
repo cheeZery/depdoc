@@ -74,10 +74,11 @@ class PackageValidator
         PackageManagerPackageInterface $package
     ): bool {
         if ($mode->isExistingOrLocked()) {
-            return (
-                $dependency->isVersionLocked()
-                && $dependency->getVersion() === $package->getVersion()
-            );
+            if ($dependency->isVersionLocked()) {
+                return $dependency->getVersion() === $package->getVersion();
+            }
+
+            return true;
         }
 
         if ($mode->isMajorAndMinor()) {
