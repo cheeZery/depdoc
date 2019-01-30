@@ -8,7 +8,7 @@ use DepDoc\Application\ApplicationBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Serializer\Mapping\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class ApplicationBuilderTest extends TestCase
 {
@@ -31,5 +31,29 @@ class ApplicationBuilderTest extends TestCase
         $containerBuilderValue = $reflContainerProperty->getValue($application);
 
         $this->assertEquals($containerBuilder->reveal(), $containerBuilderValue);
+    }
+
+    public function testItUsesDefaultDependencies(): void
+    {
+        $builder = new ApplicationBuilder();
+
+        $reflBuilder = new \ReflectionClass($builder);
+
+        $reflContainerBuilderProp = $reflBuilder->getProperty('containerBuilder');
+        $reflContainerBuilderProp->setAccessible(true);
+        $reflLoaderProp = $reflBuilder->getProperty('loader');
+        $reflLoaderProp->setAccessible(true);
+
+        $this->assertInstanceOf(
+            ContainerBuilder::class,
+            $reflContainerBuilderProp->getValue($builder),
+            'default container builder should be instance of ' . ContainerBuilder::class
+        );
+
+        $this->assertInstanceOf(
+            YamlFileLoader::class,
+            $reflLoaderProp->getValue($builder),
+            'default loader should be instance of ' . YamlFileLoader::class
+        );
     }
 }
