@@ -24,21 +24,28 @@ class PackageValidatorTest extends TestCase
         $versionMismatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0', true);
         $notExistingDependency = $this->getDependencyPackageProphecy('Composer', 'test3', '1.0.0');
 
+        $correctPackage = $this->getPackageProphecy('Composer', 'test4', '1.0.0');
+        $correctDependency = $this->getDependencyPackageProphecy('Composer', 'test4', '1.0.0', false);
+
         $installedPackages->getAllFlat()->willReturn([
             $notExistingPackage->reveal(),
             $versionMismatchPackage->reveal(),
+            $correctPackage->reveal(),
         ])->shouldBeCalled();
 
         $dependencyList->has('Composer', 'test1')->willReturn(false)->shouldBeCalled();
         $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+        $dependencyList->has('Composer', 'test4')->willReturn(true)->shouldBeCalled();
 
         $dependencyList->get('Composer', 'test2')->willReturn($versionMismatchDependency->reveal())->shouldBeCalled();
+        $dependencyList->get('Composer', 'test4')->willReturn($correctDependency->reveal())->shouldBeCalled();
 
         $dependencyList->getAllFlat()->willReturn([
             $notExistingDependency->reveal(),
         ])->shouldBeCalled();
 
         $installedPackages->has('Composer', 'test3')->willReturn(false)->shouldBeCalled();
+        #$installedPackages->has('Composer', 'test4')->willReturn(true)->shouldBeCalled();
 
         $validator = new PackageValidator();
         $errorResultList = $validator->compare(
@@ -184,15 +191,15 @@ class PackageValidatorTest extends TestCase
         string $manager,
         string $name,
         string $version,
-        bool $isVersionLocked = false
+        bool $isVersionLocked = null
     ) {
         $package = $this->prophesize(DependencyData::class);
 
         $package->getManagerName()->willReturn($manager);
         $package->getName()->willReturn($name);
         $package->getVersion()->willReturn($version);
-        if ($isVersionLocked) {
-            $package->getVersion()->shouldBeCalled();
+        if (is_bool($isVersionLocked)) {
+            $package->getVersion()->shouldBeCalledTimes($isVersionLocked ? 2 : 0);
             $package->isVersionLocked()->willReturn($isVersionLocked)->shouldBeCalled();
         }
 
