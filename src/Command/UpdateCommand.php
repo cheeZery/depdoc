@@ -92,7 +92,7 @@ class UpdateCommand extends BaseCommand
             $documentedDependencies
         );
 
-        if ($lockedVersionErrors) {
+        if (count($lockedVersionErrors) > 0) {
             foreach ($lockedVersionErrors as $error) {
                 $this->io->error($error->toString());
             }
