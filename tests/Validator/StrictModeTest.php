@@ -9,6 +9,15 @@ use PHPUnit\Framework\TestCase;
 
 class StrictModeTest extends TestCase
 {
+    public function testLockedOnly(): void
+    {
+        $strictMode = StrictMode::lockedOnly();
+
+        $this->assertTrue(
+            $strictMode->isLockedOnly(),
+            'strict mode should be locked only'
+        );
+    }
     public function testExistingOrLocked(): void
     {
         $strictMode = StrictMode::existingOrLocked();

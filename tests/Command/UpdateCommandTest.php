@@ -11,6 +11,8 @@ use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
+use DepDoc\Validator\PackageValidator;
+use DepDoc\Validator\StrictMode;
 use DepDoc\Writer\WriterConfiguration;
 use DepDoc\Writer\WriterInterface;
 use phpmock\MockRegistry;
@@ -42,6 +44,7 @@ class UpdateCommandTest extends TestCase
         $command = new UpdateCommand(
             $this->prophesize(WriterInterface::class)->reveal(),
             $this->prophesize(ParserInterface::class)->reveal(),
+            $this->prophesize(PackageValidator::class)->reveal(),
             $this->prophesize(ComposerPackageManager::class)->reveal(),
             $this->prophesize(NodePackageManager::class)->reveal(),
             $this->prophesize(ConfigurationService::class)->reveal()
@@ -66,6 +69,7 @@ class UpdateCommandTest extends TestCase
         $command = new UpdateCommand(
             $this->prophesize(WriterInterface::class)->reveal(),
             $this->prophesize(ParserInterface::class)->reveal(),
+            $this->prophesize(PackageValidator::class)->reveal(),
             $composerPackageManager->reveal(),
             $this->prophesize(NodePackageManager::class)->reveal(),
             $this->prophesize(ConfigurationService::class)->reveal()
@@ -128,9 +132,13 @@ class UpdateCommandTest extends TestCase
             Argument::type(PackageManagerPackageList::class)
         );
 
+        $packageValidator = $this->prophesize(PackageValidator::class);
+        $packageValidator->compare(Argument::type(StrictMode::class), Argument::cetera())->willReturn([]);
+
         $command = new UpdateCommand(
             $writer->reveal(),
             $parser->reveal(),
+            $packageValidator->reveal(),
             $composerPackageManager->reveal(),
             $nodePackageManager->reveal(),
             $this->prophesize(ConfigurationService::class)->reveal()
