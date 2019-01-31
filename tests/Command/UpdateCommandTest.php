@@ -12,6 +12,7 @@ use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 use DepDoc\Parser\ParserInterface;
 use DepDoc\Validator\PackageValidator;
+use DepDoc\Validator\Result\ErrorResultInterface;
 use DepDoc\Validator\StrictMode;
 use DepDoc\Writer\WriterConfiguration;
 use DepDoc\Writer\WriterInterface;
@@ -163,6 +164,87 @@ class UpdateCommandTest extends TestCase
 
         $this->assertEquals(
             0,
+            $command->run($input->reveal(), $output->reveal())
+        );
+
+        $this->prophet->checkPredictions();
+    }
+
+    public function testReturnsErrorsWhenValidationOfLockedVersionsFails(): void
+    {
+        $packageManagerPackage = $this->prophesize(
+            PackageManagerPackageInterface::class
+        );
+        $packageManagerPackage->getManagerName()->willReturn('composer');
+        $packageManagerPackage->getName()->willReturn('test');
+
+        $packages = $this->prophesize(PackageManagerPackageList::class);
+        $packages
+            ->getAllFlat()
+            ->willReturn([ $packageManagerPackage->reveal() ])
+            ->shouldBeCalled();
+
+        $composerPackageManager = $this->prophesize(
+            ComposerPackageManager::class
+        );
+        $composerPackageManager
+            ->getInstalledPackages(Argument::type('string'))
+            ->willReturn($packages->reveal())
+            ->shouldBeCalled();
+
+        $nodePackageManager = $this->prophesize(NodePackageManager::class);
+        $nodePackageManager
+            ->getInstalledPackages(Argument::type('string'))
+            ->willReturn($packages->reveal())
+            ->shouldBeCalled();
+
+        $parser = $this->prophesize(ParserInterface::class);
+        $parser->getDocumentedDependencies(
+            Argument::type('string')
+        )->willReturn(
+            $this->prophesize(PackageManagerPackageList::class)->reveal()
+        );
+
+        $writerConfiguration = $this->prophesize(WriterConfiguration::class);
+
+        $writer = $this->prophesize(WriterInterface::class);
+
+        $error = $this->prophesize(ErrorResultInterface::class);
+        $error->toString()->willReturn('error')->shouldBeCalled();
+
+        $packageValidator = $this->prophesize(PackageValidator::class);
+        $packageValidator
+            ->compare(Argument::type(StrictMode::class), Argument::cetera())
+            ->willReturn([$error->reveal()]);
+
+        $command = new UpdateCommand(
+            $writer->reveal(),
+            $parser->reveal(),
+            $packageValidator->reveal(),
+            $composerPackageManager->reveal(),
+            $nodePackageManager->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
+
+        $input = $this->getDefaultInputProphecy();
+        $output = $this->getDefaultOutputProphecy();
+
+        $input->getOption('directory')->willReturn('/test');
+
+        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
+        $prophecy
+            ->file_exists(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+        $prophecy
+            ->realpath(Argument::type('string'))
+            ->shouldBeCalledTimes(1)
+            ->willReturn(true);
+
+        $prophecy->reveal();
+
+        $this->assertEquals(
+            1,
             $command->run($input->reveal(), $output->reveal())
         );
 
