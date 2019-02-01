@@ -85,7 +85,7 @@ class UpdateCommand extends BaseCommand
             $filepath
         );
 
-        // This checks for version which are locked but installed with a different version.
+        // This checks for versions which are locked but installed with a different version.
         $lockedVersionErrors = $this->packageValidator->compare(
             StrictMode::lockedOnly(),
             $installedPackages,
