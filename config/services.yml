@@ -4,7 +4,7 @@ services:
         arguments: ['@PackageValidator', '@MarkdownParser', '@ComposerPackageManager', '@NodePackageManager', '@ConfigurationService']
     UpdateCommand:
         class: \DepDoc\Command\UpdateCommand
-        arguments: ['@MarkdownWriter', '@MarkdownParser', '@ComposerPackageManager', '@NodePackageManager', '@ConfigurationService']
+        arguments: ['@MarkdownWriter', '@MarkdownParser', '@PackageValidator', '@ComposerPackageManager', '@NodePackageManager', '@ConfigurationService']
 
     PackageValidator:
         class: \DepDoc\Validator\PackageValidator

@@ -30,7 +30,10 @@ class PackageValidator
 
         foreach ($installedPackages->getAllFlat() as $package) {
             if ($dependencyList->has($package->getManagerName(), $package->getName()) === false) {
-                $errors[] = new ErrorMissingDocumentationResult($package->getManagerName(), $package->getName());
+
+                if (!$mode->isLockedOnly()) {
+                    $errors[] = new ErrorMissingDocumentationResult($package->getManagerName(), $package->getName());
+                }
                 continue;
             }
 
@@ -46,6 +49,10 @@ class PackageValidator
                 );
                 continue;
             }
+        }
+
+        if ($mode->isLockedOnly()) {
+            return $errors;
         }
 
         foreach ($dependencyList->getAllFlat() as $dependency) {
@@ -73,7 +80,7 @@ class PackageValidator
         DependencyData $dependency,
         PackageManagerPackageInterface $package
     ): bool {
-        if ($mode->isExistingOrLocked()) {
+        if ($mode->isLockedOnly() || $mode->isExistingOrLocked()) {
             if ($dependency->isVersionLocked()) {
                 return $dependency->getVersion() === $package->getVersion();
             }

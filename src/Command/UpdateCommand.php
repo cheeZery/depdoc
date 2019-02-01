@@ -7,6 +7,8 @@ use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\Parser\ParserInterface;
+use DepDoc\Validator\PackageValidator;
+use DepDoc\Validator\StrictMode;
 use DepDoc\Writer\WriterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +19,8 @@ class UpdateCommand extends BaseCommand
     protected $writer;
     /** @var ParserInterface */
     protected $parser;
+    /** @var PackageValidator */
+    private $packageValidator;
 
     /**
      * @inheritdoc
@@ -24,6 +28,7 @@ class UpdateCommand extends BaseCommand
     public function __construct(
         WriterInterface $writer,
         ParserInterface $parser,
+        PackageValidator $packageValidator,
         ComposerPackageManager $managerComposer,
         NodePackageManager $managerNode,
         ConfigurationService $configurationService
@@ -32,6 +37,7 @@ class UpdateCommand extends BaseCommand
         $this->parser = $parser;
 
         parent::__construct('update', $managerComposer, $managerNode, $configurationService);
+        $this->packageValidator = $packageValidator;
     }
 
     /**
@@ -78,6 +84,21 @@ class UpdateCommand extends BaseCommand
         $documentedDependencies = $this->parser->getDocumentedDependencies(
             $filepath
         );
+
+        // This checks for versions which are locked but installed with a different version.
+        $lockedVersionErrors = $this->packageValidator->compare(
+            StrictMode::lockedOnly(),
+            $installedPackages,
+            $documentedDependencies
+        );
+
+        if (count($lockedVersionErrors) > 0) {
+            foreach ($lockedVersionErrors as $error) {
+                $this->io->error($error->toString());
+            }
+
+            return 1;
+        }
 
         $this->writer->getConfiguration()->setNewline(
             $this->configuration->getNewlineCharacter()

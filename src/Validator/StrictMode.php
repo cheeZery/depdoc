@@ -6,9 +6,10 @@ namespace DepDoc\Validator;
 
 class StrictMode
 {
-    protected const EXISTING_OR_LOCKED = 0;
-    protected const MAJOR_AND_MINOR = 1;
-    protected const FULL_SEM_VER_MATCH = 2;
+    protected const LOCKED_ONLY = 0;
+    protected const EXISTING_OR_LOCKED = 1;
+    protected const MAJOR_AND_MINOR = 2;
+    protected const FULL_SEM_VER_MATCH = 3;
 
     /** @var int */
     private $mode;
@@ -19,6 +20,11 @@ class StrictMode
     protected function __construct(int $mode)
     {
         $this->mode = $mode;
+    }
+
+    public static function lockedOnly(): self
+    {
+        return new StrictMode(self::LOCKED_ONLY);
     }
 
     public static function existingOrLocked(): self
@@ -34,6 +40,11 @@ class StrictMode
     public static function fullSemVerMatch(): self
     {
         return new StrictMode(self::FULL_SEM_VER_MATCH);
+    }
+
+    public function isLockedOnly(): bool
+    {
+        return $this->mode === self::LOCKED_ONLY;
     }
 
     public function isExistingOrLocked(): bool

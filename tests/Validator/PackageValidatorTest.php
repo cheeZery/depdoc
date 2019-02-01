@@ -14,6 +14,47 @@ use PHPUnit\Framework\TestCase;
 
 class PackageValidatorTest extends TestCase
 {
+    public function testItComparesForLockedOnly()
+    {
+        $installedPackages = $this->prophesize(PackageManagerPackageList::class);
+        $dependencyList = $this->prophesize(PackageManagerPackageList::class);
+
+        $notExistingPackage = $this->getPackageProphecy('Composer', 'test1', '1.0.0');
+        $versionMismatchPackage = $this->getPackageProphecy('Composer', 'test2', '1.0.0');
+        $notExistingDependency = $this->getDependencyPackageProphecy('Composer', 'test3', '1.0.0');
+        $versionMismatchDependency = $this->getDependencyPackageProphecy('Composer', 'test2', '1.1.0', true);
+
+        $installedPackages->getAllFlat()->willReturn([
+            $notExistingPackage->reveal(),
+            $versionMismatchPackage->reveal(),
+        ])->shouldBeCalled();
+
+        $dependencyList->has('Composer', 'test1')->willReturn(false)->shouldBeCalled();
+        $dependencyList->has('Composer', 'test2')->willReturn(true)->shouldBeCalled();
+
+        $dependencyList->get('Composer', 'test2')->willReturn($versionMismatchDependency->reveal())->shouldBeCalled();
+
+        $dependencyList->getAllFlat()->shouldNotBeCalled();
+
+        $installedPackages->has('Composer', 'test3')->shouldNotBeCalled();
+
+        $validator = new PackageValidator();
+        $errorResultList = $validator->compare(
+            StrictMode::lockedOnly(),
+            $installedPackages->reveal(),
+            $dependencyList->reveal()
+        );
+
+        $this->assertCount(1, $errorResultList);
+        foreach ($errorResultList as $errorResult) {
+            if ($errorResult instanceof ErrorVersionMismatchResult) {
+                $this->assertEquals($errorResult->getPackageName(), 'test2');
+            } else {
+                $this->fail('Unexpected error result: ' . get_class($errorResult));
+            }
+        }
+    }
+
     public function testItComparesCorrectlyForExistingOrLocked()
     {
         $installedPackages = $this->prophesize(PackageManagerPackageList::class);
@@ -45,7 +86,6 @@ class PackageValidatorTest extends TestCase
         ])->shouldBeCalled();
 
         $installedPackages->has('Composer', 'test3')->willReturn(false)->shouldBeCalled();
-        #$installedPackages->has('Composer', 'test4')->willReturn(true)->shouldBeCalled();
 
         $validator = new PackageValidator();
         $errorResultList = $validator->compare(
@@ -114,7 +154,6 @@ class PackageValidatorTest extends TestCase
             }
         }
     }
-
 
     public function testItComparesCorrectlyForFullSemanticVersion()
     {
