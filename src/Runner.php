@@ -1,8 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace DepDoc;
-
-// TODO: Add PHP 7.1 as requirement in composer.json
 
 class Runner
 {
