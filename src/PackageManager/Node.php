@@ -22,10 +22,8 @@ class Node extends PackageManager
             return [];
         }
 
-        $installedPackages = array_merge(
-            $dependencies["dependencies"] ?? [],
-            $dependencies['devDependencies'] ?? []
-        );
+        // The dependencies key contains both, dev & non-dev
+        $installedPackages = $dependencies["dependencies"];
 
         $relevantData = array_flip(["name", "version", "description", "peerMissing", "extraneous"]);
 
