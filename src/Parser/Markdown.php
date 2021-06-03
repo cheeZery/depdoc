@@ -10,8 +10,7 @@ class Markdown extends Parser
     public function getDocumentedDependencies(?string $packageManagerName = null): ?array
     {
         if (!file_exists(self::DEPENDENCIES_FILE)) {
-            echo self::DEPENDENCIES_FILE . ' is missing!';
-            exit(1);
+            return [];
         }
 
         $handle = @fopen(self::DEPENDENCIES_FILE, 'rb');
