@@ -14,3 +14,6 @@
 ##### @storybook/addon-storyshots `6.2.9`
 > Take a code snapshot of every story automatically with Jest
 
+##### jest `27.0.4`
+> Delightful JavaScript Testing.
+
