@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$composerAutoload = getcwd() . '/vendor/autoload.php';
+$composerAutoload = __DIR__ . '/../vendor/autoload.php';
 
 if (!file_exists($composerAutoload)) {
     echo 'Couldn\'t find composer, make sure to run script in project root!' . PHP_EOL;
