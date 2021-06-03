@@ -6,7 +6,7 @@ class Node extends PackageManager
 {
     public function getInstalledPackages()
     {
-        exec("npm list -json -depth 0 -long", $output);
+        exec("npm list -json -depth 0 -long 2> /dev/null", $output);
 
         if ($output[0] !== '{') {
             do {

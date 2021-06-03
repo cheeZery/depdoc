@@ -6,8 +6,7 @@ class Composer extends PackageManager
 {
     public function getInstalledPackages()
     {
-        // TODO: Detect operating system and pipe additional output into nothingness, 2> /dev/null vs. NUL:
-        exec("composer show --direct --format json", $output);
+        exec("composer show --direct --format json 2> /dev/null", $output);
 
         if ($output[0] !== '{') {
             do {
