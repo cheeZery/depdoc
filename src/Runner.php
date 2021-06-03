@@ -11,7 +11,7 @@ class Runner
     {
         $action = $arguments[0] ?? self::ACTIONS[0];
 
-        if (!in_array($action, self::ACTIONS)) {
+        if (!in_array($action, self::ACTIONS, true)) {
             echo "Unrecognized action '$action'!";
             exit(1);
         }

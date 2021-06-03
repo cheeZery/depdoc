@@ -5,11 +5,7 @@ namespace DepDoc\Validator;
 
 class Validator
 {
-    /**
-     * @param array $installedPackages
-     * @param array $documentedDependencies
-     */
-    public function compare(array $installedPackages, array $documentedDependencies)
+    public function compare(array $installedPackages, array $documentedDependencies): void
     {
         $errors = [];
 

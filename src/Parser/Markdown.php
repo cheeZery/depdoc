@@ -14,7 +14,7 @@ class Markdown extends Parser
             exit(1);
         }
 
-        $handle = @fopen(self::DEPENDENCIES_FILE, "r");
+        $handle = @fopen(self::DEPENDENCIES_FILE, 'rb');
 
         $currentPackageManagerName = null;
         $currentPackage = null;
@@ -44,7 +44,7 @@ class Markdown extends Parser
             }
 
             // TODO: After config file was added, add option to define used lock symbol
-            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/', $line, $matches)) {
+            if (preg_match('/^#{5}\s([^ ]+)\s`([^`]+)`\s?(🔒|🛇|⚠|✋)?/u', $line, $matches)) {
                 $currentPackage = $matches[1];
 
                 // TODO: Create model for documented dependency

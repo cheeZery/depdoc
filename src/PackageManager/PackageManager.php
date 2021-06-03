@@ -7,7 +7,7 @@ abstract class PackageManager
 {
     public function getName()
     {
-        $fullyQualifiedClassNameParts = explode('\\', get_called_class());
+        $fullyQualifiedClassNameParts = explode('\\', static::class);
 
         return end($fullyQualifiedClassNameParts);
     }

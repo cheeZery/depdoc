@@ -8,9 +8,9 @@ class Application
     public function updateAction()
     {
         $composer = new PackageManager\Composer();
-        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $node = new PackageManager\Node();
-        $installedPackages[$node->getName()] = [];
+
+        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $markdownParser = new Parser\Markdown();
@@ -23,8 +23,9 @@ class Application
     public function validateAction()
     {
         $composer = new PackageManager\Composer();
-        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $node = new PackageManager\Node();
+
+        $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
 
         $markdownParser = new Parser\Markdown();

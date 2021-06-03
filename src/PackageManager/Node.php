@@ -5,7 +5,7 @@ namespace DepDoc\PackageManager;
 
 class Node extends PackageManager
 {
-    public function getInstalledPackages()
+    public function getInstalledPackages(): array
     {
         exec("npm list -json -depth 0 -long 2> /dev/null", $output);
 

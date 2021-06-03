@@ -7,7 +7,7 @@ class Markdown extends Writer
 {
     private const DEPENDENCIES_FILE = 'DEPENDENCIES.md';
 
-    public function createDocumentation(array $installedPackages, array $documentedDependencies)
+    public function createDocumentation(array $installedPackages, array $documentedDependencies): void
     {
         $documentation = [];
 
@@ -52,11 +52,10 @@ class Markdown extends Writer
 
             $documentation[] = "";
 
-            $handle = @fopen(self::DEPENDENCIES_FILE, "w");
+            $handle = @fopen(self::DEPENDENCIES_FILE, 'wb');
 
             foreach ($documentation as $line) {
-                // TODO: which line break?!
-                fwrite($handle, "$line\r\n");
+                fwrite($handle, $line . PHP_EOL);
             }
 
             fclose($handle);
