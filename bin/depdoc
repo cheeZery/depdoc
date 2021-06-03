@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require __DIR__ . '/../vendor/autoload.php';
-} elseif (file_exists(getcwd() . '/vendor/autoload.php')) {
+if (file_exists(getcwd() . '/vendor/autoload.php')) {
     require getcwd() . '/vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
 } else {
     echo 'Couldn\'t find composer, make sure to run script in project root!' . PHP_EOL;
     exit(1);
