@@ -41,7 +41,9 @@ class Markdown extends Writer
                     $documentation[] = "##### $name `$version`";
                 }
 
-                $documentation[] = "> $description";
+                if (strlen($description) > 0) {
+                    $documentation[] = "> $description";
+                }
 
                 foreach ($additionalContent as $contentLine) {
                     $documentation[] = $contentLine;
