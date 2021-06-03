@@ -35,7 +35,6 @@ class Node extends PackageManager
 
         $requiredPackages = [];
         foreach ($installedPackages as $installedPackage) {
-            // Skip peer dependencies
             if ($this->isPeerDependency($installedPackage)) {
                 continue;
             }
