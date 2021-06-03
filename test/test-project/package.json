@@ -1,0 +1,10 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "description": "Test project",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@storybook/addon-storyshots": "^6.2.0"
+  }
+}
