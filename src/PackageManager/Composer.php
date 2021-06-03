@@ -5,31 +5,10 @@ namespace DepDoc\PackageManager;
 
 class Composer extends PackageManager
 {
-    public function getInstalledPackages()
+    public function getInstalledPackages(): array
     {
-        exec("composer show --direct --format json 2> /dev/null", $output);
-
-        if ($output[0] !== '{') {
-            do {
-                array_shift($output);
-            } while (count($output) > 0 && trim($output[0]) !== '{');
-        }
-
-        if (count($output) === 0) {
-            return [];
-        }
-
-        $dependencies = json_decode(implode("", $output), true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            echo sprintf(
-                'Error occurred while trying to read %s dependencies: %s (%s)' . PHP_EOL,
-                $this->getName(),
-                json_last_error_msg(),
-                json_last_error()
-            );
-            exit(1);
-        }
+        $dependencies = $this->cliCommandHelper
+            ->runAndGetOutputAsJson('composer show --direct --format json', $this->getName());
 
         $installedPackages = $dependencies["installed"] ?? [];
 

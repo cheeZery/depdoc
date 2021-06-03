@@ -3,12 +3,21 @@ declare(strict_types=1);
 
 namespace DepDoc;
 
+use DepDoc\Helper\CliCommandHelper;
+
 class Application
 {
+    private CliCommandHelper $cliCommandHelper;
+
+    public function __construct()
+    {
+        $this->cliCommandHelper = new CliCommandHelper();
+    }
+
     public function updateAction()
     {
-        $composer = new PackageManager\Composer();
-        $node = new PackageManager\Node();
+        $composer = new PackageManager\Composer($this->cliCommandHelper);
+        $node = new PackageManager\Node($this->cliCommandHelper);
 
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
@@ -22,8 +31,8 @@ class Application
 
     public function validateAction()
     {
-        $composer = new PackageManager\Composer();
-        $node = new PackageManager\Node();
+        $composer = new PackageManager\Composer($this->cliCommandHelper);
+        $node = new PackageManager\Node($this->cliCommandHelper);
 
         $installedPackages[$composer->getName()] = $composer->getInstalledPackages();
         $installedPackages[$node->getName()] = $node->getInstalledPackages();
