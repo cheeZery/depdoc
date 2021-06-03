@@ -7,8 +7,16 @@ class Node extends PackageManager
 {
     public function getInstalledPackages(): array
     {
+        $command = implode(' ', [
+            'npm list',
+            '--json',
+            // Saves some performance
+            '--depth 0',
+            // Required to get description field
+            '--long',
+        ]);
         $dependencies = $this->cliCommandHelper
-            ->runAndGetOutputAsJson('npm list -json -depth 0 -long', $this->getName());
+            ->runAndGetOutputAsJson($command, $this->getName());
 
         if (count($dependencies) === 0) {
             return [];
@@ -19,16 +27,27 @@ class Node extends PackageManager
             $dependencies['devDependencies'] ?? []
         );
 
-        $relevantData = array_flip(["name", "version", "description"]);
+        $relevantData = array_flip(["name", "version", "description", "peerMissing"]);
 
         array_walk($installedPackages, function (&$dependency) use ($relevantData) {
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
+        $requiredPackages = [];
         foreach ($installedPackages as $installedPackage) {
-            $output[$installedPackage['name']] = $installedPackage;
+            // Skip peer dependencies
+            if ($this->isPeerDependency($installedPackage)) {
+                continue;
+            }
+
+            $requiredPackages[$installedPackage['name']] = $installedPackage;
         }
 
-        return $installedPackages;
+        return $requiredPackages;
+    }
+
+    private function isPeerDependency(array $installedPackage): bool
+    {
+        return array_key_exists('peerMissing', $installedPackage) && count($installedPackage['peerMissing']) > 0;
     }
 }
