@@ -25,7 +25,7 @@ class Markdown extends Writer
 
                 $name = $installedPackage['name'];
                 $version = $installedPackage['version'];
-                $description = $installedPackage['description'];
+                $description = $installedPackage['description'] ?? '';
 
                 if (!empty($documentedDependencies[$packageManagerName])) {
                     $documentedDependency = $documentedDependencies[$packageManagerName][$name] ?? [];
