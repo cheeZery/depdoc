@@ -5,12 +5,11 @@ namespace DepDoc\Helper;
 
 use JsonException;
 
-class CliCommandHelper {
-
-    public function runAndGetOutputAsJson(string $command, string $contextName): array {
-
-        $fullCommand = sprintf('%s 2> /dev/null', escapeshellcmd($command));
-        exec($fullCommand, $output);
+class CliCommandHelper
+{
+    public function runAndGetOutputAsJson(string $command, string $contextName): array
+    {
+        $output = $this->run($command, $contextName);
 
         if (count($output) === 0) {
             return [];
@@ -42,4 +41,11 @@ class CliCommandHelper {
         return $jsonOutput;
     }
 
+    public function run(string $command, string $contextName): array
+    {
+        $fullCommand = sprintf('%s 2> /dev/null', escapeshellcmd($command));
+        exec($fullCommand, $output);
+
+        return $output;
+    }
 }

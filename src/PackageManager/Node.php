@@ -27,7 +27,7 @@ class Node extends PackageManager
             $dependencies['devDependencies'] ?? []
         );
 
-        $relevantData = array_flip(["name", "version", "description", "peerMissing"]);
+        $relevantData = array_flip(["name", "version", "description", "peerMissing", "extraneous"]);
 
         array_walk($installedPackages, function (&$dependency) use ($relevantData) {
             $dependency = array_intersect_key($dependency, $relevantData);
@@ -35,7 +35,7 @@ class Node extends PackageManager
 
         $requiredPackages = [];
         foreach ($installedPackages as $installedPackage) {
-            if ($this->isPeerDependency($installedPackage)) {
+            if (!$this->isValidPackage($installedPackage)) {
                 continue;
             }
 
@@ -45,8 +45,18 @@ class Node extends PackageManager
         return $requiredPackages;
     }
 
-    private function isPeerDependency(array $installedPackage): bool
+    private function isValidPackage(array $installedPackage): bool
     {
-        return array_key_exists('peerMissing', $installedPackage) && count($installedPackage['peerMissing']) > 0;
+        // NPM <= 6 peer dependency note
+        if (array_key_exists('peerMissing', $installedPackage) && count($installedPackage['peerMissing']) > 0) {
+            return false;
+        }
+
+        // NPM 7 extraneous (installed but unneeded) package
+        if (array_key_exists('extraneous', $installedPackage) && $installedPackage['extraneous'] === true) {
+            return false;
+        }
+
+        return true;
     }
 }
