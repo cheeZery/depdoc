@@ -23,7 +23,12 @@ class NodePackageManager implements PackageManagerInterface
             // Required to get description field
             '--long',
         ]);
-        $output = shell_exec("cd " . escapeshellarg($directory) . " && " . $npmCommand . " 2> /dev/null");
+        $command = sprintf(
+            "cd %s && %s 2> /dev/null",
+            escapeshellarg($directory),
+            $npmCommand,
+        );
+        $output = shell_exec($command);
 
         if ($output === null) {
             return $packageList;
@@ -47,13 +52,17 @@ class NodePackageManager implements PackageManagerInterface
 
         $installedPackages = $dependencies['dependencies'] ?? [];
 
-        $relevantData = array_flip(['name', 'version', 'description']);
+        $relevantData = array_flip(['name', 'version', 'description', 'peerMissing', 'extraneous']);
 
-        array_walk($installedPackages, function (&$dependency) use ($relevantData) {
+        array_walk($installedPackages, static function (&$dependency) use ($relevantData) {
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
         foreach ($installedPackages as $installedPackage) {
+            if (!$this->isValidPackage($installedPackage)) {
+                continue;
+            }
+
             $packageList->add(new NodePackage(
                 $this->getName(),
                 $installedPackage['name'],
@@ -63,6 +72,21 @@ class NodePackageManager implements PackageManagerInterface
         }
 
         return $packageList;
+    }
+
+    private function isValidPackage(array $installedPackage): bool
+    {
+        // NPM <= 6 peer dependency note
+        if (array_key_exists('peerMissing', $installedPackage) && count($installedPackage['peerMissing']) > 0) {
+            return false;
+        }
+
+        // NPM 7 extraneous (installed but unneeded) package
+        if (array_key_exists('extraneous', $installedPackage) && $installedPackage['extraneous'] === true) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getName(): string
