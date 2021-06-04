@@ -6,6 +6,7 @@ namespace DepDoc\PackageManager;
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
 use DepDoc\PackageManager\Package\NodePackage;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
+use JsonException;
 
 class NodePackageManager implements PackageManagerInterface
 {
@@ -30,17 +31,17 @@ class NodePackageManager implements PackageManagerInterface
 
         $output = trim($output);
 
-        if (strlen($output) === 0 || $output[0] !== '{') {
+        if ($output === '' || $output[0] !== '{') {
             return $packageList;
         }
 
-        $dependencies = json_decode($output, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $dependencies = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
             throw new FailedToParseDependencyInformationException(
                 $this->getName(),
-                json_last_error(),
-                json_last_error_msg()
+                $exception->getCode(),
+                $exception->getMessage()
             );
         }
 
