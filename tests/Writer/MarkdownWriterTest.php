@@ -11,22 +11,24 @@ use DepDoc\Writer\MarkdownWriter;
 use DepDoc\Writer\WriterConfiguration;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class MarkdownWriterTest extends TestCase
 {
-    /** @var PHPProphet */
-    protected $prophet;
+    use ProphecyTrait;
+
+    protected PHPProphet $globalProphet;
 
     protected function setUp(): void
     {
-        $this->prophet = new PHPProphet();
+        $this->globalProphet = new PHPProphet();
     }
 
     public function testItSuccessfullyCreatesFileData(): void
     {
         $filepath = '/some/file';
 
-        $prophecy = $this->prophet->prophesize('DepDoc\\Writer');
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\Writer');
 
         $installedPackages = $this->prophesize(PackageManagerPackageList::class);
         $dependencyList = $this->prophesize(PackageManagerPackageList::class);
@@ -71,7 +73,7 @@ class MarkdownWriterTest extends TestCase
         $configuration->isExportExternalLink()->willReturn(true)->shouldBeCalledTimes(6);
         $configuration->getNewline()->willReturn('#nl')->shouldBeCalledTimes(26);
 
-        $prophecy->file_put_contents($filepath, [
+        $globalProphecy->file_put_contents($filepath, [
             '# Composer#nl',
             '#nl',
             '## t1p1 `1.0.0` [link](https://packagist.org/packages/t1p1)#nl',
@@ -100,7 +102,7 @@ class MarkdownWriterTest extends TestCase
             '#nl',
         ], LOCK_EX)->shouldBeCalled();
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
 
         $writer = new MarkdownWriter($configuration->reveal());
         $writer->createDocumentation(
@@ -109,7 +111,7 @@ class MarkdownWriterTest extends TestCase
             $dependencyList->reveal()
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     protected function getComposerPackageProphecy(string $name, string $version, ?string $description)

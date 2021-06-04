@@ -4,9 +4,12 @@ namespace DepDocTest\PackageManager\Package;
 
 use DepDoc\PackageManager\Package\ComposerPackage;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class ComposerPackageTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItBuildsCorrectExternalLInk()
     {
         $package = new ComposerPackage('Composer', 'test/package', '1.0.0', null);

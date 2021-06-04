@@ -35,6 +35,7 @@
         "composer/composer": "^1.7",
         "symfony/config": "^4.2",
         "vierbergenlars/php-semver": "^3.0",
+        "phpspec/prophecy-phpunit": "^2.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

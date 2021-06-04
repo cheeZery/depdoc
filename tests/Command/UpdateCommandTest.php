@@ -20,6 +20,7 @@ use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,12 +28,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommandTest extends TestCase
 {
-    /** @var PHPProphet */
-    protected $prophet;
+    use ProphecyTrait;
+
+    protected PHPProphet $globalProphet;
 
     protected function setUp(): void
     {
-        $this->prophet = new PHPProphet();
+        $this->globalProphet = new PHPProphet();
     }
 
     protected function tearDown(): void
@@ -150,24 +152,24 @@ class UpdateCommandTest extends TestCase
 
         $input->getOption('directory')->willReturn('/test');
 
-        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
-        $prophecy
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\Command');
+        $globalProphecy
             ->file_exists(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $prophecy
+        $globalProphecy
             ->realpath(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
 
         $this->assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal())
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     public function testReturnsErrorsWhenValidationOfLockedVersionsFails(): void
@@ -231,24 +233,24 @@ class UpdateCommandTest extends TestCase
 
         $input->getOption('directory')->willReturn('/test');
 
-        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
-        $prophecy
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\Command');
+        $globalProphecy
             ->file_exists(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $prophecy
+        $globalProphecy
             ->realpath(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
 
         $this->assertEquals(
             1,
             $command->run($input->reveal(), $output->reveal())
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     /**

@@ -5,9 +5,12 @@ namespace DepDocTest\Dependencies;
 use DepDoc\Dependencies\DependencyData;
 use DepDoc\Dependencies\DependencyDataAdditionalContent;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class DependencyDataTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItTakesConstructorDefaultValues()
     {
         $dependency = new DependencyData('manager', 'name', 'version', null);

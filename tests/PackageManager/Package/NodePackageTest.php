@@ -4,9 +4,12 @@ namespace DepDocTest\PackageManager\Package;
 
 use DepDoc\PackageManager\Package\NodePackage;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class NodePackageTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItBuildsCorrectExternalLInk()
     {
         $package = new NodePackage('Node', 'test/package', '1.0.0', null);

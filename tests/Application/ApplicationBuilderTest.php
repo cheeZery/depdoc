@@ -6,12 +6,15 @@ namespace DepDocTest\Application;
 
 use DepDoc\Application\ApplicationBuilder;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class ApplicationBuilderTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItBuildsApplication(): void
     {
         $containerBuilder = $this->prophesize(ContainerBuilder::class);

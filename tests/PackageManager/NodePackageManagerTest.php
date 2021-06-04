@@ -7,15 +7,17 @@ use DepDoc\PackageManager\Package\NodePackage;
 use phpmock\Mock;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class NodePackageManagerTest extends TestCase
 {
-    /** @var PHPProphet */
-    protected $prophet;
+    use ProphecyTrait;
+
+    protected PHPProphet $globalProphet;
 
     protected function setUp(): void
     {
-        $this->prophet = new PHPProphet();
+        $this->globalProphet = new PHPProphet();
     }
 
     protected function tearDown(): void
@@ -27,11 +29,11 @@ class NodePackageManagerTest extends TestCase
 
     public function testGetInstalledPackages()
     {
-        $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
         $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list --json --depth 0 --long 2> /dev/null';
-        $prophecy
+        $globalProphecy
             ->shell_exec($command)
             ->shouldBeCalledTimes(1)
             ->willReturn(<<<JSON
@@ -62,7 +64,7 @@ class NodePackageManagerTest extends TestCase
 JSON
             );
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
@@ -79,16 +81,16 @@ JSON
 
     public function testOutputWithNullReturnsEmptyPackageList()
     {
-        $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
         $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list --json --depth 0 --long 2> /dev/null';
-        $prophecy
+        $globalProphecy
             ->shell_exec($command)
             ->shouldBeCalledTimes(1)
             ->willReturn(null);
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);

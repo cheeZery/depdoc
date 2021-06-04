@@ -7,12 +7,15 @@ use DepDoc\Command\UpdateCommand;
 use DepDoc\Command\ValidateCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputDefinition;
 
 class DepDocApplicationTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItShouldHaveExpectedCommands()
     {
         $validateCommand = $this->prophesize(ValidateCommand::class);

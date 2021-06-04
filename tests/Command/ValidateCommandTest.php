@@ -17,6 +17,7 @@ use phpmock\MockRegistry;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,12 +25,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ValidateCommandTest extends TestCase
 {
-    /** @var PHPProphet */
-    protected $prophet;
+    use ProphecyTrait;
+
+    protected PHPProphet $globalProphet;
 
     protected function setUp(): void
     {
-        $this->prophet = new PHPProphet();
+        $this->globalProphet = new PHPProphet();
     }
 
     protected function tearDown(): void
@@ -142,7 +144,7 @@ class ValidateCommandTest extends TestCase
             $command->run($input->reveal(), $output->reveal())
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     public function testItDeterminesVeryStrictMode(): void
@@ -187,7 +189,7 @@ class ValidateCommandTest extends TestCase
             'exit code should match'
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     public function testItDeterminesStrictMode(): void
@@ -233,7 +235,7 @@ class ValidateCommandTest extends TestCase
             'exit code should match'
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     public function testItDeterminesDefaultStrictMode(): void
@@ -279,7 +281,7 @@ class ValidateCommandTest extends TestCase
             'exit code should match'
         );
 
-        $this->prophet->checkPredictions();
+        $this->globalProphet->checkPredictions();
     }
 
     /**
@@ -370,16 +372,16 @@ class ValidateCommandTest extends TestCase
 
     protected function prophesizeSystemCalls(): void
     {
-        $prophecy = $this->prophet->prophesize('DepDoc\\Command');
-        $prophecy
+        $globalProphecy = $this->globalProphet->prophesize('DepDoc\\Command');
+        $globalProphecy
             ->file_exists(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
-        $prophecy
+        $globalProphecy
             ->realpath(Argument::type('string'))
             ->shouldBeCalledTimes(1)
             ->willReturn(true);
 
-        $prophecy->reveal();
+        $globalProphecy->reveal();
     }
 }

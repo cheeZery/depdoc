@@ -13,9 +13,12 @@ use Composer\Semver\Constraint\ConstraintInterface;
 use DepDoc\PackageManager\ComposerPackageManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class ComposerPackageManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testGetInstalledPackages()
     {
         $package = $this->prophesize(CompletePackage::class);

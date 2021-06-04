@@ -4,9 +4,12 @@ namespace DepDocTest\PackageManager\PackageList;
 
 use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class PackageManagerPackageListTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItAddsPackage()
     {
         $package = $this->prophesize(PackageManagerPackageInterface::class);

@@ -11,9 +11,12 @@ use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorVersionMismatchResult;
 use DepDoc\Validator\StrictMode;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class PackageValidatorTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItComparesForLockedOnly()
     {
         $installedPackages = $this->prophesize(PackageManagerPackageList::class);
