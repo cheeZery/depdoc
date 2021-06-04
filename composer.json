@@ -24,7 +24,7 @@
         }
     },
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.4.0",
         "ext-json": "*",
         "ext-pcre": "*",
         "symfony/console": "^4.1",
@@ -37,6 +37,7 @@
         "vierbergenlars/php-semver": "^3.0"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
         "phpunit/phpunit": "^7.2",
         "php-mock/php-mock-prophecy": "^0.0.2",
         "symfony/var-dumper": "^4.1",
