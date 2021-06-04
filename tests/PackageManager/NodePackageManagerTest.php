@@ -31,7 +31,6 @@ class NodePackageManagerTest extends TestCase
 
         $targetDirectory = '/some/dir';
         $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list --json --depth 0 --long 2> /dev/null';
-        $commandOutput = null;
         $prophecy
             ->shell_exec($command)
             ->shouldBeCalledTimes(1)
@@ -42,6 +41,21 @@ class NodePackageManagerTest extends TestCase
       "name": "Test",
       "version": "1.0.0",
       "description": "awesome package"
+    },
+    "SomeExtraneous": {
+      "name": "Extraneous package",
+      "version": "1.0.0",
+      "extraneous": true
+    },
+    "svelte": {
+      "name": "svelte",
+      "version": "*",
+      "peerMissing": [
+        {
+          "requiredBy": "@storybook/addon-storyshots@6.2.9",
+          "requires": "svelte@*"
+        }
+      ]
     }
   }
 }
@@ -68,8 +82,7 @@ JSON
         $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
-        $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list -json -depth 0 -long';
-        $commandOutput = null;
+        $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list --json --depth 0 --long 2> /dev/null';
         $prophecy
             ->shell_exec($command)
             ->shouldBeCalledTimes(1)
