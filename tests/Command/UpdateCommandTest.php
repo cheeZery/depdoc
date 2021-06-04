@@ -30,12 +30,12 @@ class UpdateCommandTest extends TestCase
     /** @var PHPProphet */
     protected $prophet;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prophet = new PHPProphet();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         MockRegistry::getInstance()->unregisterAll();
     }

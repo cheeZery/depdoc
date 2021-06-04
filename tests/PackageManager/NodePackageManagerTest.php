@@ -13,12 +13,12 @@ class NodePackageManagerTest extends TestCase
     /** @var PHPProphet */
     protected $prophet;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prophet = new PHPProphet();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -30,7 +30,7 @@ class NodePackageManagerTest extends TestCase
         $prophecy = $this->prophet->prophesize('DepDoc\\PackageManager');
 
         $targetDirectory = '/some/dir';
-        $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list -json -depth 0 -long';
+        $command = 'cd ' . escapeshellarg($targetDirectory) . ' && npm list --json --depth 0 --long 2> /dev/null';
         $commandOutput = null;
         $prophecy
             ->shell_exec($command)

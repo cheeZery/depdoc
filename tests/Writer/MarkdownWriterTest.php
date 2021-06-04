@@ -17,12 +17,12 @@ class MarkdownWriterTest extends TestCase
     /** @var PHPProphet */
     protected $prophet;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prophet = new PHPProphet();
     }
 
-    public function testItSuccessfullyCreatesFileData()
+    public function testItSuccessfullyCreatesFileData(): void
     {
         $filepath = '/some/file';
 
