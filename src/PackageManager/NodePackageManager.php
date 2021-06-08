@@ -30,7 +30,7 @@ class NodePackageManager implements PackageManagerInterface
         );
         $output = shell_exec($command);
 
-        if ($output === null || $output === false) {
+        if (!is_string($output)) {
             return $packageList;
         }
 
