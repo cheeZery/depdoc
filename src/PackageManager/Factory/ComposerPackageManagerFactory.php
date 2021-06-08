@@ -13,7 +13,7 @@ class ComposerPackageManagerFactory
     public static function create(Factory $factory = null): ComposerPackageManager
     {
         // Find a better way to create composer package with ConsoleIO.
-        $factory = $factory ?: new Factory();
+        $factory = $factory ?? new Factory();
 
         return new ComposerPackageManager(
             $factory->createComposer(new NullIO())

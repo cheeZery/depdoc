@@ -9,32 +9,23 @@ use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 class PackageManagerPackageList implements PackageManagerPackageListInterface
 {
     /** @var PackageManagerPackage[][] */
-    protected $dependencies = [];
+    protected array $dependencies = [];
     /** @var null|PackageManagerPackage[] */
-    protected $cachedFlatDependencies;
+    protected ?array $cachedFlatDependencies;
 
-    /**
-     * @param PackageManagerPackageInterface $package
-     * @return PackageManagerPackageListInterface
-     */
-    public function add(PackageManagerPackageInterface $package): PackageManagerPackageListInterface
+    public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {
-        if (isset($this->dependencies[$package->getManagerName()]) === false) {
-            $this->dependencies[$package->getManagerName()] = [];
+        if (isset($this->dependencies[$data->getManagerName()]) === false) {
+            $this->dependencies[$data->getManagerName()] = [];
         }
 
         // @TODO: Check for same package name and throw exception in case somebody edits the file manually
-        $this->dependencies[$package->getManagerName()][$package->getName()] = $package;
+        $this->dependencies[$data->getManagerName()][$data->getName()] = $data;
         $this->cachedFlatDependencies = null;
 
         return $this;
     }
 
-    /**
-     * @param string $packageManagerName
-     * @param string $packageName
-     * @return bool
-     */
     public function has(string $packageManagerName, string $packageName): bool
     {
         if (isset($this->dependencies[$packageManagerName]) === false) {
@@ -44,12 +35,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
         return array_key_exists($packageName, $this->getAllByManager($packageManagerName));
     }
 
-    /**
-     * @param string $packageManagerName
-     * @param string $packageName
-     * @return null|PackageManagerPackageInterface
-     */
-    public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface
+    public function get(string $packageManagerName, string $packageName): ?PackageManagerPackage
     {
         if ($this->has($packageManagerName, $packageName) === false) {
             return null;
@@ -88,7 +74,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 
     /**
      * @param string $manager
-     * @return PackageManagerPackageInterface[]
+     * @return PackageManagerPackage[]
      */
     public function getAllByManager(string $manager): array
     {
@@ -99,10 +85,6 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
         return $this->dependencies[$manager];
     }
 
-    /**
-     * @param PackageManagerPackageListInterface $packageList
-     * @return PackageManagerPackageListInterface
-     */
     public function merge(PackageManagerPackageListInterface $packageList): PackageManagerPackageListInterface
     {
         foreach ($packageList->getAllFlat() as $package) {

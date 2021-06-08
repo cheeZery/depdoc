@@ -9,7 +9,7 @@ namespace DepDoc\Dependencies;
 class DependencyDataAdditionalContent
 {
     /** @var string[] */
-    protected $lines = [];
+    protected array $lines = [];
 
     /**
      * @param string[] $lines
@@ -20,6 +20,9 @@ class DependencyDataAdditionalContent
     }
 
 
+    /**
+     * @return string[]
+     */
     public function getAll(): array
     {
         return $this->lines;

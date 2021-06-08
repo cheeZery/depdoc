@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DepDoc\Configuration;
 
 use DepDoc\Configuration\Exception\FailedToParseConfigurationFileException;
+use Exception;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
@@ -11,13 +12,13 @@ use Symfony\Component\Serializer\Encoder\YamlEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Throwable;
 
 class ConfigurationService
 {
-    /** @var Serializer */
-    protected $serializer;
+    protected Serializer $serializer;
     /** @var ConfigurationFileDefinition[] */
-    protected $supportedConfigurationFiles = [];
+    protected array $supportedConfigurationFiles = [];
 
     /**
      * @param ConfigurationFileDefinition[] $additionalConfigurationFiles
@@ -41,10 +42,6 @@ class ConfigurationService
     }
 
 
-    /**
-     * @param string $targetDirectory
-     * @return ApplicationConfiguration|null
-     */
     public function loadFromDirectory(string $targetDirectory): ?ApplicationConfiguration
     {
         foreach ($this->supportedConfigurationFiles as $supportedConfigurationFile) {
@@ -59,11 +56,6 @@ class ConfigurationService
         return null;
     }
 
-    /**
-     * @param ConfigurationFileDefinition $supportedConfigurationFile
-     * @param string $filepath
-     * @return ApplicationConfiguration
-     */
     protected function loadDefinition(
         ConfigurationFileDefinition $supportedConfigurationFile,
         string $filepath
@@ -71,12 +63,17 @@ class ConfigurationService
 
         try {
             $content = file_get_contents($filepath);
+            if ($content=== false) {
+                throw new Exception('Failed to read file: ' . $filepath);
+            }
+
             $dataArray = $this->serializer->decode($content, $supportedConfigurationFile->getFormat());
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             throw new FailedToParseConfigurationFileException($filepath, $exception->getMessage());
         }
 
         // @TODO: Catch TypeError and expose as invalid configuration file format?
+        /** @var ApplicationConfiguration $configuration */
         $configuration = $this->serializer->denormalize($dataArray, ApplicationConfiguration::class);
 
         return $configuration;

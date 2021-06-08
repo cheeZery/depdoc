@@ -30,7 +30,7 @@ class NodePackageManager implements PackageManagerInterface
         );
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if ($output === null || $output === false) {
             return $packageList;
         }
 
@@ -54,7 +54,7 @@ class NodePackageManager implements PackageManagerInterface
 
         $relevantData = array_flip(['name', 'version', 'description', 'peerMissing', 'extraneous']);
 
-        array_walk($installedPackages, static function (&$dependency) use ($relevantData) {
+        array_walk($installedPackages, static function (&$dependency) use ($relevantData): void {
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
@@ -74,6 +74,10 @@ class NodePackageManager implements PackageManagerInterface
         return $packageList;
     }
 
+    /**
+     * @param array{peerMissing?: array, extraneous?: bool} $installedPackage
+     * @return bool
+     */
     private function isValidPackage(array $installedPackage): bool
     {
         // NPM <= 6 peer dependency note

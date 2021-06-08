@@ -14,26 +14,20 @@ class ApplicationBuilder
 {
     private const CONFIG_DIRECTORY = __DIR__ . '/../../config';
 
-    /**
-     * @var ContainerBuilder
-     */
-    private $containerBuilder;
-
-    /**
-     * @var LoaderInterface
-     */
-    private $loader;
+    private ContainerBuilder $containerBuilder;
+    private LoaderInterface $loader;
 
     public function __construct(
         ContainerBuilder $containerBuilder = null,
-        LoaderInterface $fileLoader = null
-    ) {
-        $this->containerBuilder = $containerBuilder ?: new ContainerBuilder();
-        $this->loader = $fileLoader ?: new YamlFileLoader(
-            $this->containerBuilder,
-            new FileLocator(self::CONFIG_DIRECTORY)
-        );
-
+        LoaderInterface  $fileLoader = null
+    )
+    {
+        $this->containerBuilder = $containerBuilder ?? new ContainerBuilder();
+        $this->loader = $fileLoader ??
+            new YamlFileLoader(
+                $this->containerBuilder,
+                new FileLocator(self::CONFIG_DIRECTORY)
+            );
     }
 
     public function build(): Application

@@ -11,17 +11,12 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 
 class MarkdownWriter implements WriterInterface
 {
-    /** @var WriterConfiguration */
-    protected $configuration;
+    protected WriterConfiguration $configuration;
 
-    /**
-     * @param WriterConfiguration|null $configuration
-     */
     public function __construct(?WriterConfiguration $configuration = null)
     {
         $this->configuration = $configuration ?? new WriterConfiguration();
     }
-
 
     /**
      * @inheritdoc
@@ -71,25 +66,16 @@ class MarkdownWriter implements WriterInterface
 
         $documentation[] = "";
 
-        file_put_contents($filepath, array_map(function ($line) {
+        file_put_contents($filepath, array_map(function ($line): string {
             return $line . $this->configuration->getNewline();
         }, $documentation), LOCK_EX);
     }
 
-    /**
-     * @param string $packageManagerName
-     * @return string
-     */
     protected function createPackageManagerLine(string $packageManagerName): string
     {
         return "# $packageManagerName";
     }
 
-    /**
-     * @param PackageManagerPackageInterface $package
-     * @param DependencyData $dependency
-     * @return string
-     */
     protected function createPackageLockedLine(
         PackageManagerPackageInterface $package,
         DependencyData $dependency
@@ -102,10 +88,6 @@ class MarkdownWriter implements WriterInterface
         return $line;
     }
 
-    /**
-     * @param PackageManagerPackageInterface $package
-     * @return string
-     */
     protected function createPackageLine(PackageManagerPackageInterface $package): string
     {
         $line = "## {$package->getName()} `{$package->getVersion()}`";
@@ -116,27 +98,16 @@ class MarkdownWriter implements WriterInterface
         return $line;
     }
 
-    /**
-     * @param null|string $description
-     * @return string
-     */
     protected function createDescriptionLine(?string $description): string
     {
         return "> $description";
     }
 
-    /**
-     * @param PackageManagerPackageInterface $package
-     * @return string
-     */
     protected function createExternalLink(PackageManagerPackageInterface $package): string
     {
         return "[link]({$package->getExternalLink()})";
     }
 
-    /**
-     * @return WriterConfiguration
-     */
     public function getConfiguration(): WriterConfiguration
     {
         return $this->configuration;
