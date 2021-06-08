@@ -33,7 +33,7 @@ class ApplicationBuilderTest extends TestCase
 
         $containerBuilderValue = $reflContainerProperty->getValue($application);
 
-        $this->assertEquals($containerBuilder->reveal(), $containerBuilderValue);
+        self::assertEquals($containerBuilder->reveal(), $containerBuilderValue);
     }
 
     public function testItUsesDefaultDependencies(): void
@@ -47,13 +47,13 @@ class ApplicationBuilderTest extends TestCase
         $reflLoaderProp = $reflBuilder->getProperty('loader');
         $reflLoaderProp->setAccessible(true);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ContainerBuilder::class,
             $reflContainerBuilderProp->getValue($builder),
             'default container builder should be instance of ' . ContainerBuilder::class
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             YamlFileLoader::class,
             $reflLoaderProp->getValue($builder),
             'default loader should be instance of ' . YamlFileLoader::class

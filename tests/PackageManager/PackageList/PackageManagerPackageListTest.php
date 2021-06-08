@@ -2,7 +2,7 @@
 
 namespace DepDocTest\PackageManager\PackageList;
 
-use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
+use DepDoc\PackageManager\Package\PackageManagerPackage;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 
@@ -10,126 +10,102 @@ class PackageManagerPackageListTest extends TestCase
 {
     use ProphecyTrait;
 
-    public function testItAddsPackage()
+    public function testItAddsPackage(): void
     {
-        $package = $this->prophesize(PackageManagerPackageInterface::class);
-        $package->getManagerName()->willReturn('Composer');
-        $package->getName()->willReturn('test');
+        $package = new PackageManagerPackage('Composer', 'test', '1');
 
         $list = new PackageManagerPackageListTestDouble();
 
         // Will create an empty array for cached dependencies
-        $this->assertNull($list->getCachedFlatDependencies());
+        self::assertNull($list->getCachedFlatDependencies());
         $list->getAllFlat();
-        $this->assertNotNull($list->getCachedFlatDependencies());
+        self::assertNotNull($list->getCachedFlatDependencies());
 
-        $list->add($package->reveal());
-        $this->assertNull($list->getCachedFlatDependencies());
-        $this->assertEquals(['Composer' => ['test' => $package->reveal()]], $list->getDependencies());
+        $list->add($package);
+        self::assertNull($list->getCachedFlatDependencies());
+        self::assertEquals(['Composer' => ['test' => $package]], $list->getDependencies());
     }
 
-    public function testHas()
+    public function testHas(): void
     {
-        $package = $this->prophesize(PackageManagerPackageInterface::class);
-        $package->getManagerName()->willReturn('Composer');
-        $package->getName()->willReturn('test');
+        $package = new PackageManagerPackage('Composer', 'test', '1');
 
         $list = new PackageManagerPackageListTestDouble();
-        $this->assertFalse($list->has('Composer', 'test'));
+        self::assertFalse($list->has('Composer', 'test'));
 
-        $list->add($package->reveal());
-        $this->assertTrue($list->has('Composer', 'test'));
+        $list->add($package);
+        self::assertTrue($list->has('Composer', 'test'));
     }
 
-    public function testGet()
+    public function testGet(): void
     {
-        $package = $this->prophesize(PackageManagerPackageInterface::class);
-        $package->getManagerName()->willReturn('Composer');
-        $package->getName()->willReturn('test');
+        $package = new PackageManagerPackage('Composer', 'test', '1');
 
         $list = new PackageManagerPackageListTestDouble();
-        $this->assertNull($list->get('Composer', 'test'));
+        self::assertNull($list->get('Composer', 'test'));
 
-        $list->add($package->reveal());
-        $this->assertEquals($package->reveal(), $list->get('Composer', 'test'));
+        $list->add($package);
+        self::assertEquals($package, $list->get('Composer', 'test'));
     }
 
-    public function testGetAllReturnsMultiLevelArray()
+    public function testGetAllReturnsMultiLevelArray(): void
     {
-        $package1 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package1->getManagerName()->willReturn('Composer');
-        $package1->getName()->willReturn('test1');
-        $package2 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package2->getManagerName()->willReturn('Node');
-        $package2->getName()->willReturn('test2');
+        $package1 = new PackageManagerPackage('Composer', 'test1', '1');
+        $package2 = new PackageManagerPackage('Node', 'test2', '1');
 
         $list = new PackageManagerPackageListTestDouble();
-        $this->assertEmpty($list->getAll());
+        self::assertEmpty($list->getAll());
 
-        $list->add($package1->reveal());
-        $list->add($package2->reveal());
-        $this->assertEquals([
-            'Composer' => ['test1' => $package1->reveal()],
-            'Node' => ['test2' => $package2->reveal()],
+        $list->add($package1);
+        $list->add($package2);
+        self::assertEquals([
+            'Composer' => ['test1' => $package1],
+            'Node' => ['test2' => $package2],
         ], $list->getAll());
     }
 
-    public function testGetAllFlatReturnsFlatArray()
+    public function testGetAllFlatReturnsFlatArray(): void
     {
-        $package1 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package1->getManagerName()->willReturn('Composer');
-        $package1->getName()->willReturn('test1');
-        $package2 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package2->getManagerName()->willReturn('Composer');
-        $package2->getName()->willReturn('test2');
-        $package3 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package3->getManagerName()->willReturn('Node');
-        $package3->getName()->willReturn('test3');
-        $package4 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package4->getManagerName()->willReturn('Node');
-        $package4->getName()->willReturn('test2');
-        $package5 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package5->getManagerName()->willReturn('Node');
-        $package5->getName()->willReturn('test3');
+        $package1 = new PackageManagerPackage('Composer', 'test1', '1');
+        $package2 = new PackageManagerPackage('Composer', 'test2', '1');
+        $package3 = new PackageManagerPackage('Node', 'test3', '1');
+        $package4 = new PackageManagerPackage('Node', 'test2', '1');
+        $package5 = new PackageManagerPackage('Node', 'test3', '1');
 
         $list = new PackageManagerPackageListTestDouble();
-        $this->assertEmpty($list->getAll());
+        self::assertEmpty($list->getAll());
 
-        $list->add($package1->reveal());
-        $list->add($package2->reveal());
-        $list->add($package3->reveal());
-        $list->add($package4->reveal());
-        $list->add($package5->reveal());
-        $this->assertEquals([
-            $package1->reveal(),
-            $package2->reveal(),
-            $package5->reveal(),
-            $package4->reveal(),
+        $list->add($package1);
+        $list->add($package2);
+        $list->add($package3);
+        $list->add($package4);
+        $list->add($package5);
+        self::assertEquals([
+            $package1,
+            $package2,
+            $package5,
+            $package4,
         ], $list->getAllFlat());
     }
 
-    public function testGetAllByManager()
+    public function testGetAllByManager(): void
     {
-        $package1 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package1->getManagerName()->willReturn('Composer');
-        $package1->getName()->willReturn('test1');
-        $package2 = $this->prophesize(PackageManagerPackageInterface::class);
-        $package2->getManagerName()->willReturn('Node');
-        $package2->getName()->willReturn('test2');
+        $package1 = new PackageManagerPackage('Composer', 'test1', '1');
+        $package2 = new PackageManagerPackage('Node', 'test2', '1');
 
         $list = new PackageManagerPackageListTestDouble();
-        $this->assertEmpty($list->getAllByManager('Composer'));
-        $this->assertEmpty($list->getAllByManager('Node'));
+        self::assertEmpty($list->getAllByManager('Composer'));
+        self::assertEmpty($list->getAllByManager('Node'));
 
-        $list->add($package1->reveal());
-        $this->assertEquals([
-            'test1' => $package1->reveal()
+        $list->add($package1);
+        self::assertEquals([
+            'test1' => $package1
         ], $list->getAllByManager('Composer'));
-        $this->assertEmpty($list->getAllByManager('Node'));
+        self::assertEmpty($list->getAllByManager('Node'));
 
-        $list->add($package2->reveal());
-        $this->assertEquals([
-            'test2' => $package2->reveal()
+        $list->add($package2);
+        self::assertEquals([
+            'test2' => $package2
         ], $list->getAllByManager('Node'));
     }
 }

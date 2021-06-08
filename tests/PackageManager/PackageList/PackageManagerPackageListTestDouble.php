@@ -9,7 +9,7 @@ use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
 class PackageManagerPackageListTestDouble extends PackageManagerPackageList
 {
     /**
-     * @return \DepDoc\PackageManager\Package\PackageManagerPackage[][]
+     * @return PackageManagerPackage[][]
      */
     public function getDependencies(): array
     {

@@ -14,6 +14,6 @@ class PackageManagerPackageTest extends TestCase
     public function testToStringThrowsException()
     {
         $package = new PackageManagerPackage('Test', 'test/package', '1.0.0');
-        $this->assertEquals('[Test] test/package (1.0.0)', $package->__toString());
+        self::assertEquals('[Test] test/package (1.0.0)', $package->__toString());
     }
 }

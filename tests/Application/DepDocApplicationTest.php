@@ -38,8 +38,8 @@ class DepDocApplicationTest extends TestCase
 
         $application = new DepDocApplication($container->reveal());
 
-        $this->assertEquals('DepDoc', $application->getName());
-        $this->assertTrue($application->has('update'));
-        $this->assertTrue($application->has('validate'));
+        self::assertEquals('DepDoc', $application->getName());
+        self::assertTrue($application->has('update'));
+        self::assertTrue($application->has('validate'));
     }
 }

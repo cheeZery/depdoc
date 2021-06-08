@@ -27,7 +27,7 @@ class NodePackageManagerTest extends TestCase
         Mock::disableAll();
     }
 
-    public function testGetInstalledPackages()
+    public function testGetInstalledPackages(): void
     {
         $globalProphecy = $this->globalProphet->prophesize('DepDoc\\PackageManager');
 
@@ -68,18 +68,18 @@ JSON
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertCount(1, $packages->getAllFlat());
-        $this->assertTrue($packages->has($manager->getName(), 'Test'));
+        self::assertCount(1, $packages->getAllFlat());
+        self::assertTrue($packages->has($manager->getName(), 'Test'));
 
         /** @var NodePackage $package */
         $package = $packages->get($manager->getName(), 'Test');
-        $this->assertInstanceOf(NodePackage::class, $package);
-        $this->assertEquals('Test', $package->getName());
-        $this->assertEquals('1.0.0', $package->getVersion());
-        $this->assertEquals('awesome package', $package->getDescription());
+        self::assertInstanceOf(NodePackage::class, $package);
+        self::assertEquals('Test', $package->getName());
+        self::assertEquals('1.0.0', $package->getVersion());
+        self::assertEquals('awesome package', $package->getDescription());
     }
 
-    public function testOutputWithNullReturnsEmptyPackageList()
+    public function testOutputWithNullReturnsEmptyPackageList(): void
     {
         $globalProphecy = $this->globalProphet->prophesize('DepDoc\\PackageManager');
 
@@ -94,6 +94,6 @@ JSON
         $manager = new NodePackageManager();
 
         $packages = $manager->getInstalledPackages($targetDirectory);
-        $this->assertCount(0, $packages->getAllFlat(), 'there should be no packages');
+        self::assertCount(0, $packages->getAllFlat(), 'there should be no packages');
     }
 }

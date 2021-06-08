@@ -48,12 +48,12 @@ class PackageValidatorTest extends TestCase
             $dependencyList->reveal()
         );
 
-        $this->assertCount(1, $errorResultList);
+        self::assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorVersionMismatchResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test2');
+                self::assertEquals($errorResult->getPackageName(), 'test2');
             } else {
-                $this->fail('Unexpected error result: ' . get_class($errorResult));
+                self::fail('Unexpected error result: ' . get_class($errorResult));
             }
         }
     }
@@ -97,16 +97,16 @@ class PackageValidatorTest extends TestCase
             $dependencyList->reveal()
         );
 
-        $this->assertCount(3, $errorResultList);
+        self::assertCount(3, $errorResultList);
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorMissingDocumentationResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test1');
+                self::assertEquals($errorResult->getPackageName(), 'test1');
             } elseif ($errorResult instanceof ErrorVersionMismatchResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test2');
+                self::assertEquals($errorResult->getPackageName(), 'test2');
             } elseif ($errorResult instanceof ErrorDocumentedButNotInstalledResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test3');
+                self::assertEquals($errorResult->getPackageName(), 'test3');
             } else {
-                $this->fail('Unexpected error result: ' . get_class($errorResult));
+                self::fail('Unexpected error result: ' . get_class($errorResult));
             }
         }
     }
@@ -148,12 +148,12 @@ class PackageValidatorTest extends TestCase
             $dependencyList->reveal()
         );
 
-        $this->assertCount(1, $errorResultList);
+        self::assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorVersionMismatchResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test2');
+                self::assertEquals($errorResult->getPackageName(), 'test2');
             } else {
-                $this->fail('Unexpected error result: ' . get_class($errorResult));
+                self::fail('Unexpected error result: ' . get_class($errorResult));
             }
         }
     }
@@ -195,12 +195,12 @@ class PackageValidatorTest extends TestCase
             $dependencyList->reveal()
         );
 
-        $this->assertCount(1, $errorResultList);
+        self::assertCount(1, $errorResultList);
         foreach ($errorResultList as $errorResult) {
             if ($errorResult instanceof ErrorVersionMismatchResult) {
-                $this->assertEquals($errorResult->getPackageName(), 'test1');
+                self::assertEquals($errorResult->getPackageName(), 'test1');
             } else {
-                $this->fail('Unexpected error result: ' . get_class($errorResult));
+                self::fail('Unexpected error result: ' . get_class($errorResult));
             }
         }
     }

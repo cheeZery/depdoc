@@ -11,7 +11,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
     /** @var PackageManagerPackage[][] */
     protected array $dependencies = [];
     /** @var null|PackageManagerPackage[] */
-    protected ?array $cachedFlatDependencies;
+    protected ?array $cachedFlatDependencies = null;
 
     public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
     {

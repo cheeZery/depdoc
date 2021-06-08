@@ -53,7 +53,7 @@ class UpdateCommandTest extends TestCase
             $this->prophesize(ConfigurationService::class)->reveal()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'Update or create a DEPENDENCIES.md',
             $command->getDescription(),
             'description should be as expected'
@@ -83,7 +83,7 @@ class UpdateCommandTest extends TestCase
 
         $input->getOption('directory')->willReturn('')->shouldBeCalledOnce();
 
-        $this->assertEquals(
+        self::assertEquals(
             -1,
             $command->run($input->reveal(), $output->reveal())
         );
@@ -164,7 +164,7 @@ class UpdateCommandTest extends TestCase
 
         $globalProphecy->reveal();
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal())
         );
@@ -245,7 +245,7 @@ class UpdateCommandTest extends TestCase
 
         $globalProphecy->reveal();
 
-        $this->assertEquals(
+        self::assertEquals(
             1,
             $command->run($input->reveal(), $output->reveal())
         );

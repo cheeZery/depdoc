@@ -13,13 +13,13 @@ class NodePackageTest extends TestCase
     public function testItBuildsCorrectExternalLInk()
     {
         $package = new NodePackage('Node', 'test/package', '1.0.0', null);
-        $this->assertEquals('https://www.npmjs.com/package/test/package', $package->getExternalLink());
+        self::assertEquals('https://www.npmjs.com/package/test/package', $package->getExternalLink());
     }
 
     public function testItReturnsAnInformativeString()
     {
         $package = new NodePackage('Node', 'test/package', '1.0.0', null);
-        $this->assertEquals(
+        self::assertEquals(
             '[Node] test/package (1.0.0 / https://www.npmjs.com/package/test/package)',
             $package->__toString()
         );

@@ -49,7 +49,7 @@ class ValidateCommandTest extends TestCase
             $this->prophesize(ConfigurationService::class)->reveal()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'Validate an already generated DEPENDENCIES.md',
             $command->getDescription(),
             'description should be as expected'
@@ -78,7 +78,7 @@ class ValidateCommandTest extends TestCase
 
         $input->getOption('directory')->willReturn('')->shouldBeCalledOnce();
 
-        $this->assertEquals(
+        self::assertEquals(
             -1,
             $command->run($input->reveal(), $output->reveal())
         );
@@ -139,7 +139,7 @@ class ValidateCommandTest extends TestCase
 
         $this->prophesizeSystemCalls();
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal())
         );
@@ -183,7 +183,7 @@ class ValidateCommandTest extends TestCase
 
         $this->prophesizeSystemCalls();
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal()),
             'exit code should match'
@@ -229,7 +229,7 @@ class ValidateCommandTest extends TestCase
 
         $this->prophesizeSystemCalls();
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal()),
             'exit code should match'
@@ -275,7 +275,7 @@ class ValidateCommandTest extends TestCase
 
         $this->prophesizeSystemCalls();
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             $command->run($input->reveal(), $output->reveal()),
             'exit code should match'

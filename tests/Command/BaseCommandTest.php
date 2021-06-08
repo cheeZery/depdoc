@@ -42,13 +42,13 @@ class BaseCommandTest extends TestCase
         $command->setHelperSet($helperSet->reveal());
 
         $definition = $command->getDefinition();
-        $this->assertTrue($definition->hasOption('directory'));
+        self::assertTrue($definition->hasOption('directory'));
 
         $option = $definition->getOption('directory');
-        $this->assertEquals('directory', $option->getName());
-        $this->assertEquals('d', $option->getShortcut());
-        $this->assertTrue($option->isValueRequired());
-        $this->assertEquals(getcwd(), $option->getDefault());
+        self::assertEquals('directory', $option->getName());
+        self::assertEquals('d', $option->getShortcut());
+        self::assertTrue($option->isValueRequired());
+        self::assertEquals(getcwd(), $option->getDefault());
     }
 
     public function testItValidatesInputDirectoryCorrectly()
@@ -83,7 +83,7 @@ class BaseCommandTest extends TestCase
         $command->setHelperSet($helperSet->reveal());
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
 
         $this->globalProphet->checkPredictions();
     }
@@ -122,7 +122,7 @@ class BaseCommandTest extends TestCase
 
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
 
         $this->globalProphet->checkPredictions();
     }
@@ -157,7 +157,7 @@ class BaseCommandTest extends TestCase
 
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
-        $this->assertEquals(-1, $result);
+        self::assertEquals(-1, $result);
     }
 
     public function testItStopsOnInvalidDirectoryOption()
@@ -196,7 +196,7 @@ class BaseCommandTest extends TestCase
 
         $result = $command->runExecute($input->reveal(), $output->reveal());
 
-        $this->assertEquals(-1, $result);
+        self::assertEquals(-1, $result);
     }
 
     public function testItCombinesAllInstalledPackages()
@@ -238,13 +238,13 @@ class BaseCommandTest extends TestCase
         );
 
         $packages = $command->testGetInstalledPackages($targetDirectory);
-        $this->assertTrue($packages->has('Composer', 't1'));
-        $this->assertTrue($packages->has('Composer', 't2'));
-        $this->assertTrue($packages->has('Composer', 't3'));
-        $this->assertTrue($packages->has('Node', 't1'));
-        $this->assertTrue($packages->has('Node', 't2'));
-        $this->assertTrue($packages->has('Node', 't3'));
-        $this->assertCount(6, $packages->getAllFlat());
+        self::assertTrue($packages->has('Composer', 't1'));
+        self::assertTrue($packages->has('Composer', 't2'));
+        self::assertTrue($packages->has('Composer', 't3'));
+        self::assertTrue($packages->has('Node', 't1'));
+        self::assertTrue($packages->has('Node', 't2'));
+        self::assertTrue($packages->has('Node', 't3'));
+        self::assertCount(6, $packages->getAllFlat());
     }
 
     /**
