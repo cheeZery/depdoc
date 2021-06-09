@@ -24,7 +24,7 @@
         }
     },
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.4.0",
         "ext-json": "*",
         "ext-pcre": "*",
         "symfony/console": "^4.1",
@@ -34,13 +34,15 @@
         "symfony/dependency-injection": "^4.2",
         "composer/composer": "^1.7",
         "symfony/config": "^4.2",
-        "vierbergenlars/php-semver": "^3.0"
+        "vierbergenlars/php-semver": "^3.0",
+        "phpspec/prophecy-phpunit": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.2",
-        "php-mock/php-mock-prophecy": "^0.0.2",
-        "symfony/var-dumper": "^4.1",
-        "phpstan/phpstan": "^0.10.7",
-        "phpstan/phpstan-strict-rules": "^0.10.1"
+        "roave/security-advisories": "dev-latest",
+        "phpstan/phpstan": "^0.12.88",
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan-strict-rules": "^0.12.9",
+        "php-mock/php-mock-prophecy": "^0.1.0",
+        "symfony/var-dumper": "^4.1"
     }
 }

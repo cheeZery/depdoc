@@ -13,7 +13,7 @@ class StrictModeTest extends TestCase
     {
         $strictMode = StrictMode::lockedOnly();
 
-        $this->assertTrue(
+        self::assertTrue(
             $strictMode->isLockedOnly(),
             'strict mode should be locked only'
         );
@@ -22,7 +22,7 @@ class StrictModeTest extends TestCase
     {
         $strictMode = StrictMode::existingOrLocked();
 
-        $this->assertTrue(
+        self::assertTrue(
             $strictMode->isExistingOrLocked(),
             'strict mode should be existing or locked'
         );
@@ -32,7 +32,7 @@ class StrictModeTest extends TestCase
     {
         $strictMode = StrictMode::majorAndMinor();
 
-        $this->assertTrue(
+        self::assertTrue(
             $strictMode->isMajorAndMinor(),
             'strict mode should be major and minor'
         );
@@ -42,7 +42,7 @@ class StrictModeTest extends TestCase
     {
         $strictMode = StrictMode::fullSemVerMatch();
 
-        $this->assertTrue(
+        self::assertTrue(
             $strictMode->isFullSemVerMatch(),
             'strict mode should be full semantic versioning match'
         );

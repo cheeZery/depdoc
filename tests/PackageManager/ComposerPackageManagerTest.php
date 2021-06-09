@@ -13,9 +13,12 @@ use Composer\Semver\Constraint\ConstraintInterface;
 use DepDoc\PackageManager\ComposerPackageManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class ComposerPackageManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testGetInstalledPackages()
     {
         $package = $this->prophesize(CompletePackage::class);
@@ -75,7 +78,7 @@ class ComposerPackageManagerTest extends TestCase
 
         $installedPackages = $composerPackageManager->getInstalledPackages('');
 
-        $this->assertTrue(
+        self::assertTrue(
             $installedPackages->has(
                 $composerPackageManager->getName(), 'test/test'
             ),
@@ -166,13 +169,13 @@ class ComposerPackageManagerTest extends TestCase
             $composerPackageManager->getName()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'abc/abc',
             array_shift($composerPackages)->getName(),
             'first package should be abc package'
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'test/test',
             array_shift($composerPackages)->getName(),
             'second package should be test package'
@@ -226,7 +229,7 @@ class ComposerPackageManagerTest extends TestCase
 
         $installedPackages = $composerPackageManager->getInstalledPackages('');
 
-        $this->assertFalse(
+        self::assertFalse(
             $installedPackages->has(
                 $composerPackageManager->getName(), 'test/test'
             ),

@@ -6,6 +6,7 @@ namespace DepDoc\PackageManager;
 use DepDoc\PackageManager\Exception\FailedToParseDependencyInformationException;
 use DepDoc\PackageManager\Package\NodePackage;
 use DepDoc\PackageManager\PackageList\PackageManagerPackageList;
+use JsonException;
 
 class NodePackageManager implements PackageManagerInterface
 {
@@ -14,37 +15,54 @@ class NodePackageManager implements PackageManagerInterface
         $packageList = new PackageManagerPackageList();
 
         // @TODO: Support npm binary detection
-        $output = shell_exec("cd " . escapeshellarg($directory) . " && npm list -json -depth 0 -long");
+        $npmCommand = implode(' ', [
+            'npm list',
+            '--json',
+            // Saves some performance
+            '--depth 0',
+            // Required to get description field
+            '--long',
+        ]);
+        $command = sprintf(
+            "cd %s && %s 2> /dev/null",
+            escapeshellarg($directory),
+            $npmCommand,
+        );
+        $output = shell_exec($command);
 
-        if ($output === null) {
+        if (!is_string($output)) {
             return $packageList;
         }
 
         $output = trim($output);
 
-        if (strlen($output) === 0 || $output[0] !== '{') {
+        if ($output === '' || $output[0] !== '{') {
             return $packageList;
         }
 
-        $dependencies = json_decode($output, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $dependencies = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
             throw new FailedToParseDependencyInformationException(
                 $this->getName(),
-                json_last_error(),
-                json_last_error_msg()
+                $exception->getCode(),
+                $exception->getMessage()
             );
         }
 
         $installedPackages = $dependencies['dependencies'] ?? [];
 
-        $relevantData = array_flip(['name', 'version', 'description']);
+        $relevantData = array_flip(['name', 'version', 'description', 'peerMissing', 'extraneous']);
 
-        array_walk($installedPackages, function (&$dependency) use ($relevantData) {
+        array_walk($installedPackages, static function (&$dependency) use ($relevantData): void {
             $dependency = array_intersect_key($dependency, $relevantData);
         });
 
         foreach ($installedPackages as $installedPackage) {
+            if (!$this->isValidPackage($installedPackage)) {
+                continue;
+            }
+
             $packageList->add(new NodePackage(
                 $this->getName(),
                 $installedPackage['name'],
@@ -54,6 +72,25 @@ class NodePackageManager implements PackageManagerInterface
         }
 
         return $packageList;
+    }
+
+    /**
+     * @param array{peerMissing?: array, extraneous?: bool} $installedPackage
+     * @return bool
+     */
+    private function isValidPackage(array $installedPackage): bool
+    {
+        // NPM <= 6 peer dependency note
+        if (array_key_exists('peerMissing', $installedPackage) && count($installedPackage['peerMissing']) > 0) {
+            return false;
+        }
+
+        // NPM 7 extraneous (installed but unneeded) package
+        if (array_key_exists('extraneous', $installedPackage) && $installedPackage['extraneous'] === true) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getName(): string

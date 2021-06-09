@@ -14,12 +14,12 @@ class MarkdownParserTest extends TestCase
     /** @var PHPProphet */
     protected $prophet;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prophet = new PHPProphet();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -46,23 +46,23 @@ class MarkdownParserTest extends TestCase
         $packageList = $parser->getDocumentedDependencies($filepath, null);
 
         $packages = $packageList->getAllFlat();
-        $this->assertCount(8, $packages);
+        self::assertCount(8, $packages);
 
         /** @var DependencyData $package */
         $package = $packageList->get('Composer', 'php-mock/php-mock-prophecy');
-        $this->assertNotNull($package);
-        $this->assertCount(2, $package->getAdditionalContent()->getAll());
-        $this->assertEquals(['', 'working'], array_values($package->getAdditionalContent()->getAll()));
+        self::assertNotNull($package);
+        self::assertCount(2, $package->getAdditionalContent()->getAll());
+        self::assertEquals(['', 'working'], array_values($package->getAdditionalContent()->getAll()));
 
         $package = $packageList->get('Composer', 'symfony/console');
-        $this->assertNotNull($package);
-        $this->assertCount(3, $package->getAdditionalContent()->getAll());
-        $this->assertEquals(['', 'test 1  ', 'test 2'], array_values($package->getAdditionalContent()->getAll()));
+        self::assertNotNull($package);
+        self::assertCount(3, $package->getAdditionalContent()->getAll());
+        self::assertEquals(['', 'test 1  ', 'test 2'], array_values($package->getAdditionalContent()->getAll()));
 
         $package = $packageList->get('Composer', 'symfony/yaml');
-        $this->assertNotNull($package);
-        $this->assertCount(4, $package->getAdditionalContent()->getAll());
-        $this->assertEquals(['', 'Will leave only one', '', 'consecutive empty line'], array_values($package->getAdditionalContent()->getAll()));
+        self::assertNotNull($package);
+        self::assertCount(4, $package->getAdditionalContent()->getAll());
+        self::assertEquals(['', 'Will leave only one', '', 'consecutive empty line'], array_values($package->getAdditionalContent()->getAll()));
     }
 
     public function getValidDependenciesFileData(): string

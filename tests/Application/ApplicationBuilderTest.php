@@ -6,12 +6,15 @@ namespace DepDocTest\Application;
 
 use DepDoc\Application\ApplicationBuilder;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class ApplicationBuilderTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItBuildsApplication(): void
     {
         $containerBuilder = $this->prophesize(ContainerBuilder::class);
@@ -30,7 +33,7 @@ class ApplicationBuilderTest extends TestCase
 
         $containerBuilderValue = $reflContainerProperty->getValue($application);
 
-        $this->assertEquals($containerBuilder->reveal(), $containerBuilderValue);
+        self::assertEquals($containerBuilder->reveal(), $containerBuilderValue);
     }
 
     public function testItUsesDefaultDependencies(): void
@@ -44,13 +47,13 @@ class ApplicationBuilderTest extends TestCase
         $reflLoaderProp = $reflBuilder->getProperty('loader');
         $reflLoaderProp->setAccessible(true);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ContainerBuilder::class,
             $reflContainerBuilderProp->getValue($builder),
             'default container builder should be instance of ' . ContainerBuilder::class
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             YamlFileLoader::class,
             $reflLoaderProp->getValue($builder),
             'default loader should be instance of ' . YamlFileLoader::class

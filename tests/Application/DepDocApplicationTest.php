@@ -7,12 +7,15 @@ use DepDoc\Command\UpdateCommand;
 use DepDoc\Command\ValidateCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputDefinition;
 
 class DepDocApplicationTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItShouldHaveExpectedCommands()
     {
         $validateCommand = $this->prophesize(ValidateCommand::class);
@@ -35,8 +38,8 @@ class DepDocApplicationTest extends TestCase
 
         $application = new DepDocApplication($container->reveal());
 
-        $this->assertEquals('DepDoc', $application->getName());
-        $this->assertTrue($application->has('update'));
-        $this->assertTrue($application->has('validate'));
+        self::assertEquals('DepDoc', $application->getName());
+        self::assertTrue($application->has('update'));
+        self::assertTrue($application->has('validate'));
     }
 }
