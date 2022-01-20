@@ -1,3 +1,5 @@
 newlineCharacter: \n
 lockSymbol: "⚠"
 exportExternalLink: true
+composer: true
+npm: true

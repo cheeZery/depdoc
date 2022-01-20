@@ -1,5 +1,7 @@
 {
   "newlineCharacter": "\n",
   "lockSymbol": "⚠",
-  "exportExternalLink": true
+  "exportExternalLink": true,
+  "composer": true,
+  "npm": true
 }
