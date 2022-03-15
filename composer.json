@@ -38,10 +38,10 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "phpstan/phpstan": "^0.12.88",
+        "phpstan/phpstan": "^1.4.10",
         "phpunit/phpunit": "^9.5",
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpstan/phpstan-strict-rules": "^0.12.9",
+        "phpstan/phpstan-strict-rules": "^1.1.0",
         "php-mock/php-mock-prophecy": "^0.1.0",
         "symfony/var-dumper": "^4.4 | ^5.4 | ^6.0"
     },

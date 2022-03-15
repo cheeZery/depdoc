@@ -30,7 +30,7 @@ class DependencyData extends PackageManagerPackage
         parent::__construct($managerName, $name, $version);
 
         $this->lockSymbol = $lockSymbol;
-        $this->additionalContent = new DependencyDataAdditionalContent($additionalContent ?? []);
+        $this->additionalContent = new DependencyDataAdditionalContent($additionalContent);
     }
 
     public function getLockSymbol(): ?string

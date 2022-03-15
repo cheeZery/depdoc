@@ -75,7 +75,7 @@ class NodePackageManager implements PackageManagerInterface
     }
 
     /**
-     * @param array{peerMissing?: array, extraneous?: bool} $installedPackage
+     * @param array{peerMissing?: array<mixed>, extraneous?: bool} $installedPackage
      * @return bool
      */
     private function isValidPackage(array $installedPackage): bool
