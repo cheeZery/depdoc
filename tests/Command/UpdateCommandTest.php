@@ -273,11 +273,13 @@ class UpdateCommandTest extends TestCase
      */
     protected function getDefaultOutputProphecy()
     {
-        $output = $this->prophesize(OutputInterface::class);
+        $formatter = $this->prophesize(OutputFormatterInterface::class);
+        $formatter->isDecorated()->willReturn(false);
+        $formatter->setDecorated(false)->willReturn(null);
+        $formatter->format(Argument::type('string'))->willReturn(null);
 
-        $output->getFormatter()->willReturn(
-            $this->prophesize(OutputFormatterInterface::class)->reveal()
-        );
+        $output = $this->prophesize(OutputInterface::class);
+        $output->getFormatter()->willReturn($formatter->reveal());
         $output->getVerbosity()->willReturn(0);
         $output->write(Argument::cetera())->willReturn(null);
         $output->writeln(Argument::cetera())->willReturn(null);

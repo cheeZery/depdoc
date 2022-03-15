@@ -25,17 +25,17 @@ class ComposerPackageManager implements PackageManagerInterface
     {
         $packageList = new PackageManagerPackageList();
 
-        $requiredPackages = $this->loadCurrentRequirements();
+        $composerLocker = $this->composer->getLocker();
+        if ($composerLocker === null) {
+            return $packageList;
+        }
 
-        $lockedRepository = $this->composer->getLocker()->getLockedRepository(true);
+        $lockedRepository = $composerLocker->getLockedRepository(true);
         $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
 
+        $requiredPackages = $this->loadCurrentRequirements();
+
         foreach ($requiredPackages as $package) {
-
-            if ($package->getConstraint() === null) {
-                continue; // Can't handle a package without a constraint.
-            }
-
             $lockedPackage = $lockedRepository->findPackage($package->getTarget(), $package->getConstraint());
             $localPackage = $localRepository->findPackage($package->getTarget(), $package->getConstraint());
 

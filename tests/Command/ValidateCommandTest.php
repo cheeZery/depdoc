@@ -304,11 +304,14 @@ class ValidateCommandTest extends TestCase
      */
     protected function getDefaultOutputProphecy()
     {
+        $formatter = $this->prophesize(OutputFormatterInterface::class);
+        $formatter->isDecorated()->willReturn(false);
+        $formatter->setDecorated(false)->willReturn(null);
+        $formatter->format(Argument::type('string'))->willReturn(null);
+
         $output = $this->prophesize(OutputInterface::class);
 
-        $output->getFormatter()->willReturn(
-            $this->prophesize(OutputFormatterInterface::class)->reveal()
-        );
+        $output->getFormatter()->willReturn($formatter->reveal());
         $output->getVerbosity()->willReturn(0);
         $output->write(Argument::cetera())->willReturn(null);
         $output->writeln(Argument::cetera())->willReturn(null);
