@@ -48,6 +48,7 @@
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/phpunit --no-coverage",
-        "test-with-coverage": "vendor/bin/phpunit --coverage-clover=build/coverage.xml"
+        "test-with-coverage": "vendor/bin/phpunit --coverage-clover=build/coverage.xml",
+        "depdoc-update": "bin/depdoc"
     }
 }
