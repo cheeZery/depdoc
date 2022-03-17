@@ -52,7 +52,7 @@ class NodePackageManager implements PackageManagerInterface
 
         $installedPackages = $dependencies['dependencies'] ?? [];
 
-        $relevantData = array_flip(['name', 'version', 'description', 'peerMissing', 'extraneous']);
+        $relevantData = array_flip(['name', 'path', 'version', 'description', 'peerMissing', 'extraneous']);
 
         array_walk($installedPackages, static function (&$dependency) use ($relevantData): void {
             $dependency = array_intersect_key($dependency, $relevantData);
@@ -67,8 +67,8 @@ class NodePackageManager implements PackageManagerInterface
                 $this->getName(),
                 $installedPackage['name'],
                 $installedPackage['version'],
-                $installedPackage['description'] ?? null
-            ));
+                $installedPackage['description'] ?? $this->determinePackageDescription($installedPackage['path']) ?? null
+          ));
         }
 
         return $packageList;
@@ -96,5 +96,29 @@ class NodePackageManager implements PackageManagerInterface
     public function getName(): string
     {
         return 'Node';
+    }
+
+    /**
+     * "npm list" for npm >= 8 does not return the description field in a reliable way.
+     * It may be present or it may be missing. In case "npm list" doesn't return it, we'll
+     * look into the package's own package.json, parse it and try to fetch the description
+     * from there.
+     */
+    private function determinePackageDescription(string $packagePath): ?string
+    {
+        $packageJsonPath = $packagePath . DIRECTORY_SEPARATOR . 'package.json';
+        $packageJsonContents = file_get_contents($packageJsonPath);
+
+        if ($packageJsonContents === false) {
+            return null;
+        }
+
+        try {
+            $packageJson = json_decode($packageJsonContents, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            return null;
+        }
+
+        return $packageJson['description'] ?? null;
     }
 }
