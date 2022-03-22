@@ -67,7 +67,7 @@ class BaseCommandTest extends TestCase
         $output->isVerbose()->willReturn(false)->shouldBeCalled();
         $output
             ->getFormatter()
-            ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
+            ->willReturn($this->getFormatter()->reveal())
             ->shouldBeCalled();
 
         $globalProphecy->reveal();
@@ -104,7 +104,7 @@ class BaseCommandTest extends TestCase
         $output->isVerbose()->willReturn(true)->shouldBeCalled();
         $output
             ->getFormatter()
-            ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
+            ->willReturn($this->getFormatter()->reveal())
             ->shouldBeCalled();
         $output->writeln('<info>Target directory:</info> /test/dir', 1)->shouldBeCalled();
 
@@ -139,7 +139,7 @@ class BaseCommandTest extends TestCase
         $output->isDecorated()->willReturn(false)->shouldBeCalled();
         $output
             ->getFormatter()
-            ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
+            ->willReturn($this->getFormatter()->reveal())
             ->shouldBeCalled();
         $output->write("\n")->shouldBeCalled();
         $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
@@ -176,7 +176,7 @@ class BaseCommandTest extends TestCase
         $output->isDecorated()->willReturn(false)->shouldBeCalled();
         $output
             ->getFormatter()
-            ->willReturn($this->prophesize(OutputFormatterInterface::class)->reveal())
+            ->willReturn($this->getFormatter()->reveal())
             ->shouldBeCalled();
         $output->write("\n")->shouldBeCalled();
         $output->writeln(Argument::containingString('<fg=white;bg=red> [ERROR] Invalid target directory given: '),
@@ -310,5 +310,18 @@ class BaseCommandTest extends TestCase
         $package->getName()->willReturn($name);
 
         return $package;
+    }
+
+    /**
+     * @return OutputFormatterInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    protected function getFormatter() {
+        $formatter = $this->prophesize(OutputFormatterInterface::class);
+
+        $formatter->isDecorated()->willReturn(false);
+        $formatter->setDecorated(false)->willReturn(null);
+        $formatter->format(Argument::type('string'))->willReturn(null);
+
+        return $formatter;
     }
 }

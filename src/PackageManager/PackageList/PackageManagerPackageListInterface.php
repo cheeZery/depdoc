@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace DepDoc\PackageManager\PackageList;
 
-use DepDoc\PackageManager\Package\PackageManagerPackage;
 use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 
 interface PackageManagerPackageListInterface
@@ -24,7 +23,7 @@ interface PackageManagerPackageListInterface
     /**
      * @param string $packageManagerName
      * @param string $packageName
-     * @return null|PackageManagerPackage
+     * @return null|PackageManagerPackageInterface
      */
     public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface;
 

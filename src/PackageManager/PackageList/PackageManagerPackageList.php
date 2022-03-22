@@ -8,9 +8,9 @@ use DepDoc\PackageManager\Package\PackageManagerPackageInterface;
 
 class PackageManagerPackageList implements PackageManagerPackageListInterface
 {
-    /** @var PackageManagerPackage[][] */
+    /** @var array<string, array<string, PackageManagerPackageInterface>> */
     protected array $dependencies = [];
-    /** @var null|PackageManagerPackage[] */
+    /** @var null|PackageManagerPackageInterface[] */
     protected ?array $cachedFlatDependencies = null;
 
     public function add(PackageManagerPackageInterface $data): PackageManagerPackageListInterface
@@ -35,7 +35,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
         return array_key_exists($packageName, $this->getAllByManager($packageManagerName));
     }
 
-    public function get(string $packageManagerName, string $packageName): ?PackageManagerPackage
+    public function get(string $packageManagerName, string $packageName): ?PackageManagerPackageInterface
     {
         if ($this->has($packageManagerName, $packageName) === false) {
             return null;
@@ -74,7 +74,7 @@ class PackageManagerPackageList implements PackageManagerPackageListInterface
 
     /**
      * @param string $manager
-     * @return PackageManagerPackage[]
+     * @return PackageManagerPackageInterface[]
      */
     public function getAllByManager(string $manager): array
     {

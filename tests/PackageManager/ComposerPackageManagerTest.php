@@ -182,46 +182,10 @@ class ComposerPackageManagerTest extends TestCase
         );
     }
 
-    public function testIgnorePackagesWithoutConstraint()
+    public function testHandleMissingLocker()
     {
-        $link = $this->prophesize(Link::class);
-        $link->getTarget()->willReturn('test/test')->shouldBeCalledOnce();
-        $link->getConstraint()->willReturn(null)->shouldBeCalled();
-
-        $rootPackage = $this->prophesize(RootPackage::class);
-        $rootPackage->getRequires()->willReturn(
-            [ $link->reveal() ]
-        )->shouldBeCalled();
-        $rootPackage->getDevRequires()->willReturn([])->shouldBeCalled();
-
-        $localRepository = $this->prophesize(RepositoryInterface::class);
-        $localRepository
-            ->findPackage('test/test', Argument::cetera())
-            ->shouldNotBeCalled();
-
-        $repositoryManager = $this->prophesize(RepositoryManager::class);
-        $repositoryManager->getLocalRepository()->willReturn(
-            $localRepository->reveal()
-        )->shouldBeCalled();
-
-        $lockedRepository = $this->prophesize(RepositoryInterface::class);
-        $lockedRepository
-            ->findPackage('test/test', Argument::cetera())
-            ->shouldNotBeCalled();
-
-        $locker = $this->prophesize(Locker::class);
-        $locker->getLockedRepository(true)->willReturn(
-            $lockedRepository->reveal()
-        )->shouldBeCalled();
-
         $composer = $this->prophesize(Composer::class);
-        $composer->getPackage()->willReturn(
-            $rootPackage->reveal()
-        )->shouldBeCalled();
-        $composer->getLocker()->willReturn($locker->reveal())->shouldBeCalled();
-        $composer->getRepositoryManager()->willReturn(
-            $repositoryManager->reveal()
-        )->shouldBeCalled();
+        $composer->getLocker()->willReturn(null)->shouldBeCalled();
 
         $composerPackageManager = new ComposerPackageManager(
             $composer->reveal()
