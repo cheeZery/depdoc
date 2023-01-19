@@ -7,8 +7,12 @@ use DepDoc\Configuration\ConfigurationService;
 use DepDoc\PackageManager\ComposerPackageManager;
 use DepDoc\PackageManager\NodePackageManager;
 use DepDoc\Parser\ParserInterface;
+use DepDoc\Validator\Formatter\DefaultFormatter;
+use DepDoc\Validator\Formatter\FormatterInterface;
+use DepDoc\Validator\Formatter\JUnitFormatter;
 use DepDoc\Validator\PackageValidator;
 use DepDoc\Validator\StrictMode;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -60,6 +64,14 @@ class ValidateCommand extends BaseCommand
             'Very strict mode checks for full semantic versioning match',
             false
         );
+
+        $this->addOption(
+            'format',
+            'f',
+            InputOption::VALUE_REQUIRED,
+            'Output format, could be "default" or "junit"',
+            'default'
+        );
     }
 
     /**
@@ -71,7 +83,6 @@ class ValidateCommand extends BaseCommand
         if ($exitCode !== 0) {
             return $exitCode;
         }
-
 
         $filepath = $this->getAbsoluteFilepath($this->getTargetDirectoryFromInput($input));
         $directory = dirname($filepath);
@@ -93,22 +104,18 @@ class ValidateCommand extends BaseCommand
             $installedPackages,
             $dependencyList
         );
+
+        $output = $this->getFormatter($input)->format($validationResult);
+
         if (count($validationResult) === 0) {
             if ($this->io->isVerbose()) {
-                $this->io->writeln('Validation result: empty, all fine.');
+                $this->io->writeln($output);
             }
 
             return 0;
         }
 
-        $this->io->error(sprintf(
-            'Validation result: found %s error(s)',
-            count($validationResult)
-        ));
-
-        foreach ($validationResult as $line) {
-            $this->io->writeln($line->toString());
-        }
+        $this->io->writeln($output);
 
         return -1;
     }
@@ -124,5 +131,20 @@ class ValidateCommand extends BaseCommand
         }
 
         return StrictMode::existingOrLocked();
+    }
+
+    protected function getFormatter(InputInterface $input): FormatterInterface
+    {
+        switch ($input->getOption('format')) {
+            case 'default':
+                return new DefaultFormatter();
+            case 'junit':
+                return new JUnitFormatter();
+            default:
+                throw new RuntimeException(sprintf(
+                    'Invalid format "%s" given.',
+                    $input->getOption('format')
+                ));
+        }
     }
 }
