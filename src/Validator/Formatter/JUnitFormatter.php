@@ -29,7 +29,7 @@ class JUnitFormatter implements FormatterInterface
         );
 
         foreach ($groupedResults as $packageManager => $errorResults) {
-            $result = sprintf('<testcase name="%s">', $this->escape($packageManager));
+            $result .= sprintf('<testcase name="%s">', $this->escape($packageManager));
             foreach ($errorResults as $errorResult) {
                 $result .= sprintf('<failure type="%s" message="%s" />', 'ERROR', $this->escape($errorResult->toString()));
             }
