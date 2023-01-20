@@ -26,9 +26,6 @@ class ComposerPackageManager implements PackageManagerInterface
         $packageList = new PackageManagerPackageList();
 
         $composerLocker = $this->composer->getLocker();
-        if ($composerLocker === null) {
-            return $packageList;
-        }
 
         $lockedRepository = $composerLocker->getLockedRepository(true);
         $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
