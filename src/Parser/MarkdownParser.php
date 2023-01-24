@@ -72,7 +72,7 @@ class MarkdownParser implements ParserInterface
                 continue;
             }
 
-            if (!$currentPackage || !$currentDependency instanceof DependencyData) {
+            if ($currentPackage === null || !$currentDependency instanceof DependencyData) {
                 continue;
             }
 

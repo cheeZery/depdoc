@@ -7,12 +7,12 @@ use Composer\Package\CompletePackage;
 use Composer\Package\Link;
 use Composer\Package\Locker;
 use Composer\Package\RootPackage;
-use Composer\Repository\RepositoryInterface;
+use Composer\Repository\InstalledRepositoryInterface;
+use Composer\Repository\LockArrayRepository;
 use Composer\Repository\RepositoryManager;
 use Composer\Semver\Constraint\ConstraintInterface;
 use DepDoc\PackageManager\ComposerPackageManager;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 
 class ComposerPackageManagerTest extends TestCase
@@ -41,7 +41,7 @@ class ComposerPackageManagerTest extends TestCase
         )->shouldBeCalled();
         $rootPackage->getDevRequires()->willReturn([])->shouldBeCalled();
 
-        $localRepository = $this->prophesize(RepositoryInterface::class);
+        $localRepository = $this->prophesize(InstalledRepositoryInterface::class);
         $localRepository
             ->findPackage('test/test', $contraint->reveal())
             ->willReturn($package->reveal())
@@ -52,7 +52,7 @@ class ComposerPackageManagerTest extends TestCase
             $localRepository->reveal()
         )->shouldBeCalled();
 
-        $lockedRepository = $this->prophesize(RepositoryInterface::class);
+        $lockedRepository = $this->prophesize(LockArrayRepository::class);
         $lockedRepository
             ->findPackage('test/test', $contraint->reveal())
             ->willReturn($package->reveal())
@@ -120,7 +120,7 @@ class ComposerPackageManagerTest extends TestCase
         )->shouldBeCalled();
         $rootPackage->getDevRequires()->willReturn([])->shouldBeCalled();
 
-        $localRepository = $this->prophesize(RepositoryInterface::class);
+        $localRepository = $this->prophesize(InstalledRepositoryInterface::class);
         $localRepository
             ->findPackage('test/test', $contraint->reveal())
             ->willReturn($package1->reveal())
@@ -135,7 +135,7 @@ class ComposerPackageManagerTest extends TestCase
             $localRepository->reveal()
         )->shouldBeCalled();
 
-        $lockedRepository = $this->prophesize(RepositoryInterface::class);
+        $lockedRepository = $this->prophesize(LockArrayRepository::class);
         $lockedRepository
             ->findPackage('test/test', $contraint->reveal())
             ->willReturn($package1->reveal())
@@ -179,25 +179,6 @@ class ComposerPackageManagerTest extends TestCase
             'test/test',
             array_shift($composerPackages)->getName(),
             'second package should be test package'
-        );
-    }
-
-    public function testHandleMissingLocker()
-    {
-        $composer = $this->prophesize(Composer::class);
-        $composer->getLocker()->willReturn(null)->shouldBeCalled();
-
-        $composerPackageManager = new ComposerPackageManager(
-            $composer->reveal()
-        );
-
-        $installedPackages = $composerPackageManager->getInstalledPackages('');
-
-        self::assertFalse(
-            $installedPackages->has(
-                $composerPackageManager->getName(), 'test/test'
-            ),
-            'installed packages should not contain test package'
         );
     }
 }

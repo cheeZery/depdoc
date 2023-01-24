@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use RuntimeException;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -284,6 +285,48 @@ class ValidateCommandTest extends TestCase
         $this->globalProphet->checkPredictions();
     }
 
+    public function testItThrowsExceptionForUnknownFormat(): void
+    {
+        self::expectException(RuntimeException::class);
+        self::expectExceptionMessage('Invalid format "json" given.');
+
+        $composerPackageManager = $this->getDefaultComposerPackageManager();
+        $nodePackageManager = $this->getDefaultNodePackageManager();
+
+        $parser = $this->getDefaultParser();
+
+        $validator = $this->prophesize(PackageValidator::class);
+        $validator
+            ->compare(
+                Argument::type(StrictMode::class),
+                Argument::type(PackageManagerPackageList::class),
+                Argument::type(PackageManagerPackageList::class)
+            )
+            ->willReturn([]);
+
+        $command = new ValidateCommand(
+            $validator->reveal(),
+            $parser->reveal(),
+            $composerPackageManager->reveal(),
+            $nodePackageManager->reveal(),
+            $this->prophesize(ConfigurationService::class)->reveal()
+        );
+
+        $input = $this->getDefaultInputProphecy();
+        $output = $this->getDefaultOutputProphecy();
+
+        $input->getOption('directory')->willReturn('/test');
+        $input->getOption('very-strict')->willReturn(false);
+        $input->getOption('strict')->willReturn(false);
+        $input->getOption('format')->willReturn('json');
+
+        $this->prophesizeSystemCalls();
+
+        $command->run($input->reveal(), $output->reveal());
+
+        $this->globalProphet->checkPredictions();
+    }
+
     /**
      * @return ObjectProphecy|InputInterface
      */
@@ -295,6 +338,7 @@ class ValidateCommandTest extends TestCase
         $input->isInteractive()->willReturn(false);
         $input->hasArgument('command')->willReturn(false);
         $input->validate()->willReturn(null);
+        $input->getOption('format')->willReturn('default');
 
         return $input;
     }
