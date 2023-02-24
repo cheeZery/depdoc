@@ -43,7 +43,7 @@ class MarkdownWriterTest extends TestCase
             ],
             'Node' => [
                 $this->getNodePackageProphecy('t2p1', '1.0.0', 'Awesome package #2!'),
-                $this->getNodePackageProphecy('t2p2', '1.0.0', null),
+                $this->getNodePackageProphecy('t2p2', '1.0.0', ''),
             ],
         ])->shouldBeCalled();
 
@@ -71,13 +71,12 @@ class MarkdownWriterTest extends TestCase
         )->shouldBeCalled();
 
         $configuration->isExportExternalLink()->willReturn(true)->shouldBeCalledTimes(6);
-        $configuration->getNewline()->willReturn('#nl')->shouldBeCalledTimes(26);
+        $configuration->getNewline()->willReturn('#nl')->shouldBeCalledTimes(24);
 
         $globalProphecy->file_put_contents($filepath, [
             '# Composer#nl',
             '#nl',
             '## t1p1 `1.0.0` [link](https://packagist.org/packages/t1p1)#nl',
-            '> #nl',
             '#nl',
             '## t1p2 `2.0.0` [link](https://packagist.org/packages/t1p2)#nl',
             '> Awesome package!#nl',
@@ -97,7 +96,6 @@ class MarkdownWriterTest extends TestCase
             '> Awesome package #2!#nl',
             '#nl',
             '## t2p2 `1.0.0` [link](https://www.npmjs.com/package/t2p2)#nl',
-            '> #nl',
             '#nl',
             '#nl',
         ], LOCK_EX)->shouldBeCalled();
