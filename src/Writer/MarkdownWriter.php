@@ -50,7 +50,9 @@ class MarkdownWriter implements WriterInterface
                     $documentation[] = $this->createPackageLine($installedPackage);
                 }
 
-                $documentation[] = $this->createDescriptionLine($installedPackage->getDescription());
+                if ($installedPackage->getDescription() !== null && $installedPackage->getDescription() !== "") {
+                    $documentation[] = $this->createDescriptionLine($installedPackage->getDescription());
+                }
 
                 if ($documentedDependency !== null) {
                     foreach ($documentedDependency->getAdditionalContent()->getAll() as $contentLine) {
