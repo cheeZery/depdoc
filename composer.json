@@ -34,7 +34,7 @@
         "symfony/dependency-injection": "^4.4 | ^5.4 | ^6.0",
         "composer/composer": "^2.0",
         "symfony/config": "^4.4 | ^5.4 | ^6.0",
-        "vierbergenlars/php-semver": "^3.0.2"
+        "z4kn4fein/php-semver": "^2.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
