@@ -89,8 +89,8 @@ class PackageValidator
         }
 
         if ($mode->isMajorAndMinor()) {
-            $dependencyVersion = Version::parse($dependency->getVersion());
-            $packageVersion = Version::parse($package->getVersion());
+            $dependencyVersion = Version::parse($dependency->getVersion(), false);
+            $packageVersion = Version::parse($package->getVersion(), false);
 
             return (
                 $dependencyVersion->getMajor() === $packageVersion->getMajor()
