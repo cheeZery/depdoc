@@ -10,7 +10,7 @@ use DepDoc\Validator\Result\ErrorDocumentedButNotInstalledResult;
 use DepDoc\Validator\Result\ErrorMissingDocumentationResult;
 use DepDoc\Validator\Result\ErrorResultInterface;
 use DepDoc\Validator\Result\ErrorVersionMismatchResult;
-use vierbergenlars\SemVer\version;
+use z4kn4fein\SemVer\Version;
 
 class PackageValidator
 {
@@ -89,8 +89,8 @@ class PackageValidator
         }
 
         if ($mode->isMajorAndMinor()) {
-            $dependencyVersion = new version($dependency->getVersion());
-            $packageVersion = new version($package->getVersion());
+            $dependencyVersion = Version::parse($dependency->getVersion(), false);
+            $packageVersion = Version::parse($package->getVersion(), false);
 
             return (
                 $dependencyVersion->getMajor() === $packageVersion->getMajor()
